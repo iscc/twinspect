@@ -1,0 +1,37 @@
+openapi: 3.1.0
+info:
+  title: TwinSpect
+  description: Datamodel for the universal near-duplicate benchmark
+  version: 0.1.0
+components:
+  schemas:
+    Dataset:
+      title: Dataset
+      type: object
+      description: A dataset used for near-duplicate benchmarking
+      required:
+      - name
+      - url
+      - mode
+      properties:
+        name:
+          type: string
+          description: The name of the dataset
+        url:
+          type: string
+          format: uri
+          description: Download url for dataset
+        mode:
+          type: string
+          description: Perceptual mode of media assets
+          enum:
+          - text
+          - image
+          - audio
+          - video
+        installer:
+          type: string
+          description: Full path to python function that installs the dataset
+        samples:
+          type: integer
+          description: Number of samples to install from the dataset

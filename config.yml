@@ -1,0 +1,8 @@
+twinspect: 0.1.0
+root_folder: data
+datasets:
+- name: fma
+  url: https://os.unil.cloud.switch.ch/fma/fma_full.zip
+  mode: audio
+  installer: twinspect.datasets.fma:install
+  samples: 10

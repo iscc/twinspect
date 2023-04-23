@@ -2,12 +2,33 @@
 name = "twinspect"
 version = "0.1.0"
 description = ""
-authors = ["Titusz Pan <titusz.pan@gmail.com>"]
+authors = ["Titusz <tp@py7.de>"]
 readme = "README.md"
+
+[tool.poetry.scripts]
+twinspect = 'twinspect.__main__:main'
 
 [tool.poetry.dependencies]
 python = "^3.11"
+remotezip = "^0.12.1"
+datamodel-code-generator = "^0.18.0"
+poethepoet = "^0.19.0"
+rich = "^13.3.4"
 
+[tool.datamodel-codegen]
+input = "twinspect/schema.yml"
+output = "twinspect/schema.py"
+input-file-type = "openapi"
+encoding = "UTF-8"
+disable-timestamp = true
+target-python-version = "3.11"
+
+[tool.poe.tasks]
+format-yaml = { script = "twinspect.tools:format_yml", help = "Format all yaml files"}
+validate-schema = { cmd = "openapi-spec-validator twinspect/schema.yml", help = "Validate OpenAPI Schema"}
+generate-code = { cmd = "datamodel-codegen", help="Build code from OpenAPI Schema"}
+fix-line-endings = { script = "twinspect.tools:fix_line_endings", help = "Convert line endings to LF"}
+all = ["format-yaml", "validate-schema", "generate-code", "fix-line-endings"]
 
 [build-system]
 requires = ["poetry-core"]
