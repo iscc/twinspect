@@ -17,6 +17,9 @@ components:
         name:
           type: string
           description: The name of the dataset
+        label:
+          type: string
+          description: Short label used in tables and as folder name
         url:
           type: string
           format: uri

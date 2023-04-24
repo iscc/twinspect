@@ -18,6 +18,9 @@ class Mode(Enum):
 
 class Dataset(BaseModel):
     name: str = Field(..., description='The name of the dataset')
+    label: Optional[str] = Field(
+        None, description='Short label used in tables and as folder name'
+    )
     url: AnyUrl = Field(..., description='Download url for dataset')
     mode: Mode = Field(..., description='Perceptual mode of media assets')
     installer: Optional[str] = Field(

@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import shutil
+
 import twinspect as ts
 import importlib
 import pathlib
@@ -7,6 +9,7 @@ import yaml
 __all__ = [
     "load_function",
     "install_dataset",
+    "clusterize",
 ]
 
 ROOT = pathlib.Path(__file__).parent.parent.absolute()
@@ -19,9 +22,24 @@ def load_function(path: str):
     return function
 
 
-def install_dataset(dataset: ts.Dataset, path: pathlib.Path) -> pathlib.Path:
+def install_dataset(dataset: ts.Dataset) -> pathlib.Path:
     install = load_function(dataset.installer)
-    return install(dataset, path)
+    return install(dataset)
+
+
+def clusterize(src: pathlib.Path, dst: pathlib.Path, clusters: int):
+    """Copy files from source to destination into a cluster folder structure."""
+    clustered = 0
+    for path in src.rglob("*"):
+        if path.is_file():
+            if clustered < clusters:
+                cluster_folder_name = f"{clustered:07d}"
+                target = dst / cluster_folder_name
+                target.mkdir()
+                shutil.copy(path, target)
+                clustered += 1
+            else:
+                shutil.copy(path, dst)
 
 
 def format_yml():
