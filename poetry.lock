@@ -373,6 +373,22 @@ files = [
 colorama = {version = "*", markers = "platform_system == \"Windows\""}
 
 [[package]]
+name = "codetiming"
+version = "1.4.0"
+description = "A flexible, customizable timer for your Python code."
+category = "main"
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "codetiming-1.4.0-py3-none-any.whl", hash = "sha256:3b80f409bef00941a9755c5524071ce2f72eaa4520f4bc35b33869cde024ccbd"},
+    {file = "codetiming-1.4.0.tar.gz", hash = "sha256:4937bf913a2814258b87eaaa43d9a1bb24711ffd3557a9ab6934fa1fe3ba0dbc"},
+]
+
+[package.extras]
+dev = ["black", "bump2version", "flake8", "flit", "interrogate", "isort", "mypy"]
+test = ["black", "interrogate", "pytest", "pytest-cov", "tox"]
+
+[[package]]
 name = "colorama"
 version = "0.4.6"
 description = "Cross-platform colored terminal text."
@@ -2064,4 +2080,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "fc4416df9dcbb336c09f76e6b2e76ec3abe0400204f9de140eb67c1d63771656"
+content-hash = "62d06ed151e8cfe2af92d64a3c4074818efe2addb2cec175f2c419e72a956b85"

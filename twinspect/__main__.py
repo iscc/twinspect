@@ -1,15 +1,13 @@
 # -*- coding: utf-8 -*-
 import twinspect as ts
 import pathlib
-import yaml
+
 
 HERE = pathlib.Path(__file__).parent.absolute()
 
 
 def main():
-    config = yaml.safe_load(open(HERE.parent / "config.yml"))
-    for dataset in config['datasets']:
-        ds_obj = ts.Dataset.parse_obj(dataset)
+    for ds_obj in ts.cnf.datasets:
         ts.install_dataset(ds_obj)
 
 

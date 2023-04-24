@@ -18,6 +18,7 @@ loguru = "^0.6"
 python-dotenv = "^1.0.0"
 pydub = "^0.25.1"
 iscc-sdk = "^0.5.5"
+codetiming = "^1.4.0"
 
 [tool.datamodel-codegen]
 input = "twinspect/schema.yml"

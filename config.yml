@@ -6,3 +6,62 @@ datasets:
   mode: audio
   installer: twinspect.datasets.fma:install
   samples: 10
+  clusters: 5
+transformations:
+- name: Trim 0.1 Seconds
+  mode: audio
+  function: twinspect.transformations.audio:trim
+  params:
+  - 0.1
+  - both
+- name: Trim 1 Second
+  mode: audio
+  function: twinspect.transformations.audio:trim
+  params:
+  - 1
+  - both
+- name: Trim 5 Seconds
+  mode: audio
+  function: twinspect.transformations.audio:trim
+  params:
+  - 5
+  - both
+- name: Fade 8 Seconds
+  mode: audio
+  function: twinspect.transformations.audio:fade
+  params:
+  - 8
+  - both
+- name: Transcode MP3 128kbps
+  mode: audio
+  function: twinspect.transformations.audio:transcode
+  params:
+  - mp3
+  - 128
+- name: Transcode OGG 64kbps
+  mode: audio
+  function: twinspect.transformations.audio:transcode
+  params:
+  - ogg
+  - 64
+- name: Transcode AAC+v2 18kbps
+  mode: audio
+  function: twinspect.transformations.audio:transcode
+  params:
+  - aac
+  - 18
+- name: Mastering Low
+  mode: audio
+  function: twinspect.transformations.audio:master
+  params:
+  - low
+- name: Mastering Medium
+  mode: audio
+  function: twinspect.transformations.audio:master
+  params:
+  - medium
+- name: Mastering Strong
+  mode: audio
+  function: twinspect.transformations.audio:master
+  params:
+  - strong

@@ -38,3 +38,54 @@ components:
         samples:
           type: integer
           description: Number of samples to install from the dataset
+        clusters:
+          type: integer
+          description: Number of similarity clusters to build for dataset
+    Transformation:
+      title: Transformation
+      type: object
+      description: A transformation being applied to a media asset
+      required:
+      - name
+      - mode
+      - function
+      properties:
+        name:
+          type: string
+          description: The name of the transformation
+        mode:
+          type: string
+          description: Perceptual mode of media assets
+          enum:
+          - text
+          - image
+          - audio
+          - video
+        function:
+          type: string
+          description: Full path to python function that applies the transformation
+        params:
+          type: array
+          description: A list of transformation parameters to be used with the function
+    Configuration:
+      title: Configuration
+      type: object
+      description: Benchmark configuration
+      required:
+      - twinspect
+      - datasets
+      - transformations
+      properties:
+        twinspect:
+          type: string
+          description: Configuration file format version
+        datasets:
+          type: array
+          items:
+            $ref: '#/components/schemas/Dataset'
+          description: List of Datasets
+        transformations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Transformation'
+          description: List of Transformations

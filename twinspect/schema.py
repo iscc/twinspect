@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import AnyUrl, BaseModel, Field
 
@@ -28,4 +28,27 @@ class Dataset(BaseModel):
     )
     samples: Optional[int] = Field(
         None, description='Number of samples to install from the dataset'
+    )
+    clusters: Optional[int] = Field(
+        None, description='Number of similarity clusters to build for dataset'
+    )
+
+
+class Transformation(BaseModel):
+    name: str = Field(..., description='The name of the transformation')
+    mode: Mode = Field(..., description='Perceptual mode of media assets')
+    function: str = Field(
+        ..., description='Full path to python function that applies the transformation'
+    )
+    params: Optional[List] = Field(
+        None,
+        description='A list of transformation parameters to be used with the function',
+    )
+
+
+class Configuration(BaseModel):
+    twinspect: str = Field(..., description='Configuration file format version')
+    datasets: List[Dataset] = Field(..., description='List of Datasets')
+    transformations: List[Transformation] = Field(
+        ..., description='List of Transformations'
     )

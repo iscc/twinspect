@@ -1,3 +1,5 @@
+import yaml
+
 import twinspect as ts
 import pathlib
 from remotezip import RemoteZip
@@ -9,22 +11,32 @@ def install(dataset: ts.Dataset) -> pathlib.Path:
     """Install FMA Dataset"""
 
     # Create Cluster Folder
-    cluster_folder = ts.cnf.root_folder / dataset.label
+    cluster_folder = ts.opts.root_folder / dataset.label
     if cluster_folder.exists():
         return cluster_folder
     else:
         cluster_folder.mkdir()
 
     download_folder = download(dataset)
-    ts.clusterize(download_folder, cluster_folder, dataset.samples // 2)
+    ts.clusterize(download_folder, cluster_folder, dataset.clusters)
+    transform(cluster_folder)
     return cluster_folder
+
+
+def transform(cluster_folder: pathlib.Path):
+    originals = list(ts.iter_original_files(cluster_folder))
+    for fp in track(originals, description="FMA Transform"):
+        for ts_obj in ts.cnf.transformations:
+            if ts_obj.mode == ts.Mode.audio:
+                ts_func = ts.load_function(ts_obj.function)
+                ts_func(fp, *ts_obj.params)
 
 
 def download(dataset: ts.Dataset) -> pathlib.Path:
     """Download FMA Dataset"""
 
     # Create Download folder
-    download_folder = ts.cnf.root_folder / f"downloads/{dataset.label}"
+    download_folder = ts.opts.root_folder / f"downloads/{dataset.label}"
     if download_folder.exists():
         return download_folder
     else:
