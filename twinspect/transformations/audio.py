@@ -21,7 +21,7 @@ def trim(file_path: Path, seconds: float, position: str) -> Path:
         raise ValueError("Invalid position argument. Must be 'start', 'end', or 'both'.")
 
     # Generate a new file name with the trimming information
-    new_file_path = file_path.with_stem(f"{file_path.stem}_trimmed_{seconds}s_{position}")
+    new_file_path = file_path.with_stem(f"z{file_path.stem}_trimmed-{seconds}s-{position}")
 
     # Export the trimmed audio file
     trimmed_audio.export(new_file_path, format=file_path.suffix[1:])
@@ -47,7 +47,7 @@ def fade(file_path: Path, seconds: int, position: str) -> Path:
         raise ValueError("Invalid position argument. Must be 'in', 'out', or 'both'.")
 
     # Generate a new file name with the fade information
-    new_file_path = file_path.with_stem(f"{file_path.stem}_faded_{seconds}s_{position}")
+    new_file_path = file_path.with_stem(f"z{file_path.stem}_faded-{seconds}s-{position}")
 
     # Export the faded audio file
     faded_audio.export(new_file_path, format=file_path.suffix[1:])
@@ -69,7 +69,7 @@ def transcode(file_path: Path, codec: str, kbps: int) -> Path:
         'wav': ('pcm_s16le', '.wav', None),
         'ogg': ('libvorbis', '.ogg', None),
         'flac': ('flac', '.flac', None),
-        'aac': ('libfdk_aac', '.m4a', 'aac_he_v2'),
+        'aac': ('aac', '.m4a', 'aac_he_v2'),
     }.get(codec.lower(), (None, None, None))
 
     if output_format is None:
@@ -77,7 +77,7 @@ def transcode(file_path: Path, codec: str, kbps: int) -> Path:
             "Invalid codec. Supported codecs are 'mp3', 'wav', 'ogg', 'flac', and 'aac'.")
 
     # Generate a new file name with the codec and kbps information
-    new_file_name = f"{file_path.stem}_transcoded_{codec}_{kbps}kbps{file_extension}"
+    new_file_name = f"z{file_path.stem}_transcoded-{codec}-{kbps}kbps{file_extension}"
     new_file_path = file_path.with_name(new_file_name)
 
     # Prepare the FFmpeg command
@@ -112,7 +112,7 @@ def master(file_path: Path, intensity: str) -> Path:
     }[intensity.lower()]
 
     # Generate a new file name with the intensity information
-    new_file_name = f"{file_path.stem}_mastered_{intensity.lower()}{file_path.suffix}"
+    new_file_name = f"z{file_path.stem}_mastered-{intensity.lower()}{file_path.suffix}"
     new_file_path = file_path.with_name(new_file_name)
 
     # Prepare the FFmpeg command
