@@ -32,6 +32,13 @@ class Dataset(BaseModel):
     clusters: Optional[int] = Field(
         None, description='Number of similarity clusters to build for dataset'
     )
+    seed: Optional[int] = Field(
+        None, description='Seed for reproducible random selection of samples'
+    )
+    download_hash: Optional[str] = Field(
+        None, description='Hash of unprocessed download data'
+    )
+    data_hash: Optional[str] = Field(None, description='Hash of processed data folder')
 
 
 class Transformation(BaseModel):

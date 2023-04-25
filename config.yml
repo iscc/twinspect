@@ -1,12 +1,25 @@
 twinspect: 0.1.0
 datasets:
-- name: FMA - A Dataset For Music Analysis
-  label: fma
+- name: FMA 1000/100 Synth
+  label: fma_1000
   url: https://os.unil.cloud.switch.ch/fma/fma_full.zip
   mode: audio
   installer: twinspect.datasets.fma:install
-  samples: 10
-  clusters: 5
+  samples: 1000
+  clusters: 100
+  seed: 0
+  download_hash: d50b3d0eced462cff1fd9e2929d08c0c91dba677d54982b667bbbfcddbe896aa
+  data_hash: e4a0861b047852c4b916df89961f5205f728d1c0d68378b7ee5cc00fb2205b9e
+- name: FMA 5000/500 Synth
+  label: fma_5000
+  url: https://os.unil.cloud.switch.ch/fma/fma_full.zip
+  mode: audio
+  installer: twinspect.datasets.fma:install
+  samples: 5000
+  clusters: 500
+  seed: 0
+  download_hash: e5dee66e49c41e5d7d8ee383caa07470f3e70c84899121a9ff5b698041b3944d
+  data_hash: 2afa59bbab5b71a883b0d571dedebacaf741fd76e23f448ebeccb5304bb041b3
 transformations:
 - name: Trim 0.1 Seconds
   mode: audio

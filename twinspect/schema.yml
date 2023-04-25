@@ -41,6 +41,15 @@ components:
         clusters:
           type: integer
           description: Number of similarity clusters to build for dataset
+        seed:
+          type: integer
+          description: Seed for reproducible random selection of samples
+        download_hash:
+          type: string
+          description: Hash of unprocessed download data
+        data_hash:
+          type: string
+          description: Hash of processed data folder
     Transformation:
       title: Transformation
       type: object

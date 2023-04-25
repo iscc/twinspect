@@ -2,6 +2,7 @@
 import mmap
 import os
 import shutil
+import sys
 import traceback
 from concurrent.futures import ProcessPoolExecutor
 from typing import Callable
@@ -20,6 +21,7 @@ __all__ = [
     "clusterize",
     "count_files",
     "hash_folder",
+    "check_folder",
     "iter_original_files",
 ]
 
@@ -91,6 +93,20 @@ def hash_folder(path: pathlib.Path) -> str:
             file_hash = blake3.blake3(mm, max_threads=blake3.blake3.AUTO).digest()
             hasher.update(file_hash)
     return hasher.hexdigest()
+
+
+def check_folder(path: pathlib.Path, checksum: str):
+    """Check folder against checksum"""
+    print(f"Checking integrity for {path}")
+    print(f"Expected checksum: {checksum}")
+    folder_hash = hash_folder(path)
+    print(f"Actual checksum:   {folder_hash}")
+    if checksum == folder_hash:
+        print(f"Integrity verified")
+    else:
+        print(f"Integrity error for {path}!")
+        print("Remove folder or update hash in configuration")
+        sys.exit(1)
 
 
 def format_yml():
