@@ -16,6 +16,23 @@ class Mode(Enum):
     video = 'video'
 
 
+class Algorithm(BaseModel):
+    name: str = Field(..., description='The name of the Algorithms')
+    label: str = Field(..., description='Short labes used in tables and for file names')
+    mode: Mode = Field(..., description='Perceptual mode of algorithm')
+    function: str = Field(
+        ...,
+        description='Full path to python function that implements the algorithm. The function must accept a file path as the first parameter and must return a hex encoded compact hash code.',
+    )
+    params: Optional[List] = Field(
+        None, description='A list of parameters to be forwared to the function'
+    )
+    dependencies: Optional[List] = Field(
+        None,
+        description='A list of python package dependencies required by the implementation',
+    )
+
+
 class Dataset(BaseModel):
     name: str = Field(..., description='The name of the dataset')
     label: Optional[str] = Field(
@@ -55,6 +72,9 @@ class Transformation(BaseModel):
 
 class Configuration(BaseModel):
     twinspect: str = Field(..., description='Configuration file format version')
+    algorithms: Optional[List[Algorithm]] = Field(
+        None, description='List of algorithms to be benchmarked'
+    )
     datasets: List[Dataset] = Field(..., description='List of Datasets')
     transformations: List[Transformation] = Field(
         ..., description='List of Transformations'

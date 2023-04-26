@@ -1,4 +1,13 @@
 twinspect: 0.1.0
+algorithms:
+- name: ISCC Audio-Code V0 64-Bit
+  label: audio_code_v0
+  mode: audio
+  function: twinspect.algorithms.iscc:audio_code
+  params:
+  - 64
+  dependencies:
+  - iscc-sdk==0.5.5
 datasets:
 - name: FMA 10/3 Synth
   label: fma_10

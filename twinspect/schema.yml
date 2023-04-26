@@ -5,6 +5,40 @@ info:
   version: 0.1.0
 components:
   schemas:
+    Algorithm:
+      title: Algorithm
+      type: object
+      description: An algorithm for similarity preserving compact codes
+      required:
+      - name
+      - label
+      - mode
+      - function
+      properties:
+        name:
+          type: string
+          description: The name of the Algorithms
+        label:
+          type: string
+          description: Short labes used in tables and for file names
+        mode:
+          type: string
+          description: Perceptual mode of algorithm
+          enum:
+          - text
+          - image
+          - audio
+          - video
+        function:
+          type: string
+          description: Full path to python function that implements the algorithm. The function must accept
+            a file path as the first parameter and must return a hex encoded compact hash code.
+        params:
+          type: array
+          description: A list of parameters to be forwared to the function
+        dependencies:
+          type: array
+          description: A list of python package dependencies required by the implementation
     Dataset:
       title: Dataset
       type: object
@@ -88,6 +122,11 @@ components:
         twinspect:
           type: string
           description: Configuration file format version
+        algorithms:
+          type: array
+          items:
+            $ref: '#/components/schemas/Algorithm'
+          description: List of algorithms to be benchmarked
         datasets:
           type: array
           items:

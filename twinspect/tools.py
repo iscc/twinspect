@@ -1,22 +1,28 @@
 # -*- coding: utf-8 -*-
+from contextlib import contextmanager
+
 from loguru import logger as log
 import mmap
 import os
 import shutil
 import sys
-
-
 import blake3
 from rich.progress import track
-
 import twinspect as ts
 import importlib
 import pathlib
 import yaml
+try:
+    from pip import main as pipmain
+except ImportError:
+    from pip._internal import main as pipmain
+
 
 __all__ = [
     "load_function",
     "install_dataset",
+    "install_algorithm",
+    "datasets",
     "clusterize",
     "count_files",
     "hash_file",
@@ -26,6 +32,22 @@ __all__ = [
 ]
 
 ROOT = pathlib.Path(__file__).parent.parent.absolute()
+
+
+@contextmanager
+def silence():
+    """Context manager for silenceing console output."""
+    with open(os.devnull, 'w') as devnull:
+        old_stdout = sys.stdout
+        old_stderr = sys.stderr
+        sys.stdout = devnull
+        sys.stderr = devnull
+
+        try:
+            yield
+        finally:
+            sys.stdout = old_stdout
+            sys.stderr = old_stderr
 
 
 def load_function(path: str):
@@ -38,6 +60,17 @@ def load_function(path: str):
 def install_dataset(dataset: ts.Dataset) -> pathlib.Path:
     install = load_function(dataset.installer)
     return install(dataset)
+
+
+def install_algorithm(algorithm: ts.Algorithm):
+    for dep in algorithm.dependencies:
+        log.info(f"Installing {dep}")
+        with silence():
+            pipmain(["install", dep])
+
+
+def datasets(mode: ts.Mode):
+    return [ds for ds in ts.cnf.datasets if ds.mode == mode]
 
 
 def clusterize(src: pathlib.Path, dst: pathlib.Path, clusters: int):
