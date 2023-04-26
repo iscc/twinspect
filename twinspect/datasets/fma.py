@@ -1,13 +1,16 @@
+import os
 import shutil
 from concurrent.futures import ProcessPoolExecutor
+import blake3
 import twinspect as ts
-import pathlib
+from pathlib import Path
 from remotezip import RemoteZip
 import random
+from loguru import logger as log
 from rich.progress import track
 
 
-def install(dataset: ts.Dataset) -> pathlib.Path:
+def install(dataset: ts.Dataset) -> Path:
     """Install FMA Dataset"""
     data_folder = clusterize(dataset)
     return data_folder
@@ -19,7 +22,7 @@ def process_transformation(tansform):
     ts_func(target_file, *ts_obj.params)
 
 
-def clusterize(dataset: ts.Dataset) -> pathlib.Path:
+def clusterize(dataset: ts.Dataset) -> Path:
     """Create data folder with clustered transformations"""
 
     download_folder = download(dataset)
@@ -28,14 +31,18 @@ def clusterize(dataset: ts.Dataset) -> pathlib.Path:
     if data_folder.exists():
         if dataset.data_hash:
             ts.check_folder(data_folder, dataset.data_hash)
-        print(f"Using cached data folder {data_folder}")
+        log.debug(f"Using cached data folder {data_folder}")
         return data_folder
 
     # Process raw data to data folder
     clusters = dataset.clusters
     clustered = 0
     audio_files = [p for p in download_folder.rglob("*") if p.is_file()]
-    for path in track(audio_files, description=f"Processing {dataset.name}"):
+    ts_objects = [tf for tf in ts.cnf.transformations if tf.mode == ts.Mode.audio]
+    log.debug(f"Processing {dataset.clusters} files from {dataset.name} with {len(ts_objects)} transformations:")
+    for ts_obj in ts_objects:
+        log.debug(f"Transform: {ts_obj.name}")
+    for path in track(audio_files, description=f"Processing {dataset.name}", console=ts.console):
         if clustered < clusters:
             cluster_folder_name = f"{clustered:07d}"
             target_dir = data_folder / cluster_folder_name
@@ -44,24 +51,26 @@ def clusterize(dataset: ts.Dataset) -> pathlib.Path:
             shutil.copy(path, target_file)
             clustered += 1
             # Process transformations in parallel
-            transforms = [(tf, target_file) for tf in ts.cnf.transformations if tf.mode == ts.Mode.audio]
+            transforms = [(tf, target_file) for tf in ts_objects]
             with ProcessPoolExecutor() as excecutor:
+                log.debug(f"Transforming {path.name}")
                 excecutor.map(process_transformation, transforms)
         else:
             shutil.copy(path, data_folder)
+
     data_hash = ts.hash_folder(data_folder)
-    print(f"data_hash: {data_hash} (add to configuration for integrity verfification)")
+    log.info(f"Dataset {dataset.name} data_hash: {data_hash}")
     return data_folder
 
 
-def download(dataset: ts.Dataset) -> pathlib.Path:
+def download(dataset: ts.Dataset) -> Path:
     """Download FMA Dataset and return download folder"""
     # Use cached download folder if available
     download_folder = ts.opts.root_folder / f"downloads/{dataset.label}"
     if download_folder.exists():
         if dataset.download_hash:
             ts.check_folder(download_folder, dataset.download_hash)
-        print(f"Using cached download folder {download_folder}")
+        log.debug(f"Using cached download folder {download_folder}")
         return download_folder
 
     # Collect, download and extract samples
@@ -74,10 +83,27 @@ def download(dataset: ts.Dataset) -> pathlib.Path:
                 audio_file_names.append(file_name)
         # Select samples
         random.seed(dataset.seed)
-        sample_file_names = random.sample(audio_file_names, dataset.samples)
+        num_samples = int(dataset.samples + (dataset.samples // 10))  # add 10% to filter dupes
+        sample_file_names = random.sample(audio_file_names, num_samples)
+
         # Extract examples
-        for sfn in track(sample_file_names, description=f"Download {dataset.name}"):
-            zipfile.extract(sfn, download_folder)
-    download_hash = ts.hash_folder(download_folder)
-    print(f"download_hash: {download_hash} (add to configuration for integrity verfification)")
+        hashes = set()
+        hasher = blake3.blake3()
+        counter = 0
+        for sfn in track(sample_file_names, description=f"Download {dataset.name}", console=ts.console):
+            log.debug(f"Extracting {sfn}")
+            file_path = zipfile.extract(sfn, download_folder)
+            file_hash = ts.hash_file(Path(file_path))
+            if file_hash not in hashes:
+                hasher.update(file_hash)
+                hashes.add(file_hash)
+                counter += 1
+                if counter == dataset.samples:
+                    log.info(f"Downloaded {dataset.samples} files for {dataset.name}")
+                    break
+            else:
+                log.warning(f"Delete duplicate file {Path(file_path).name}")
+                os.remove(file_path)
+    dl_hash = ts.hash_folder(download_folder)
+    log.info(f"Dataset {dataset.name} download_hash: {dl_hash}")
     return download_folder

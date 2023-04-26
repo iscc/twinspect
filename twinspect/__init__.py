@@ -1,5 +1,36 @@
 from pathlib import Path
+from loguru import logger
+from rich.console import Console
 
+
+console = Console()
+logger.remove()
+
+
+def _log_formatter(record: dict) -> str:
+    """Log message formatter"""
+    color_map = {
+        'TRACE': 'dim blue',
+        'DEBUG': 'cyan',
+        'INFO': 'bold',
+        'SUCCESS': 'bold green',
+        'WARNING': 'yellow',
+        'ERROR': 'bold red',
+        'CRITICAL': 'bold white on red'
+    }
+    lvl_color = color_map.get(record['level'].name, 'cyan')
+    return (
+        '[not bold green]{time:YYYY/MM/DD HH:mm:ss}[/not bold green] | {level.icon}'
+        + f'  - [{lvl_color}]{{message}}[/{lvl_color}]'
+    )
+
+
+logger.add(
+    console.print,
+    level='TRACE',
+    format=_log_formatter,
+    colorize=True,
+)
 
 CODE_DIR = Path(__file__).parent.parent.resolve().absolute()
 DEFAULT_ROOT_FOLDER = CODE_DIR / "data"

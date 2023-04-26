@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
+from loguru import logger as log
 import mmap
 import os
 import shutil
 import sys
-import traceback
-from concurrent.futures import ProcessPoolExecutor
-from typing import Callable
+
 
 import blake3
 from rich.progress import track
@@ -20,6 +19,7 @@ __all__ = [
     "install_dataset",
     "clusterize",
     "count_files",
+    "hash_file",
     "hash_folder",
     "check_folder",
     "iter_original_files",
@@ -69,7 +69,7 @@ def iter_files(path: pathlib.Path):
         dirs.sort()
         files.sort()
         for filename in files:
-            yield os.path.join(root, filename)
+            yield pathlib.Path(os.path.join(root, filename))
 
 
 def iter_original_files(data_folder: pathlib.Path):
@@ -82,30 +82,39 @@ def iter_original_files(data_folder: pathlib.Path):
                 yield sorted_files[0]
 
 
+def hash_file(file_path: pathlib.Path) -> bytes:
+    """Create hash for file at file_path"""
+    with file_path.open("r+b") as infile:
+        mm = mmap.mmap(infile.fileno(), 0, access=mmap.ACCESS_READ)
+        return blake3.blake3(mm, max_threads=blake3.blake3.AUTO).digest(8)
+
+
 def hash_folder(path: pathlib.Path) -> str:
     """Create checksum of folder for reproducibility"""
     total = count_files(path)
     hasher = blake3.blake3()
-    print(f"Calculating directory hash for {total} files in {path}")
-    for file in track(iter_files(path), description="Hashing...", total=total):
-        with open(file, "r+b") as infile:
-            mm = mmap.mmap(infile.fileno(), 0, access=mmap.ACCESS_READ)
-            file_hash = blake3.blake3(mm, max_threads=blake3.blake3.AUTO).digest()
-            hasher.update(file_hash)
-    return hasher.hexdigest()
+    hashes = set()
+    log.debug(f"Hashing {total} files in {path}")
+    for file in track(iter_files(path), description="Hashing...", total=total, console=ts.console):
+        file_hash = hash_file(file)
+        hasher.update(file_hash)
+        if file_hash in hashes:
+            log.warning(f"Warning - Duplicate File - {file}")
+        hashes.add(file_hash)
+    return hasher.digest(8).hex()
 
 
 def check_folder(path: pathlib.Path, checksum: str):
     """Check folder against checksum"""
-    print(f"Checking integrity for {path}")
-    print(f"Expected checksum: {checksum}")
+    log.debug(f"Checking integrity for {path}")
+    log.debug(f"Expected checksum: {checksum}")
     folder_hash = hash_folder(path)
-    print(f"Actual checksum:   {folder_hash}")
+    log.debug(f"Actual checksum:   {folder_hash}")
     if checksum == folder_hash:
-        print(f"Integrity verified")
+        log.debug(f"Integrity verified")
     else:
-        print(f"Integrity error for {path}!")
-        print("Remove folder or update hash in configuration")
+        log.debug(f"Integrity error for {path}!")
+        log.debug("Remove folder or update hash in configuration")
         sys.exit(1)
 
 
