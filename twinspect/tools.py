@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from contextlib import contextmanager
-
+from importlib.metadata import version, PackageNotFoundError
 from loguru import logger as log
 import mmap
 import os
@@ -19,6 +19,7 @@ except ImportError:
 
 
 __all__ = [
+    "iter_files",
     "load_function",
     "install_dataset",
     "install_algorithm",
@@ -64,9 +65,16 @@ def install_dataset(dataset: ts.Dataset) -> pathlib.Path:
 
 def install_algorithm(algorithm: ts.Algorithm):
     for dep in algorithm.dependencies:
-        log.info(f"Installing {dep}")
-        with silence():
-            pipmain(["install", dep])
+        package_name, required_version = dep.split("==")
+        try:
+            installed_version = version(package_name)
+            if installed_version == required_version:
+                log.debug(f"{package_name} v{required_version} already installed")
+                continue
+        except PackageNotFoundError:
+            log.info(f"Installing {dep}")
+            with silence():
+                pipmain(["install", dep])
 
 
 def datasets(mode: ts.Mode):
@@ -98,7 +106,7 @@ def count_files(path: pathlib.Path) -> int:
 
 def iter_files(path: pathlib.Path):
     """Iterate all files in path recurively with deterministic ordering"""
-    for root, dirs, files in os.walk(path):
+    for root, dirs, files in os.walk(path, topdown=False):
         dirs.sort()
         files.sort()
         for filename in files:
@@ -117,36 +125,51 @@ def iter_original_files(data_folder: pathlib.Path):
 
 def hash_file(file_path: pathlib.Path) -> bytes:
     """Create hash for file at file_path"""
+    file_path = pathlib.Path(file_path)
     with file_path.open("r+b") as infile:
         mm = mmap.mmap(infile.fileno(), 0, access=mmap.ACCESS_READ)
         return blake3.blake3(mm, max_threads=blake3.blake3.AUTO).digest(8)
 
 
 def hash_folder(path: pathlib.Path) -> str:
-    """Create checksum of folder for reproducibility"""
+    """
+    Create a 64-bit hash of folder as identifier for reproducibility
+
+    Note:
+        The hash is intentionally sensitive to subdirectory and filename changes that change the
+        lexicographic ordering of the files within the folder.
+    """
+    path = pathlib.Path(path)
     total = count_files(path)
     hasher = blake3.blake3()
-    hashes = set()
+    hashes = dict()
     log.debug(f"Hashing {total} files in {path}")
     for file in track(iter_files(path), description="Hashing...", total=total, console=ts.console):
-        file_hash = hash_file(file)
-        hasher.update(file_hash)
+        try:
+            file_hash = hash_file(file)
+        except ValueError:
+            if file.stat().st_size == 0:
+                log.error(f"Failed to hash empty file {file}")
+                continue
+            else:
+                log.error(f"Unexpected hashing error for {file}")
+                sys.exit(1)
         if file_hash in hashes:
-            log.warning(f"Warning - Duplicate File - {file}")
-        hashes.add(file_hash)
+            log.warning(f"Warning - Duplicate Files - {file} == {hashes[file_hash]}")
+        hashes[file_hash] = file
+        # Update global hash created from individual file hashes
+        hasher.update(file_hash)
     return hasher.digest(8).hex()
 
 
 def check_folder(path: pathlib.Path, checksum: str):
     """Check folder against checksum"""
     log.debug(f"Checking integrity for {path}")
-    log.debug(f"Expected checksum: {checksum}")
     folder_hash = hash_folder(path)
-    log.debug(f"Actual checksum:   {folder_hash}")
     if checksum == folder_hash:
-        log.debug(f"Integrity verified")
+        log.debug(f"Verified Integrity for {path}")
     else:
-        log.debug(f"Integrity error for {path}!")
+        log.debug(f"Integrity error! Expected {checksum}, actual {folder_hash} for {path}!")
         log.debug("Remove folder or update hash in configuration")
         sys.exit(1)
 

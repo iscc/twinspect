@@ -9,23 +9,15 @@ algorithms:
   dependencies:
   - iscc-sdk==0.5.5
 datasets:
-- name: FMA 10/3 Synth
-  label: fma_10
+- name: FMA 100/10 Synth
+  label: fma_100
   url: https://os.unil.cloud.switch.ch/fma/fma_full.zip
   mode: audio
   installer: twinspect.datasets.fma:install
-  samples: 10
-  clusters: 3
+  samples: 100
+  clusters: 10
   seed: 0
-  download_hash: 0804eacde5a4791e
-  data_hash: 19b60596942ac04c
 transformations:
-- name: Trim 0.1 Seconds
-  mode: audio
-  function: twinspect.transformations.audio:trim
-  params:
-  - 0.1
-  - both
 - name: Trim 1 Second
   mode: audio
   function: twinspect.transformations.audio:trim
@@ -56,24 +48,23 @@ transformations:
   params:
   - ogg
   - 64
-- name: Transcode AAC+v2 18kbps
+- name: Transcode AAC 18kbps
   mode: audio
   function: twinspect.transformations.audio:transcode
   params:
   - aac
   - 18
-- name: Mastering Low
+- name: Compress
   mode: audio
-  function: twinspect.transformations.audio:master
-  params:
-  - low
-- name: Mastering Medium
-  mode: audio
-  function: twinspect.transformations.audio:master
+  function: twinspect.transformations.audio:compress
   params:
   - medium
-- name: Mastering Strong
+- name: Equalize
   mode: audio
-  function: twinspect.transformations.audio:master
-  params:
-  - strong
+  function: twinspect.transformations.audio:equalize
+- name: Echo
+  mode: audio
+  function: twinspect.transformations.audio:echo
+- name: Loudness Normalization
+  mode: audio
+  function: twinspect.transformations.audio:loudnorm

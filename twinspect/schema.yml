@@ -39,6 +39,31 @@ components:
         dependencies:
           type: array
           description: A list of python package dependencies required by the implementation
+    Task:
+      title: Task
+      type: object
+      description: A processing task that generates a compact code for a media file
+      required:
+      - id
+      - file
+      properties:
+        id:
+          type: integer
+          description: The id of the media file
+        function:
+          type: string
+        code:
+          type: string
+          description: The genrated hex encoded compact binary code
+        file:
+          type: string
+          description: The file path of the media file
+        size:
+          type: integer
+          description: The file size of the media file in number of bytes
+        time:
+          type: integer
+          description: The processing duration for code generation in milliseconds
     Dataset:
       title: Dataset
       type: object

@@ -11,7 +11,7 @@ logger.remove()
 def _log_formatter(record: dict) -> str:
     """Log message formatter"""
     color_map = {
-        'TRACE': 'dim blue',
+        'TRACE': 'blue',
         'DEBUG': 'cyan',
         'INFO': 'bold',
         'SUCCESS': 'bold green',
@@ -37,7 +37,7 @@ CODE_DIR = Path(__file__).parent.parent.resolve().absolute()
 DEFAULT_ROOT_FOLDER = CODE_DIR / "data"
 DEFAULT_CONFIG_FILE = CODE_DIR / "config.yml"
 
-from twinspect.schema import Configuration, Dataset, Transformation, Mode, Algorithm
+from twinspect.schema import Configuration, Dataset, Transformation, Mode, Algorithm, Task
 from twinspect.options import *
 from twinspect.tools import *
 

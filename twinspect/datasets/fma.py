@@ -19,7 +19,10 @@ def install(dataset: ts.Dataset) -> Path:
 def process_transformation(tansform):
     ts_obj, target_file = tansform
     ts_func = ts.load_function(ts_obj.function)
-    ts_func(target_file, *ts_obj.params)
+    if ts_obj.params:
+        ts_func(target_file, *ts_obj.params)
+    else:
+        ts_func(target_file)
 
 
 def clusterize(dataset: ts.Dataset) -> Path:
@@ -91,7 +94,7 @@ def download(dataset: ts.Dataset) -> Path:
         hasher = blake3.blake3()
         counter = 0
         for sfn in track(sample_file_names, description=f"Download {dataset.name}", console=ts.console):
-            log.debug(f"Extracting {sfn}")
+            log.debug(f"Downloading {sfn}")
             file_path = zipfile.extract(sfn, download_folder)
             file_hash = ts.hash_file(Path(file_path))
             if file_hash not in hashes:

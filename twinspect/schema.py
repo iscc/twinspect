@@ -33,6 +33,21 @@ class Algorithm(BaseModel):
     )
 
 
+class Task(BaseModel):
+    id: int = Field(..., description='The id of the media file')
+    function: Optional[str] = None
+    code: Optional[str] = Field(
+        None, description='The genrated hex encoded compact binary code'
+    )
+    file: str = Field(..., description='The file path of the media file')
+    size: Optional[int] = Field(
+        None, description='The file size of the media file in number of bytes'
+    )
+    time: Optional[int] = Field(
+        None, description='The processing duration for code generation in milliseconds'
+    )
+
+
 class Dataset(BaseModel):
     name: str = Field(..., description='The name of the dataset')
     label: Optional[str] = Field(

@@ -19,7 +19,6 @@ python-dotenv = "^1.0.0"
 pydub = "^0.25.1"
 codetiming = "^1.4.0"
 blake3 = "^0.3.3"
-pip = "^23.1.2"
 
 
 [tool.datamodel-codegen]
