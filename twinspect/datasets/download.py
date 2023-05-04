@@ -17,22 +17,23 @@ import tempfile
 __all__ = ["download_samples"]
 
 
-def download_samples(url, num_samples, target=None, filter_=None):
-    # type: (str, int, Path|None, str|None) -> Path
+def download_samples(url, num_samples, target=None, filter_=None, seed=0):
+    # type: (str, int, Path|None, str|None, int) -> Path
     """Download a number of random samples from a remote zip file in parallel with progress bar.
 
     :param url: The URL of the remote zip file.
     :param num_samples: The number of random samples to select and download.
     :param target: The target directory where the samples will be saved. Default is ./download.
     :param filter_: A string to filter the filenames in the zip file. Default is None.
-    :return: Path to target download directory
+    :param seed: An integer seed for initializing the selection of random samples. Defauls is 0.
+    :return: Path to target download directory.
     """
     if target is None:
         target = Path(tempfile.mktemp())  # Set default target directory
 
     log.debug(f"Download samples from {url} -> {target.absolute().as_posix()}")
 
-    samples = zip_samples(url, num_samples, filter_=filter_)
+    samples = zip_samples(url, num_samples, filter_=filter_, seed=seed)
     zip_download(url, samples, target)
     return target
 
