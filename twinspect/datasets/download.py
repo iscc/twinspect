@@ -16,6 +16,7 @@ from rich.filesize import decimal
 from rich.progress import Progress, TaskID
 import tempfile
 from httpx import Client, HTTPError
+from urllib.parse import urlparse
 
 
 __all__ = [
@@ -65,11 +66,18 @@ def download_multi(urls, target=None, workers=cpu_count()):
 
 def download_file(url, target=None, client=None):
     # type: (str, Path|None, Client|None) -> Path|None
-    """Download file from url to target directory and return file path."""
-    client = client or Client()
+    """
+    Download a file from the given URL to the target directory and return the file path.
+
+    :param str url: The URL of the file to download.
+    :param target: The directory to save the file to. If None, a temporary directory is created.
+    :param client: The HTTPX client to use for downloading. If None, a new client is created.
+    :return: The path of the downloaded file or None if an error occurs during the download process.
+    """
+    filename = urlparse(url).path.split("/")[-1]
     target = target or Path(tempfile.mkdtemp())
-    filename = url.split("/")[-1]
     filepath = Path(target) / filename
+    client = client or Client()
     with open(filepath, "wb") as outfile:
         try:
             with client.stream("GET", url) as instream:
