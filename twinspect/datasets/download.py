@@ -3,6 +3,8 @@ import random
 import threading
 from concurrent.futures import as_completed, ThreadPoolExecutor
 from contextlib import contextmanager
+from dataclasses import dataclass
+from functools import partial
 from pathlib import Path
 from zipfile import ZipInfo
 from loguru import logger as log
@@ -13,8 +15,70 @@ from more_itertools import chunked_even
 from rich.filesize import decimal
 from rich.progress import Progress, TaskID
 import tempfile
+from httpx import Client, HTTPError
 
-__all__ = ["download_samples"]
+
+__all__ = [
+    "download_multi",
+    "download_samples",
+]
+
+
+def download_multi(urls, target=None, workers=cpu_count()):
+    # type: (list[str], Path|None, int) -> None
+    """Download files from multiple urls in parallel while showing a progress bar.
+
+    Note: web servers must support head requests and return content-length headers
+    """
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        with Client() as client:
+            func = partial(get_info, client=client)
+            file_infos = []
+            log.debug(f"Collect file infos for {len(urls)} urls with {workers} workers.")
+            for file_info in pool.map(func, urls):
+                if file_info.size:
+                    file_infos.append(file_info)
+                else:
+                    log.warning(f"Skipped {file_info}")
+
+    total_size = sum(fi.size for fi in file_infos if fi.size)
+    human_size = decimal(total_size)
+    good_urls = [fi.url for fi in file_infos]
+    filename_size = {fi.url.split("/")[-1]: fi.size for fi in file_infos}
+    target = target or Path(tempfile.mkdtemp())
+    counter = 0
+    log.debug(f"Download {len(file_infos)} files ({human_size}) with {workers} workers")
+    with progress:
+        task_id = progress.add_task("download", name="Downloading", total=total_size)
+        with ThreadPoolExecutor(max_workers=workers) as pool:
+            with Client() as client:
+                func = partial(download_file, target=target, client=client)
+                for file_path in pool.map(func, good_urls):
+                    if file_path:
+                        counter += 1
+                        log.debug(f"Retrieved {file_path.name}")
+                        progress.update(
+                            task_id, advance=filename_size[file_path.name], refresh=True
+                        )
+    log.debug(f"Downloded {counter} files to {target}")
+
+
+def download_file(url, target=None, client=None):
+    # type: (str, Path|None, Client|None) -> Path|None
+    """Download file from url to target directory and return file path."""
+    client = client or Client()
+    target = target or Path(tempfile.mkdtemp())
+    filename = url.split("/")[-1]
+    filepath = Path(target) / filename
+    with open(filepath, "wb") as outfile:
+        try:
+            with client.stream("GET", url) as instream:
+                for chunk in instream.iter_bytes():
+                    outfile.write(chunk)
+        except HTTPError as e:
+            log.error(repr(e))
+            return None
+    return filepath
 
 
 def download_samples(url, num_samples, target=None, filter_=None, seed=0):
@@ -128,3 +192,38 @@ def random_seed(seed):
         yield
     finally:
         random.setstate(old_state)
+
+
+@dataclass
+class FileInfo:
+    url: str
+    type: str | None = None
+    size: int | None = None
+    status: int | None = None
+
+
+def get_info(url, client=None):
+    # type: (str, Client|None) -> FileInfo|None
+    """Get file information for url via head request"""
+    if client:
+        try:
+            response = client.head(url)
+            response.raise_for_status()
+        except HTTPError as e:
+            log.error(repr(e))
+            return FileInfo(url, status=e.response.status_code)
+    else:
+        with Client() as c:
+            try:
+                response = c.head(url)
+                response.raise_for_status()
+            except HTTPError as e:
+                log.error(repr(e))
+                return FileInfo(url, status=e.response.status_code)
+
+    return FileInfo(
+        url=str(response.url),
+        type=response.headers.get("content-type"),
+        size=int(response.headers.get("content-length")),
+        status=response.status_code,
+    )
