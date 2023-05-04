@@ -6,8 +6,8 @@ To improve benchmark reproducibility we use integrity checks. Secure integrity v
 computationally costly as it requires to compute cryptographic hashes for all files in a dataset.
 To improve performance we support two kinds of integrity checks:
 
-- **check_dir_secure**: a secure 256-bit blake3 hash generated from file content
 - **check_dir_fast**: a fast 64-bit black3 checksum generated from file metadata
+- **check_dir_secure**: a secure 256-bit blake3 hash generated from file content
 
 We compute hashes and verify integrity at various checkpoints during benchmark execution:
 
@@ -35,7 +35,12 @@ from rich.progress import (
 from twinspect.exceptions import DuplicateFileError, EmptyFileError, IntegrityError
 from twinspect import console
 
-__all__ = ["check_dir_fast", "check_dir_secure"]
+__all__ = [
+    "check_dir_fast",
+    "check_dir_secure",
+    "hash_file_secure",
+    "iter_file_meta",
+]
 
 
 def check_dir_fast(path, expected=None, raise_empty=True):
@@ -177,8 +182,10 @@ def iter_file_meta(path, root_path=None):
     - size: integer file size in number of bytes
     - mtime: float modification timestamp
 
-    File-entries are yielded in reproducible and deterministic order (bottom-up).
-    Note: We use os.scandir to reduce the number of syscalls required to collect metadata.
+    File-entries are yielded in reproducible and deterministic order (bottom-up). Symlincs are
+    ignored silently.
+
+    Implementation Note: We use os.scandir to reduce the number of syscalls for metadata collection.
     """
     root_path = Path(root_path or path)
     with os.scandir(path) as entries:
