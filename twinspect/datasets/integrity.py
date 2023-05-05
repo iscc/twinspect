@@ -17,6 +17,9 @@ Compute and verify **secure** hash:
 Compute and verify **fast** hash:
     - after building a clustered data folder
     - each time we construct a benchmark result file name
+
+TODO: The performance of check_dir_secure can be improved 10x for directories with many small
+      files by using asynchronous file IO (aiofiles package).
 """
 import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
