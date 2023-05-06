@@ -22,6 +22,7 @@ from urllib.parse import urlparse
 __all__ = [
     "download_multi",
     "download_samples",
+    "random_seed",
 ]
 
 
@@ -59,6 +60,7 @@ def download_multi(urls, target=None, workers=cpu_count(), dedupe=False):
                 if not file_info.size:
                     log.warning(f"No conent-length for {file_info}")
                 file_infos.append(file_info)
+                content_ids[file_info.etag] = file_info.url
 
     total_size = sum(fi.size for fi in file_infos if fi.size)
     human_size = decimal(total_size)
