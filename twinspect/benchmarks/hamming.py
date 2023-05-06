@@ -16,10 +16,9 @@ from faiss import IndexBinaryHNSW, read_index_binary, write_index_binary
 __all__ = ["HammingHero"]
 
 
-
 class HammingHero:
     """
-    Efficient ANNS Search Engine
+    Efficient ANNS Search Engine based on the Faiss library.
     """
 
     def __init__(self, csv_path, code_field="code"):
@@ -27,6 +26,9 @@ class HammingHero:
         """
         Cached initialization from a CSV-file which must have a hex coded comapct binary codes in
         the `code_field` column.
+
+        :param csv_path: Path to the CSV file containing hex coded compact binary codes.
+        :param code_field: Column name containing the binary codes.
         """
         c = Path(csv_path)
         self.csv_path = c
@@ -34,11 +36,16 @@ class HammingHero:
         self.index_file = c.parent / f"{c.stem}.anns"
         self.index: IndexBinaryHNSW | None = None
         self.numpy_codes: NDArray[np.uint8] | None = None
-        self.load()
+        self._load()
 
     def iter_queries(self, threshold, nprobe=10):
         # type: (int, int) -> Iterable[NDArray[np.uint8]]
-        """Iterate over all pairs query results with hamming `threshold`"""
+        """
+        Iterate over all pairs query results with hamming `threshold`.
+
+        :param threshold: Hamming distance threshold for the search.
+        :param nprobe: Number of probes to use during the search.
+        """
         index: IndexBinaryHNSW = self.index
         index.nprobe = nprobe
         for i, code in enumerate(self.numpy_codes):
@@ -52,45 +59,54 @@ class HammingHero:
             query_result.sort()
             yield query_result
 
-    def load(self):
-        """Load or build index"""
+    def _load(self):
+        # type: () -> None
+        """
+        Load or build index.
+        """
         # Load query codes from CSV
-        self.load_csv()
+        self._load_csv()
 
         # Load existing index
         if self.index_file.exists():
+            log.debug(f"Load HNSW index {self.index_file.name}")
             self.index = read_index_binary(self.index_file.as_posix())
             return
 
         # Build & Store  FAISS Binary HNSW index
+        log.debug(f"Build HNSW index {self.index_file.name}")
         bit_length = len(self.numpy_codes[0]) * 8
-        log.debug(f"Build HNSQ index {self.index_file.name} (bit length {bit_length})")
         self.index = IndexBinaryHNSW(bit_length)
-        self.index.verbose = True
         self.index.train(self.numpy_codes)
         self.index.add(self.numpy_codes)
-        self.save()
+        self._save()
 
-    def save(self):
-        """Save index to disk"""
+    def _save(self):
+        # type: () -> None
+        """
+        Save index to disk.
+        """
         write_index_binary(self.index, self.index_file.as_posix())
 
-    def load_csv(self):
+    def _load_csv(self):
         # type: () -> NDArray[np.uint8]
+        """
+        Load codes from csv to numpy array and returns the numpy array.
+
+        :return: 2-dimensional numpy array of binary codes.
+        """
         # Load codes from csv to numpy array
         log.debug(f"Loading codes from {self.csv_path.name}")
-        with open(self.csv_path, "r") as csvfile:
+        with self.csv_path.open("r") as csvfile:
             reader = csv.DictReader(csvfile, delimiter=";")
-            # Extract the hex encoded compact binary codes from the specified column
             hex_codes = [row[self.code_field] for row in reader]
-            # Convert hex codes to np.uint8 arrays
-            uint8_arrays = [
-                np.array(
-                    [np.uint8(int(hex_code[i : i + 2], 16)) for i in range(0, len(hex_code), 2)]
-                )
-                for hex_code in hex_codes
-            ]
-            # Create a 2-dimensional numpy array
-            uint8_matrix = np.stack(uint8_arrays, axis=0)
+
+        num_codes = len(hex_codes)
+        code_length = len(hex_codes[0]) // 2
+        uint8_matrix = np.empty((num_codes, code_length), dtype=np.uint8)
+        for i, hex_code in enumerate(hex_codes):
+            for j in range(0, len(hex_code), 2):
+                uint8_matrix[i, j // 2] = np.uint8(int(hex_code[j : j + 2], 16))
+
         self.numpy_codes = uint8_matrix
         return uint8_matrix
