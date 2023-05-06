@@ -25,22 +25,40 @@ __all__ = [
 ]
 
 
-def download_multi(urls, target=None, workers=cpu_count()):
-    # type: (list[str], Path|None, int) -> None
+def download_multi(urls, target=None, workers=cpu_count(), dedupe=False):
+    # type: (list[str], Path|None, int|None, bool|None) -> None
     """Download files from multiple urls in parallel while showing a progress bar.
 
     Note: web servers must support head requests and return content-length headers
+
+    :param urls: List of urls to download files from.
+    :param target: The directory to save the files to. If None, a temporary directory is created.
+    :param workers: The number of threads to use for downloading. Default: number of CPUs.
+    :param dedupe: Skip downloads with duplicate content (based on ETags). Default: False
     """
+    # Dedupe duplicate urls (not duplicate content)
+    num_urls_orig = len(urls)
+    urls = list(set(urls))
+    num_urls_dedup = len(urls)
+    if num_urls_orig != num_urls_dedup:
+        log.warning(f"Removed {num_urls_orig - num_urls_dedup} duplicate urls")
+
+    content_ids = {}  # Maps ETags to URLs
+
+    # Collect file metadata (FileInfo) and filter urls
     with ThreadPoolExecutor(max_workers=workers) as pool:
         with Client() as client:
             func = partial(get_info, client=client)
             file_infos = []
             log.debug(f"Collect file infos for {len(urls)} urls with {workers} workers.")
             for file_info in pool.map(func, urls):
-                if file_info.size:
-                    file_infos.append(file_info)
-                else:
-                    log.warning(f"Skipped {file_info}")
+                file_info: FileInfo
+                if dedupe and file_info.etag in content_ids:
+                    log.debug(f"Skipped duplicate {file_info.url} == {content_ids[file_info.etag]}")
+                    continue
+                if not file_info.size:
+                    log.warning(f"No conent-length for {file_info}")
+                file_infos.append(file_info)
 
     total_size = sum(fi.size for fi in file_infos if fi.size)
     human_size = decimal(total_size)
@@ -69,7 +87,7 @@ def download_file(url, target=None, client=None):
     """
     Download a file from the given URL to the target directory and return the file path.
 
-    :param str url: The URL of the file to download.
+    :param url: The URL of the file to download.
     :param target: The directory to save the file to. If None, a temporary directory is created.
     :param client: The HTTPX client to use for downloading. If None, a new client is created.
     :return: The path of the downloaded file or None if an error occurs during the download process.
@@ -139,14 +157,14 @@ def zip_download(url, files, target, workers=cpu_count()):
                 log.debug(f"Finished batch of {batch_size} files")
 
 
-def zip_download_worker(url, samples, target, progress, task_id, lock):
+def zip_download_worker(url, samples, target, progress_, task_id, lock):
     # type: (str, list[ZipInfo], Path, Progress, TaskID, threading.Lock) -> int
     """A worker thread for download of multiple members from a remote zip archive.
 
     :param url: The URL of the remote zip file.
     :param samples: List of ZipInfo objects representing the samples to be downloaded.
     :param target: The target directory where the samples will be saved.
-    :param progress: The progress object to update the progress bar.
+    :param progress_: The progress object to update the progress bar.
     :param task_id: The task ID associated with the progress object.
     :param lock: The lock object to synchronize access to the progress object.
     :return: The number of downloaded samples.
@@ -156,7 +174,7 @@ def zip_download_worker(url, samples, target, progress, task_id, lock):
             zipfile.extract(zinfo, target)
             log.debug(f"Retrieved {zinfo.filename}")
             with lock:
-                progress.update(task_id, advance=zinfo.file_size, refresh=True)
+                progress_.update(task_id, advance=zinfo.file_size, refresh=True)
     return len(samples)
 
 
@@ -207,6 +225,7 @@ class FileInfo:
     url: str
     type: str | None = None
     size: int | None = None
+    etag: str | None = None
     status: int | None = None
 
 
@@ -233,5 +252,6 @@ def get_info(url, client=None):
         url=str(response.url),
         type=response.headers.get("content-type"),
         size=int(response.headers.get("content-length")),
+        etag=response.headers.get("etag"),
         status=response.status_code,
     )
