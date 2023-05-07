@@ -33,4 +33,3 @@ class TwinSpectSettings(BaseSettings):
 
 opts = TwinSpectSettings()
 cnf = ts.Configuration.parse_obj(yaml.safe_load(open(opts.config_file)))
-
