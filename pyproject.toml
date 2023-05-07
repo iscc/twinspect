@@ -6,7 +6,7 @@ authors = ["Titusz <tp@py7.de>"]
 readme = "README.md"
 
 [tool.poetry.scripts]
-twinspect = 'twinspect.__main__:main'
+twinspect = 'twinspect.__main__:app'
 
 [tool.poetry.dependencies]
 python = "^3.11"
@@ -19,6 +19,17 @@ python-dotenv = "^1.0.0"
 pydub = "^0.25.1"
 codetiming = "^1.4.0"
 blake3 = "^0.3.3"
+pandas = "^2.0.1"
+hexhamming = "^2.2.3"
+matplotlib = "^3.7.1"
+scikit-learn = "^1.2.2"
+more-itertools = "^9.1.0"
+httpx = "^0.24.0"
+typer = "^0.9.0"
+tqdm = "^4.65.0"
+faiss-cpu = "^1.7.4"
+httpx-cache = "^0.9.0"
+ruamel-yaml = "^0.17.24"
 
 
 [tool.datamodel-codegen]
@@ -29,12 +40,18 @@ encoding = "UTF-8"
 disable-timestamp = true
 target-python-version = "3.11"
 
+[tool.black]
+skip-string-normalization = false
+line-length = 100
+target-version = ['py311']
+
 [tool.poe.tasks]
 format-yaml = { script = "twinspect.tools:format_yml", help = "Format all yaml files"}
 validate-schema = { cmd = "openapi-spec-validator twinspect/schema.yml", help = "Validate OpenAPI Schema"}
 generate-code = { cmd = "datamodel-codegen", help="Build code from OpenAPI Schema"}
+format-code = { cmd = "poetry run black .", help = "Code style formating with black" }
 fix-line-endings = { script = "twinspect.tools:fix_line_endings", help = "Convert line endings to LF"}
-all = ["format-yaml", "validate-schema", "generate-code", "fix-line-endings"]
+all = ["format-yaml", "validate-schema", "generate-code", "format-code", "fix-line-endings"]
 
 [build-system]
 requires = ["poetry-core"]
