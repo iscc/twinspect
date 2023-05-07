@@ -58,8 +58,10 @@ def install(dataset):
     if dataset.data_folder.exists():
         if dataset.checksum:
             check_dir_fast(dataset.data_folder, expected=dataset.checksum)
+        log.debug(f"Using cached dataset {dataset.name}")
         return dataset.data_folder
 
+    log.debug(f"Installing dataset {dataset.name}")
     # Create dataset folder
     dataset.data_folder.mkdir(exist_ok=True)
 

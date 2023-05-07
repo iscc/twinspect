@@ -63,7 +63,10 @@ def check_dir_fast(path, expected=None, raise_empty=True):
     :raises IntegrityError: If calculated checksum does not match the expected one.
     :raises EmptyFileError: If raise_empty is True, and we encounter a zero-byte file.
     """
-    log.debug(f"Compute fast check: {path}, expected={expected}, raise_empty={raise_empty}")
+    if expected:
+        log.debug(f"Verifying checksum {expected} for {path.name}")
+    else:
+        log.debug(f"Calculating checksum for {path.name}")
     path = Path(path)
     hasher = blake3(max_threads=blake3.AUTO)
     for file, size, time in iter_file_meta(path):
@@ -77,7 +80,7 @@ def check_dir_fast(path, expected=None, raise_empty=True):
     actual_hash = hasher.hexdigest(8)
     if expected:
         if expected == actual_hash:
-            log.info(f"Success verifying {path.name} against {expected}")
+            log.info(f"Success verifying {path.name}")
         else:
             raise IntegrityError(path, expected, actual_hash)
     else:
