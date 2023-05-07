@@ -33,6 +33,8 @@ Clustering Strategy:
     - We stop when a total of x files has been collected.
 """
 import csv
+from pathlib import Path
+
 import httpx
 from loguru import logger as log
 import httpx_cache as hc

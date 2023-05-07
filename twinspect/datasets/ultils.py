@@ -1,7 +1,10 @@
 from contextlib import contextmanager
 import random
 
-__all__ = ["random_seed"]
+__all__ = [
+    "random_seed",
+    "Graph",
+]
 
 
 @contextmanager

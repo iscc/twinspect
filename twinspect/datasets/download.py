@@ -19,6 +19,7 @@ from urllib.parse import urlparse
 from twinspect.datasets.ultils import random_seed
 
 __all__ = [
+    "download_file",
     "download_multi",
     "download_samples",
 ]
