@@ -72,7 +72,7 @@ def check_dir_fast(path, expected=None, raise_empty=True):
                 raise EmptyFileError(file)
             else:
                 log.warning(f"Empty file {file}")
-        ident = f"{file};{size};{time}".encode("utf-8")
+        ident = f"{file};{size}".encode("utf-8")
         hasher.update(ident)
     actual_hash = hasher.hexdigest(8)
     if expected:
