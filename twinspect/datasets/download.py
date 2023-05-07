@@ -2,7 +2,6 @@
 import random
 import threading
 from concurrent.futures import as_completed, ThreadPoolExecutor
-from contextlib import contextmanager
 from dataclasses import dataclass
 from functools import partial
 from pathlib import Path
@@ -17,12 +16,11 @@ from rich.progress import Progress, TaskID
 import tempfile
 from httpx import Client, HTTPError
 from urllib.parse import urlparse
-
+from twinspect.datasets.ultils import random_seed
 
 __all__ = [
     "download_multi",
     "download_samples",
-    "random_seed",
 ]
 
 
@@ -204,22 +202,6 @@ def zip_samples(url, num_samples, filter_=None, seed=0):
         samples = random.sample(zip_infos, num_samples)
 
     return samples
-
-
-@contextmanager
-def random_seed(seed):
-    # type: (int) -> None
-    """
-    Context manager for setting the random seed temporarily.
-
-    :param seed: The seed value to use for random number generation.
-    """
-    old_state = random.getstate()
-    random.seed(seed)
-    try:
-        yield
-    finally:
-        random.setstate(old_state)
 
 
 @dataclass
