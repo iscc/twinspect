@@ -5,160 +5,269 @@ info:
   version: 0.1.0
 components:
   schemas:
-    Algorithm:
-      title: Algorithm
-      type: object
-      description: An algorithm for similarity preserving compact codes
+    Benchmark:
+      title: Benchmark
+      type:
+        - object
+      description: An individual benchmark evaluating an algorithm against a specific dataset using
+        a defined set of metrics.
       required:
-      - name
-      - label
-      - mode
-      - function
+        - algorithm_label
+        - dataset_label
+        - metric_labels
+        - active
+      properties:
+        algorithm_label:
+          type:
+            - string
+          description: The Algorithm to evaluate referenced by its label
+        dataset_label:
+          type:
+            - string
+          description: The Dataset against which to evaluate the Algorithm referenced by its label
+        metric_labels:
+          type:
+            - array
+          description: A list of metrics to calculate for the benchmark referenced by label
+        active:
+          type:
+            - boolean
+          description: Whether the benchmark should be executed during full benchmark run
+    Metric:
+      title: Metric
+      type:
+        - object
+      description: An individual metric to be calculated
       properties:
         name:
-          type: string
+          type:
+            - string
+          description: A short readable name of the metric
+        label:
+          type:
+            - string
+          description: Short unique label used to reference the metric
+        function:
+          type:
+            - string
+          description: Full path to python function that that calculates the metric
+    Effectivness:
+      title: Effectiveness
+      type:
+        - object
+      description: Set of measures of effectiveness of near-duplicate matching
+      properties:
+        threshold:
+          type:
+            - integer
+          description: The maximum hamming distance threshold of the measurement
+        recall:
+          type:
+            - number
+          description: How many retrieved items are relevant (0-None, 1-All)
+        precision:
+          type:
+            - number
+          description: How many retrieved items are relevant (0-None, 1-All)
+        f1-score:
+          type:
+            - number
+          description: Harmonic mean of precision and recall (0-Worst, 1-Best)
+    Algorithm:
+      title: Algorithm
+      type:
+        - object
+      description: An algorithm for similarity preserving compact codes
+      required:
+        - name
+        - label
+        - mode
+        - function
+      properties:
+        name:
+          type:
+            - string
           description: The name of the Algorithms
         label:
-          type: string
+          type:
+            - string
           description: Short labes used in tables and for file names
         mode:
-          type: string
+          type:
+            - string
           description: Perceptual mode of algorithm
           enum:
-          - text
-          - image
-          - audio
-          - video
+            - text
+            - image
+            - audio
+            - video
         function:
-          type: string
-          description: Full path to python function that implements the algorithm. The function must accept
-            a file path as the first parameter and must return a hex encoded compact hash code.
-        params:
-          type: array
-          description: A list of parameters to be forwared to the function
+          type:
+            - string
+          description: Full path to python function that implements the algorithm. The function must
+            accept a file path as the first parameter and must return a hex encoded compact hash
+            code.
         dependencies:
-          type: array
+          type:
+            - array
           description: A list of python package dependencies required by the implementation
     Task:
       title: Task
-      type: object
+      type:
+        - object
       description: A processing task that generates a compact code for a media file
       required:
-      - id
-      - file
+        - id
+        - file
       properties:
         id:
-          type: integer
+          type:
+            - integer
           description: The id of the media file
-        function:
-          type: string
         code:
-          type: string
+          type:
+            - string
           description: The genrated hex encoded compact binary code
         file:
-          type: string
-          description: The file path of the media file
+          type:
+            - string
+          description: The root relative file path of the media file
         size:
-          type: integer
+          type:
+            - integer
           description: The file size of the media file in number of bytes
         time:
-          type: integer
+          type:
+            - integer
           description: The processing duration for code generation in milliseconds
     Dataset:
       title: Dataset
-      type: object
+      type:
+        - object
       description: A dataset used for near-duplicate benchmarking
       required:
-      - name
-      - url
-      - mode
+        - name
+        - url
+        - mode
       properties:
         name:
-          type: string
+          type:
+            - string
           description: The name of the dataset
         label:
-          type: string
+          type:
+            - string
           description: Short label used in tables and as folder name
         url:
-          type: string
+          type:
+            - string
           format: uri
           description: Download url for dataset
         mode:
-          type: string
+          type:
+            - string
           description: Perceptual mode of media assets
           enum:
-          - text
-          - image
-          - audio
-          - video
+            - text
+            - image
+            - audio
+            - video
         installer:
-          type: string
+          type:
+            - string
           description: Full path to python function that installs the dataset
         samples:
-          type: integer
+          type:
+            - integer
           description: Number of samples to install from the dataset
         clusters:
-          type: integer
+          type:
+            - integer
           description: Number of similarity clusters to build for dataset
         seed:
-          type: integer
+          type:
+            - integer
           description: Seed for reproducible random selection of samples
-        download_hash:
-          type: string
-          description: Hash of unprocessed download data
-        data_hash:
-          type: string
-          description: Hash of processed data folder
+        checksum:
+          type:
+            - string
+          description: Checksum of datafolder
     Transformation:
       title: Transformation
-      type: object
+      type:
+        - object
       description: A transformation being applied to a media asset
       required:
-      - name
-      - mode
-      - function
+        - name
+        - label
+        - mode
+        - function
       properties:
         name:
-          type: string
+          type:
+            - string
           description: The name of the transformation
+        label:
+          type:
+            - string
+          description: Short unique label to identify the transformation
         mode:
-          type: string
+          type:
+            - string
           description: Perceptual mode of media assets
           enum:
-          - text
-          - image
-          - audio
-          - video
+            - text
+            - image
+            - audio
+            - video
         function:
-          type: string
+          type:
+            - string
           description: Full path to python function that applies the transformation
         params:
-          type: array
+          type:
+            - array
           description: A list of transformation parameters to be used with the function
     Configuration:
       title: Configuration
-      type: object
+      type:
+        - object
       description: Benchmark configuration
       required:
-      - twinspect
-      - datasets
-      - transformations
+        - twinspect
+        - datasets
+        - transformations
       properties:
         twinspect:
-          type: string
+          type:
+            - string
           description: Configuration file format version
         algorithms:
-          type: array
+          type:
+            - array
           items:
             $ref: '#/components/schemas/Algorithm'
           description: List of algorithms to be benchmarked
         datasets:
-          type: array
+          type:
+            - array
           items:
             $ref: '#/components/schemas/Dataset'
           description: List of Datasets
         transformations:
-          type: array
+          type:
+            - array
           items:
             $ref: '#/components/schemas/Transformation'
           description: List of Transformations
+        metrics:
+          type:
+            - array
+          items:
+            $ref: '#/components/schemas/Metric'
+        benchmarks:
+          type:
+            - array
+          items:
+            $ref: '#/components/schemas/Benchmark'
+          description: A list of Benchmarks to run
