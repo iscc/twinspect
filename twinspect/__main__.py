@@ -46,8 +46,7 @@ def run():
         log.info(f"Running Benchmark {benchmark.algorithm.name} - {benchmark.dataset.name}")
         benchmark.algorithm.install()
         benchmark.dataset.install()
-        # benchmark.simprint()
-        proc_file = ts.simprint(benchmark.algorithm, benchmark.dataset)
+        benchmark.simprint()
 
 
 @app.command()
