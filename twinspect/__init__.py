@@ -18,5 +18,5 @@ from twinspect.models import *
 from twinspect.options import *
 from twinspect.tools import *
 from twinspect.transformations.transform import *
-from twinspect.processing import *
+from twinspect.algos.processing import *
 from twinspect.exceptions import *
