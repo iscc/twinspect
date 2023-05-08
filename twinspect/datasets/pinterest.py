@@ -31,6 +31,8 @@ Clustering Strategy:
     - we first cluster near-dupes using a graph (connected components)
     - For each clusterd file we download equivalent number of distractors
     - We stop when a total of x files has been collected.
+
+TODO Implement Parallel Download
 """
 import csv
 from pathlib import Path
@@ -105,7 +107,7 @@ def install(dataset):
         task = prog.add_task("[cyan]Download Images", total=dataset.samples, completed=0)
 
         for cluster in graph.connected_components():
-            if samples_count == dataset.samples:
+            if samples_count >= dataset.samples:
                 break
             cluster_count += 1
             cluster_folder = dataset.data_folder / f"cluster-{cluster_count:04}"
@@ -117,7 +119,7 @@ def install(dataset):
                     samples_count += 1
                     log.debug(f"Retrieved {fp.relative_to(dataset.data_folder)}")
                     prog.update(task, advance=1)
-                    if samples_count == dataset.samples:
+                    if samples_count >= dataset.samples:
                         break
             # Download equivalent number distractors
             for _ in range(len(cluster)):
@@ -128,7 +130,7 @@ def install(dataset):
                     distract_count += 1
                     log.debug(f"Retrieved {fp.relative_to(dataset.data_folder)}")
                     prog.update(task, advance=1)
-                    if samples_count == dataset.samples:
+                    if samples_count >= dataset.samples:
                         break
     if dataset.checksum:
         check_dir_fast(dataset.data_folder, expected=dataset.checksum)

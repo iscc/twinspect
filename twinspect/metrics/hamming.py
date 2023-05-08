@@ -8,6 +8,7 @@ import csv
 from typing import Iterable
 from numpy.typing import NDArray
 import numpy as np
+import pandas as pd
 from loguru import logger as log
 from pathlib import Path
 from faiss import IndexBinaryHNSW, read_index_binary, write_index_binary
@@ -37,6 +38,23 @@ class HammingHero:
         self.index: IndexBinaryHNSW | None = None
         self.numpy_codes: NDArray[np.uint8] | None = None
         self._load()
+
+    def compute_queries(self, threshold, nprobe=10):
+        # type: (int, int) -> pd.DataFrame
+        """
+        Collect query results into a DataFrame of the form:
+
+            id                                       query_result
+        0    0  [(0, 4), (0, 5), (0, 7), (0, 8), (0, 9), (1, 1...
+        1    1  [(1, 10), (2, 0), (2, 3), (2, 4), (2, 5), (2, ...
+
+        :param threshold: Hamming distance threshold for the search.
+        :param nprobe: Number of probes to use during the search.
+        :return: DataFrame with ids and query results
+        """
+        query_results = list(self.iter_queries(threshold, nprobe))
+        df = pd.DataFrame({"id": range(len(query_results)), "query_result": query_results})
+        return df
 
     def iter_queries(self, threshold, nprobe=10):
         # type: (int, int) -> Iterable[NDArray[np.uint8]]

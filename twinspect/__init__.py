@@ -11,7 +11,6 @@ DEFAULT_CONFIG_FILE = CODE_DIR / "config.yml"
 
 from twinspect.globals import *
 from twinspect.datasets.ultils import *
-from twinspect.benchmarks.hamming import *
 from twinspect.datasets.integrity import *
 from twinspect.datasets.download import *
 from twinspect.models import *
