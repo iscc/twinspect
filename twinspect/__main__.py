@@ -36,7 +36,7 @@ def no_command(
 
 @app.command()
 def run():
-    """Compute all configures benchmarks."""
+    """Compute all configured benchmarks."""
     title = f"\n\nTwinSpect v{ts.__version__}"
     typer.echo(title)
     typer.echo("#" * (len(title) + 1))
@@ -46,7 +46,7 @@ def run():
         log.info(f"Running Benchmark {benchmark.algorithm.name} - {benchmark.dataset.name}")
         benchmark.algorithm.install()
         benchmark.dataset.install()
-        benchmark.simprint()
+        benchmark.simprint()  # process media files and create simprint file
 
 
 @app.command()

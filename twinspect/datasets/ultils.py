@@ -4,6 +4,7 @@ from contextlib import contextmanager
 import random
 from pathlib import Path
 from rich.progress import track
+from twinspect.globals import console
 
 
 __all__ = [
@@ -43,7 +44,7 @@ def clusterize(src: Path, dst: Path, clusters: int):
     """Copy files from source to destination into a cluster folder structure."""
     clustered = 0
     files = [fp for fp in iter_files(src) if fp.is_file()]
-    for path in track(files, description=f"Clusterizing {dst.name}", console=ts.console):
+    for path in track(files, description=f"Clusterizing {dst.name}", console=console):
         if clustered < clusters:
             cluster_folder_name = f"{clustered:07d}"
             target_dir = dst / cluster_folder_name

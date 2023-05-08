@@ -46,11 +46,11 @@ line-length = 100
 target-version = ['py311']
 
 [tool.poe.tasks]
-format-yaml = { script = "twinspect.tools:format_yml", help = "Format all yaml files"}
+format-yaml = { script = "twinspect.dev:format_yml", help = "Format all yaml files"}
 validate-schema = { cmd = "openapi-spec-validator twinspect/schema.yml", help = "Validate OpenAPI Schema"}
 generate-code = { cmd = "datamodel-codegen", help="Build code from OpenAPI Schema"}
 format-code = { cmd = "poetry run black .", help = "Code style formating with black" }
-fix-line-endings = { script = "twinspect.tools:fix_line_endings", help = "Convert line endings to LF"}
+fix-line-endings = { script = "twinspect.dev:fix_line_endings", help = "Convert line endings to LF"}
 all = ["format-yaml", "validate-schema", "generate-code", "format-code", "fix-line-endings"]
 
 [build-system]

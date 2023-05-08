@@ -28,6 +28,19 @@ class Benchmark(BenchmarkBase):
             if algo.label == self.algorithm_label:
                 return algo
 
+    def simprint(self) -> Path:
+        """Compute simprint file for benchmark"""
+        import twinspect as ts
+
+        return ts.simprint(self)
+
+    def filepath(self, extension, tag=None):
+        # type: (str, str|None) -> Path
+        """Generate dataset anchored result file path with `extension`"""
+        import twinspect as ts
+
+        return ts.result_path(self.algorithm.label, self.dataset.data_folder, extension, tag)
+
 
 class Algorithm(AlgorithmBase):
     def __hash__(self):

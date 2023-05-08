@@ -13,43 +13,25 @@ import twinspect as ts
 
 __all__ = [
     "simprint",
-    "construct_processed_file_path",
     "process_file",
     "process_data_folder",
 ]
 
 
-def simprint(algorithm, dataset):
-    # type: (ts.Algorithm, ts.Dataset) -> Path
+def simprint(benchmark):
+    # type: (ts.Benchmark) -> Path
     """
     Get file path to processed data for Dataset/Algorithm pair.
 
     Will either return a cached file path or generate a new one and return it.
     """
-    file_path = construct_processed_file_path(algorithm.label, dataset.data_folder)
+    file_path = benchmark.filepath("csv", tag="simprint")
     if file_path.exists():
         log.debug(f"Using cached {file_path.name}")
         return file_path
     with Timer("Data-Folder Processing", text="{name}: {seconds:.2f} seconds", logger=log.info):
-        path = process_data_folder(algorithm.function, dataset.data_folder)
+        path = process_data_folder(benchmark.algorithm.function, benchmark.dataset.data_folder)
     return path
-
-
-def construct_processed_file_path(algo_label, data_folder):
-    # type: (str, str|Path) -> Path
-    """
-    Construct file path for processed data for Dataset & Algorithm pair
-
-    :param algo_label: Label or function import path
-    :param data_folder: folder path to data folder
-    """
-    algo_label = algo_label.split(":")[-1]
-    data_folder = Path(data_folder)
-    dataset_label = data_folder.name
-    checksum = ts.check_dir_fast(data_folder)
-    file_name = f"simprints-{algo_label}-{dataset_label}-{checksum}.csv"
-    file_path = ts.opts.root_folder / file_name
-    return file_path
 
 
 def process_file(function, task):
@@ -65,7 +47,7 @@ def process_data_folder(func_path, data_folder):
     # type: (str, Path) -> Path
     """Process all files in `data_folder` with `function` and function `params`."""
     data_folder = Path(data_folder)
-    result_path = construct_processed_file_path(func_path, data_folder)
+    result_path = ts.result_path(func_path, data_folder, extension="csv", tag="simprint")
     func = ts.load_function(func_path)
     cores = os.cpu_count()
     total = ts.count_files(data_folder)

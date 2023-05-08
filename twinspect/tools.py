@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from contextlib import contextmanager
+from functools import cache
 from importlib.metadata import PackageNotFoundError, version
 from runpy import run_module
 from typing import Callable
@@ -10,11 +11,11 @@ import importlib
 from pathlib import Path
 from loguru import logger as log
 import blake3
-import ruamel.yaml
 import twinspect as ts
 
 
 __all__ = [
+    "result_path",
     "get_data_folder",
     "get_function",
     "load_function",
@@ -25,7 +26,18 @@ __all__ = [
     "iter_original_files",
 ]
 
-ROOT = Path(__file__).parent.parent.absolute()
+
+@cache
+def result_path(algo_label, data_folder, extension, tag=None, checksum=None):
+    # type: (str, str|Path, str, str|None, str | None) -> Path
+    """Construct a result file path for a given benchmark based on data_folder checksum"""
+    algo_label = algo_label.split(":")[-1]
+    data_folder = Path(data_folder)
+    dataset_label = data_folder.name
+    checksum = ts.check_dir_fast(data_folder, expected=checksum)
+    stem = f"{algo_label}-{dataset_label}-{checksum}"
+    suffix = f"-{tag}.{extension}" if tag else f".{extension}"
+    return ts.opts.root_folder / f"{stem}{suffix}"
 
 
 @contextmanager
@@ -114,36 +126,3 @@ def hash_file(file_path: Path) -> bytes:
     with file_path.open("r+b") as infile:
         mm = mmap.mmap(infile.fileno(), 0, access=mmap.ACCESS_READ)
         return blake3.blake3(mm, max_threads=blake3.blake3.AUTO).digest(8)
-
-
-def format_yml():
-    """Format all .yml files"""
-    yaml = ruamel.yaml.YAML()
-    yaml.indent(mapping=2, sequence=4, offset=2)
-    yaml.width = 95
-    yaml.allow_unicode = True
-    yaml.default_flow_style = False
-    yaml.default_style = None
-    yaml.sort_keys = False
-
-    for f in ROOT.glob("**/*.yml"):
-        with open(f, "rt", encoding="utf-8") as infile:
-            data = yaml.load(infile)
-        with open(f, "wt", encoding="utf-8", newline="\n") as outf:
-            yaml.dump(data, outf)
-
-
-def fix_line_endings():
-    """Normalize all line endings to unix LF"""
-    WINDOWS_LINE_ENDING = b"\r\n"
-    UNIX_LINE_ENDING = b"\n"
-    extensions = {".py", ".toml", ".lock", ".md", ".yml", ".yaml"}
-    for fp in ROOT.glob("**/*"):
-        if fp.suffix in extensions:
-            with open(fp, "rb") as infile:
-                content = infile.read()
-            new_content = content.replace(WINDOWS_LINE_ENDING, UNIX_LINE_ENDING)
-            if new_content != content:
-                with open(fp, "wb") as outfile:
-                    outfile.write(new_content)
-                print(f"       fixed line endings for {fp.name}")
