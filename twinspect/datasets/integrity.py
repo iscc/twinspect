@@ -83,8 +83,6 @@ def check_dir_fast(path, expected=None, raise_empty=True):
             log.info(f"Success verifying {path.name}")
         else:
             raise IntegrityError(path, expected, actual_hash)
-    else:
-        log.warning(f"Add checksum {actual_hash} to {path.name} dataset configuration")
 
     return actual_hash
 
