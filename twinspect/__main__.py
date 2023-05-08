@@ -47,6 +47,9 @@ def run():
         benchmark.algorithm.install()
         benchmark.dataset.install()
         benchmark.simprint()  # process media files and create simprint file
+        for metric in benchmark.metrics:
+            func = ts.load_function(metric.function)
+            func(benchmark.simprint())
 
 
 @app.command()

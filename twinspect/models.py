@@ -28,6 +28,17 @@ class Benchmark(BenchmarkBase):
             if algo.label == self.algorithm_label:
                 return algo
 
+    @property
+    def metrics(self):
+        # type: () -> list[Metric]
+        import twinspect as ts
+
+        metrics = []
+        for metric in ts.cnf.metrics:
+            if metric.label in self.metric_labels:
+                metrics.append(metric)
+        return metrics
+
     def simprint(self) -> Path:
         """Compute simprint file for benchmark"""
         import twinspect as ts

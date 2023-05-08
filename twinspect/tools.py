@@ -30,9 +30,21 @@ __all__ = [
 @cache
 def result_path(algo_label, data_folder, extension, tag=None, checksum=None):
     # type: (str, str|Path, str, str|None, str | None) -> Path
-    """Construct a result file path for a given benchmark based on data_folder checksum"""
+    """
+    Construct a result file path for a given benchmark based on data_folder checksum.
+
+    :param algo_label: The label of the algorithm used in the benchmark.
+    :param data_folder: The folder containing the data for the benchmark.
+    :param extension: The file extension for the result file.
+    :param tag: An optional tag to add to the file name.
+    :param checksum: An optional expected checksum for the data folder.
+    :return: The result file path.
+    """
     algo_label = algo_label.split(":")[-1]
     data_folder = Path(data_folder)
+    # Cunstruct absolute path
+    if not data_folder.is_absolute():
+        data_folder = ts.opts.root_folder / data_folder
     dataset_label = data_folder.name
     checksum = ts.check_dir_fast(data_folder, expected=checksum)
     stem = f"{algo_label}-{dataset_label}-{checksum}"
