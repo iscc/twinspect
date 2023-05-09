@@ -21,7 +21,7 @@ def trim(file_path: Path, seconds: float, position: str) -> Path:
         raise ValueError("Invalid position argument. Must be 'start', 'end', or 'both'.")
 
     # Generate a new file name with the trimming information
-    new_file_path = file_path.with_stem(f"z{file_path.stem}_trimmed-{seconds}s-{position}")
+    new_file_path = file_path.with_stem(f"z{file_path.stem}_trim-{seconds}s-{position}")
 
     # Export the trimmed audio file
     trimmed_audio.export(new_file_path, format=file_path.suffix[1:])
@@ -46,7 +46,7 @@ def fade(file_path: Path, seconds: int, position: str) -> Path:
         raise ValueError("Invalid position argument. Must be 'in', 'out', or 'both'.")
 
     # Generate a new file name with the fade information
-    new_file_path = file_path.with_stem(f"z{file_path.stem}_faded-{seconds}s-{position}")
+    new_file_path = file_path.with_stem(f"z{file_path.stem}_fade-{seconds}s-{position}")
 
     # Export the faded audio file
     faded_audio.export(new_file_path, format=file_path.suffix[1:])
@@ -76,7 +76,7 @@ def transcode(file_path: Path, codec: str, kbps: int) -> Path:
             "Invalid codec. Supported codecs are 'mp3', 'wav', 'ogg', 'flac', and 'aac'."
         )
 
-    new_file_name = f"z{file_path.stem}_transcoded-{codec}-{kbps}kbps{file_extension}"
+    new_file_name = f"z{file_path.stem}_transcode-{codec}-{kbps}kbps{file_extension}"
     new_file_path = file_path.with_name(new_file_name)
 
     cmd = [
@@ -113,7 +113,7 @@ def compress(file_path: Path, intensity: str) -> Path:
         "strong": {"attack": 5, "release": 100, "ratio": 4, "threshold": -25},
     }[intensity.lower()]
 
-    new_file_name = f"z{file_path.stem}_compressed-{intensity.lower()}{file_path.suffix}"
+    new_file_name = f"z{file_path.stem}_compress-{intensity.lower()}{file_path.suffix}"
     new_file_path = file_path.with_name(new_file_name)
 
     cmd = [
@@ -132,7 +132,7 @@ def compress(file_path: Path, intensity: str) -> Path:
 
 def equalize(file_path: Path) -> Path:
     file_path = Path(file_path)
-    new_file_name = f"z{file_path.stem}_equalized{file_path.suffix}"
+    new_file_name = f"z{file_path.stem}_equalize{file_path.suffix}"
     new_file_path = file_path.with_name(new_file_name)
 
     cmd = [
@@ -141,7 +141,7 @@ def equalize(file_path: Path) -> Path:
         "-i",
         str(file_path),
         "-af",
-        "equalizer=f=1000:t=h:width=200:g=-3, highpass=f=100, lowpass=f=15000",
+        "equalizer=f=1000:t=h:width=150:g=-3, highpass=f=150, lowpass=f=14000",
         str(new_file_path),
     ]
 
@@ -151,7 +151,7 @@ def equalize(file_path: Path) -> Path:
 
 def echo(file_path: Path) -> Path:
     file_path = Path(file_path)
-    new_file_name = f"z{file_path.stem}_echoed{file_path.suffix}"
+    new_file_name = f"z{file_path.stem}_echo{file_path.suffix}"
     new_file_path = file_path.with_name(new_file_name)
     cmd = [
         "ffmpeg",
@@ -159,7 +159,7 @@ def echo(file_path: Path) -> Path:
         "-i",
         str(file_path),
         "-af",
-        "aecho=0.8:0.88:60:0.4",
+        "aecho=0.8:0.7:60:0.2",
         str(new_file_path),
     ]
     subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
@@ -168,7 +168,7 @@ def echo(file_path: Path) -> Path:
 
 def loudnorm(file_path: Path) -> Path:
     file_path = Path(file_path)
-    new_file_name = f"z{file_path.stem}_loudnormed{file_path.suffix}"
+    new_file_name = f"z{file_path.stem}_loudnorm{file_path.suffix}"
     new_file_path = file_path.with_name(new_file_name)
     cmd = [
         "ffmpeg",
