@@ -30,6 +30,22 @@ tqdm = "^4.65.0"
 faiss-cpu = "^1.7.4"
 httpx-cache = "^0.9.0"
 ruamel-yaml = "^0.17.24"
+mkdocs-material = "^9.1"
+mdformat = "*"
+mdformat-gfm = "*"
+mdformat-tables = "*"
+mdformat-config = "*"
+mdformat-black = "*"
+mdformat-web = "*"
+mdformat-toc = "*"
+mdformat_footnote = "*"
+mdformat_frontmatter = "*"
+mdformat_deflist = "*"
+mkdocs-git-revision-date-localized-plugin = "*"
+mkdocs-add-number-plugin = "*"
+mkdocs-glightbox = "*"
+jinja2 = "^3.1.2"
+plotext = "^5.2.8"
 
 
 [tool.datamodel-codegen]
@@ -50,8 +66,9 @@ format-yaml = { script = "twinspect.dev:format_yml", help = "Format all yaml fil
 validate-schema = { cmd = "openapi-spec-validator twinspect/schema.yml", help = "Validate OpenAPI Schema"}
 generate-code = { cmd = "datamodel-codegen", help="Build code from OpenAPI Schema"}
 format-code = { cmd = "poetry run black .", help = "Code style formating with black" }
+format-md = { script = "twinspect.dev:format_md", help = "Markdown formating with mdformat" }
 fix-line-endings = { script = "twinspect.dev:fix_line_endings", help = "Convert line endings to LF"}
-all = ["format-yaml", "validate-schema", "generate-code", "format-code", "fix-line-endings"]
+all = ["format-yaml", "validate-schema", "generate-code", "format-code", "format-md", "fix-line-endings"]
 
 [build-system]
 requires = ["poetry-core"]
