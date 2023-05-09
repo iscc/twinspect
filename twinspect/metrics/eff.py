@@ -86,12 +86,15 @@ from hexhamming import hamming_distance_string as hamming_distance
 from twinspect.metrics.hamming import HammingHero
 from twinspect.tools import result_path
 from twinspect.metrics.utils import update_json
+from loguru import logger as log
 
 
 def effectiveness(simprint_path):
     # type: (str|Path) -> dict
     """Calculate precission, recall and f1-score for simprint csv file"""
     simprint_path = Path(simprint_path)
+    algo, dataset, checksum = simprint_path.name.split("-")[:3]
+    log.debug(f"Compute [white on red]effectiveness[/] for {algo} -> {dataset}")
     df_simprints = load_simprints(simprint_path)
 
     # Inferr max hamming threshold as 1/4 of the code length
@@ -108,7 +111,6 @@ def effectiveness(simprint_path):
     result = evaluate(df_ground_truth, df_query_results, max_threshold)
 
     # Store evaluaion results
-    algo, dataset, checksum = simprint_path.name.split("-")[:3]
     metrics_path = result_path(algo, dataset, "json", tag="metrics")
     result = {
         "algorithm": algo,
@@ -192,12 +194,12 @@ def ground_truth(df):
 def evaluate(df_ground_truth, df_query_result, max_threshold):
     # type: (pd.DataFrame, pd.DataFrame, int) -> list[dict]
     """
-    Evaluate precision, recall and f1-score for all thresholdss from 0 - max_threshold.
+    Evaluate precision, recall and f1-score for all thresholds from 0 - max_threshold.
 
     Each row in the input dataframes must include the `id` of the query file and the `ground_truth`
     or `query_result query as sequence of (hamming_distance, file_id) results.
 
-    The Result is a dictionary of the form:
+    The result is a dictionary of the form:
 
     {
         "effectiveness": [
@@ -235,11 +237,7 @@ def evaluate(df_ground_truth, df_query_result, max_threshold):
 
         # Iterate through each row in the merged dataframe
         for _, row in df.iterrows():
-            ground_truth = set(
-                file_id
-                for hamming_distance, file_id in row["ground_truth"]
-                if hamming_distance <= threshold
-            )
+            ground_truth = set(file_id for hamming_distance, file_id in row["ground_truth"])
             query_result = set(
                 file_id
                 for hamming_distance, file_id in row["query_result"]

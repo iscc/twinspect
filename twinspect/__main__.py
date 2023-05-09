@@ -43,7 +43,9 @@ def run():
     typer.echo()
     for benchmark in ts.cnf.active_benchmarks:
         typer.echo()
-        log.info(f"Running Benchmark {benchmark.algorithm.name} - {benchmark.dataset.name}")
+        log.info(
+            f"[white on red] Running Benchmark {benchmark.algorithm.name} - {benchmark.dataset.name} [/]"
+        )
         benchmark.algorithm.install()
         benchmark.dataset.install()
         benchmark.simprint()  # process media files and create simprint file

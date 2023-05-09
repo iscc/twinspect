@@ -4,12 +4,15 @@ import csv
 from statistics import mean, median
 from twinspect.tools import result_path
 from twinspect.metrics.utils import update_json
+from loguru import logger as log
 
 
 def speed(simprint_path):
     # type: (Path) -> dict
     """Calculate execution speed from simprint csv file"""
     simprint_path = Path(simprint_path)
+    algo, dataset, checksum = simprint_path.name.split("-")[:3]
+    log.debug(f"Compute [white on red]speed[/] for {algo} -> {dataset}")
 
     with open(simprint_path, "r") as csvfile:
         csvreader = csv.DictReader(csvfile, delimiter=";")
