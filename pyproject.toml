@@ -42,10 +42,10 @@ mdformat_footnote = "*"
 mdformat_frontmatter = "*"
 mdformat_deflist = "*"
 mkdocs-git-revision-date-localized-plugin = "*"
-mkdocs-add-number-plugin = "*"
 mkdocs-glightbox = "*"
 jinja2 = "^3.1.2"
 plotext = "^5.2.8"
+jmespath = "^1.0.1"
 
 
 [tool.datamodel-codegen]
