@@ -36,7 +36,11 @@ def simprint(benchmark):
 
 def process_file(function, task):
     # type: (Callable, ts.Task) -> ts.Task
-    """Pocess compact code for a single media file"""
+    """
+    Process compact code for a single media file.
+
+    TODO: Collect essential metadata like duration, pixels, characters
+    """
     start_time = time.perf_counter()
     task.code = function(task.file)
     task.time = round((time.perf_counter() - start_time) * 1000)
@@ -77,7 +81,6 @@ def process_data_folder(func_path, data_folder):
             if result.code is None:
                 log.error(f"Failed {func.__name__} on {result.file}")
                 continue
-            log.trace(f"{result.code} <- {result.file}")
             results.append(result)
 
     # Sort results by index
