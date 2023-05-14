@@ -3,6 +3,8 @@ The TwinSpect Benchmark requires an all-pairs hamming distance search which unfo
 does not scale for larger datasets above a couple of thousand items O(n^2). So instead we use a
 less accurate but much more performant Approximate Nearest Neighbor Search (ANNS) based on the
 faiss library.
+
+TODO: Use LameDuck with progress output for smaller datesets up to 1000 queries.
 """
 import csv
 from typing import Iterable
@@ -12,6 +14,9 @@ import pandas as pd
 from loguru import logger as log
 from pathlib import Path
 from faiss import IndexBinaryHNSW, read_index_binary, write_index_binary
+from rich.progress import track
+from twinspect.globals import console
+from collections import Counter
 
 
 __all__ = ["HammingHero", "LameDuck"]
@@ -44,7 +49,7 @@ class BaseHammingSearch:
 
 class LameDuck(BaseHammingSearch):
     """
-    Brute force all-pairs based exact NNS Search
+    Brute force all-pairs based exact NNS Search that also collects all-pairs hamming distribution.
     """
 
     def __init__(self, csv_path, code_field="code"):
@@ -60,6 +65,7 @@ class LameDuck(BaseHammingSearch):
         self.csv_path = c
         self.code_field = code_field
         self.numpy_codes: NDArray[np.uint8] | None = None
+        self.distribution = Counter()
         self._load_csv()
 
     def compute_queries(self, threshold):
@@ -74,7 +80,11 @@ class LameDuck(BaseHammingSearch):
         :param threshold: Hamming distance threshold for the search.
         :return: DataFrame with ids and query results
         """
-        query_results = list(self.iter_queries(threshold))
+        query_results = []
+        for item in track(
+            self.iter_queries(threshold), total=len(self.numpy_codes), console=console
+        ):
+            query_results.append(item)
         df = pd.DataFrame({"id": range(len(query_results)), "query_result": query_results})
         return df
 
@@ -90,6 +100,7 @@ class LameDuck(BaseHammingSearch):
             for j, other_code in enumerate(self.numpy_codes):
                 if i != j:
                     distance = self.hamming_distance(code, other_code)
+                    self.distribution.update([distance])
                     if distance <= threshold:
                         query_result.append((distance, j))
             query_result.sort()
@@ -196,15 +207,3 @@ class HammingHero(BaseHammingSearch):
         Save index to disk.
         """
         write_index_binary(self.index, self.index_file.as_posix())
-
-
-if __name__ == "__main__":
-    from codetiming import Timer
-
-    fp = r"E:\twinspect\image_code_v0_256-pin_1000-f9ba7fb300ead3bf-simprint.csv"
-    hh = HammingHero(fp)
-    with Timer():
-        print(hh.compute_queries(8))
-    ld = LameDuck(fp)
-    with Timer():
-        print(ld.compute_queries(8))
