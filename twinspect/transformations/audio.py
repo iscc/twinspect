@@ -1,3 +1,8 @@
+"""
+Collection of synthetic audio transformations.
+
+TODO: Use relative transformations (trim 1pct ... )
+"""
 from pathlib import Path
 from pydub import AudioSegment
 import subprocess
