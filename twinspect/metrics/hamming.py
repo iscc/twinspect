@@ -3,8 +3,6 @@ The TwinSpect Benchmark requires an all-pairs hamming distance search which unfo
 does not scale for larger datasets above a couple of thousand items O(n^2). So instead we use a
 less accurate but much more performant Approximate Nearest Neighbor Search (ANNS) based on the
 faiss library.
-
-TODO: Use LameDuck with progress output for smaller datesets up to 1000 queries.
 """
 import csv
 from typing import Iterable

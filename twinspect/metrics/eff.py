@@ -79,39 +79,48 @@ Implementation Notes:
 
 TODO: Calculate effectiveness per transformation
 TODO: Settle on query input selection and query result set
+TODO: Calculate other metrics like Accuracy, Jaccard Index, Matthews correlation coefficient (MCC)
+TODO: Specificity = TN / (TN + FP)
 """
 from pathlib import Path
 import pandas as pd
 from hexhamming import hamming_distance_string as hamming_distance
 from twinspect.metrics.hamming import HammingHero
 from twinspect.tools import result_path
-from twinspect.metrics.utils import update_json
+from twinspect.metrics.utils import update_json, best_threshold, get_metric
 from loguru import logger as log
 
 
 def effectiveness(simprint_path):
     # type: (str|Path) -> dict
-    """Calculate precission, recall and f1-score for simprint csv file"""
+    """Compute precission, recall and f1-score for simprint csv file"""
     simprint_path = Path(simprint_path)
     algo, dataset, checksum = simprint_path.name.split("-")[:3]
-    log.debug(f"Compute [white on red]effectiveness[/] for {algo} -> {dataset}")
-    df_simprints = load_simprints(simprint_path)
+    metrics_path = result_path(algo, dataset, "json", tag="metrics")
+    result = get_metric(metrics_path, "effectiveness")
 
-    # Inferr max hamming threshold as 1/4 of the code length
-    code = df_simprints.at[0, "code"]
-    bitlength = int((len(code) / 2) * 8)
-    max_threshold = bitlength // 4
+    if result:
+        log.debug(f"Using cached [white on green]effectiveness[/] metric for {algo} -> {dataset}")
+        do_update = False
+    else:
+        log.debug(f"Compute [white on red]effectiveness[/] metric for {algo} -> {dataset}")
+        do_update = True
+        df_simprints = load_simprints(simprint_path)
 
-    # Compute ground truth and query results
-    df_ground_truth = ground_truth(df_simprints)
-    hh = HammingHero(simprint_path)
-    df_query_results = hh.compute_queries(max_threshold)
+        # Inferr max hamming threshold as 1/4 of the code length
+        code = df_simprints.at[0, "code"]
+        bitlength = int((len(code) / 2) * 8)
+        max_threshold = bitlength // 4
 
-    # Evaluate computed ground truth and query results
-    result = evaluate(df_ground_truth, df_query_results, max_threshold)
+        # Compute ground truth and query results
+        df_ground_truth = ground_truth(df_simprints)
+        hh = HammingHero(simprint_path)
+        df_query_results = hh.compute_queries(max_threshold)
+
+        # Evaluate computed ground truth and query results
+        result = evaluate(df_ground_truth, df_query_results, max_threshold)
 
     # Store evaluaion results
-    metrics_path = result_path(algo, dataset, "json", tag="metrics")
     result = {
         "algorithm": algo,
         "dataset": dataset,
@@ -120,7 +129,17 @@ def effectiveness(simprint_path):
             "effectiveness": result,
         },
     }
-    update_json(metrics_path, result)
+
+    # Log best threshold
+
+    best_f1 = best_threshold(result)
+    log.debug(
+        f"[white on blue]{algo} -> {dataset}: Best Threshold {best_f1['threshold']} "
+        f"@ Recall {best_f1['recall']:.2f} - Precision {best_f1['precision']:.2f} - "
+        f"F1-Score {best_f1['f1_score']:.2f}[/]"
+    )
+    if do_update:
+        update_json(metrics_path, result)
     return result
 
 
@@ -192,50 +211,18 @@ def ground_truth(df):
 
 
 def evaluate(df_ground_truth, df_query_result, max_threshold):
-    # type: (pd.DataFrame, pd.DataFrame, int) -> list[dict]
-    """
-    Evaluate precision, recall and f1-score for all thresholds from 0 - max_threshold.
-
-    Each row in the input dataframes must include the `id` of the query file and the `ground_truth`
-    or `query_result query as sequence of (hamming_distance, file_id) results.
-
-    The result is a dictionary of the form:
-
-    {
-        "effectiveness": [
-            {
-              "threshold": 0,
-              "precision": 0.95,
-              "recall": 0.92,
-              "f1_score": 0.935
-            },
-            ...
-            {
-              "threshold": N,
-              "precision": P_N,
-              "recall": R_N,
-              "f1_score": F1_N
-            }
-        ]
-    }
-
-    :param df_ground_truth: DataFrame with ground truth data e.g. df[["id", "ground_truth"]]
-    :param df_query_result: DataFrame with query result data e.g. df[["id", "query_result"]]
-    :param max_threshold: Maximum threshold of query results
-    :return: dict
-    """
-    # Merge ground truth and query result dataframes on the 'id' column
     df = df_ground_truth.merge(df_query_result, on="id")
 
     result = []
 
-    # Iterate through all thresholds from 0 to max_threshold
+    total_files = len(df)
+
     for threshold in range(max_threshold + 1):
         tp = 0
         fp = 0
         fn = 0
+        tn = 0
 
-        # Iterate through each row in the merged dataframe
         for _, row in df.iterrows():
             ground_truth = set(file_id for hamming_distance, file_id in row["ground_truth"])
             query_result = set(
@@ -247,15 +234,177 @@ def evaluate(df_ground_truth, df_query_result, max_threshold):
             tp += len(ground_truth.intersection(query_result))
             fp += len(query_result.difference(ground_truth))
             fn += len(ground_truth.difference(query_result))
+            tn += total_files - len(ground_truth.union(query_result))
 
-        # Calculate precision, recall, and F1-score
         precision = tp / (tp + fp) if (tp + fp) > 0 else 0
         recall = tp / (tp + fn) if (tp + fn) > 0 else 0
+        accuracy = (tp + tn) / (tp + tn + fp + fn) if (tp + tn + fp + fn) > 0 else 0
         f1_score = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0
+        jaccard_index = tp / (tp + fp + fn) if (tp + fp + fn) > 0 else 0
+        mcc_numerator = (tp * tn) - (fp * fn)
+        mcc_denominator = ((tp + fp) * (tp + fn) * (tn + fp) * (tn + fn)) ** 0.5
+        mcc = mcc_numerator / mcc_denominator if mcc_denominator > 0 else 0
 
-        # Append the result to the effectiveness list
         result.append(
-            {"threshold": threshold, "precision": precision, "recall": recall, "f1_score": f1_score}
+            {
+                "threshold": threshold,
+                "precision": precision,
+                "recall": recall,
+                "accuracy": accuracy,
+                "f1_score": f1_score,
+                "jaccard_index": jaccard_index,
+                "mcc": mcc,
+            }
         )
 
     return result
+
+
+# def evaluate(df_ground_truth, df_query_result, max_threshold):
+#     """
+#     Evaluate precision, recall, accuracy, and f1-score for all thresholds from 0 - max_threshold.
+#
+#     Each row in the input dataframes must include the `id` of the query file and the `ground_truth`
+#     or `query_result query as sequence of (hamming_distance, file_id) results.
+#
+#     The result is a dictionary of the form:
+#
+#     {
+#         "effectiveness": [
+#             {
+#               "threshold": 0,
+#               "precision": 0.95,
+#               "recall": 0.92,
+#               "accuracy": 0.93,
+#               "f1_score": 0.935
+#             },
+#             ...
+#             {
+#               "threshold": N,
+#               "precision": P_N,
+#               "recall": R_N,
+#               "accuracy": A_N,
+#               "f1_score": F1_N
+#             }
+#         ]
+#     }
+#
+#     :param df_ground_truth: DataFrame with ground truth data e.g. df[["id", "ground_truth"]]
+#     :param df_query_result: DataFrame with query result data e.g. df[["id", "query_result"]]
+#     :param max_threshold: Maximum threshold of query results
+#     :return: dict
+#     """
+#     # Merge ground truth and query result dataframes on the 'id' column
+#     df = df_ground_truth.merge(df_query_result, on="id")
+#     total_files = len(df)
+#     result = []
+#
+#     # Iterate through all thresholds from 0 to max_threshold
+#     for threshold in range(max_threshold + 1):
+#         tp = 0
+#         fp = 0
+#         fn = 0
+#         tn = 0
+#
+#         # Iterate through each row in the merged dataframe
+#         for _, row in df.iterrows():
+#             ground_truth = set(file_id for hamming_distance, file_id in row["ground_truth"])
+#             query_result = set(
+#                 file_id
+#                 for hamming_distance, file_id in row["query_result"]
+#                 if hamming_distance <= threshold
+#             )
+#
+#             tp += len(ground_truth.intersection(query_result))
+#             fp += len(query_result.difference(ground_truth))
+#             fn += len(ground_truth.difference(query_result))
+#             tn += total_files - len(ground_truth.union(query_result))
+#
+#         # Calculate precision, recall, accuracy, and F1-score
+#         precision = tp / (tp + fp) if (tp + fp) > 0 else 0
+#         recall = tp / (tp + fn) if (tp + fn) > 0 else 0
+#         accuracy = (tp + tn) / (tp + tn + fp + fn) if (tp + tn + fp + fn) > 0 else 0
+#         f1_score = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0
+#
+#         # Append the result to the effectiveness list
+#         result.append(
+#             {
+#                 "threshold": threshold,
+#                 "precision": precision,
+#                 "recall": recall,
+#                 "accuracy": accuracy,
+#                 "f1_score": f1_score
+#             }
+#         )
+#
+#     return result
+
+
+# def evaluate(df_ground_truth, df_query_result, max_threshold):
+#     # type: (pd.DataFrame, pd.DataFrame, int) -> list[dict]
+#     """
+#     Evaluate precision, recall and f1-score for all thresholds from 0 - max_threshold.
+#
+#     Each row in the input dataframes must include the `id` of the query file and the `ground_truth`
+#     or `query_result query as sequence of (hamming_distance, file_id) results.
+#
+#     The result is a dictionary of the form:
+#
+#     {
+#         "effectiveness": [
+#             {
+#               "threshold": 0,
+#               "precision": 0.95,
+#               "recall": 0.92,
+#               "f1_score": 0.935
+#             },
+#             ...
+#             {
+#               "threshold": N,
+#               "precision": P_N,
+#               "recall": R_N,
+#               "f1_score": F1_N
+#             }
+#         ]
+#     }
+#
+#     :param df_ground_truth: DataFrame with ground truth data e.g. df[["id", "ground_truth"]]
+#     :param df_query_result: DataFrame with query result data e.g. df[["id", "query_result"]]
+#     :param max_threshold: Maximum threshold of query results
+#     :return: dict
+#     """
+#     # Merge ground truth and query result dataframes on the 'id' column
+#     df = df_ground_truth.merge(df_query_result, on="id")
+#
+#     result = []
+#
+#     # Iterate through all thresholds from 0 to max_threshold
+#     for threshold in range(max_threshold + 1):
+#         tp = 0
+#         fp = 0
+#         fn = 0
+#
+#         # Iterate through each row in the merged dataframe
+#         for _, row in df.iterrows():
+#             ground_truth = set(file_id for hamming_distance, file_id in row["ground_truth"])
+#             query_result = set(
+#                 file_id
+#                 for hamming_distance, file_id in row["query_result"]
+#                 if hamming_distance <= threshold
+#             )
+#
+#             tp += len(ground_truth.intersection(query_result))
+#             fp += len(query_result.difference(ground_truth))
+#             fn += len(ground_truth.difference(query_result))
+#
+#         # Calculate precision, recall, and F1-score
+#         precision = tp / (tp + fp) if (tp + fp) > 0 else 0
+#         recall = tp / (tp + fn) if (tp + fn) > 0 else 0
+#         f1_score = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0
+#
+#         # Append the result to the effectiveness list
+#         result.append(
+#             {"threshold": threshold, "precision": precision, "recall": recall, "f1_score": f1_score}
+#         )
+#
+#     return result
