@@ -46,20 +46,27 @@ data-folder
 
 ______________________________________________________________________
 
-### STLIB-2000
+### MIRFLICKR-MFND
 
 !!! abstract inline end "Dataset Info"
-    - **ID**: e20bd16e097e8faf
-    - **Mode**: Text
-    - **Size**: 4.8 GB
-    - **Files**: 1610
+    - **ID**: 99107a584e0bd4e3
+    - **Mode**: Image
+    - **Size**: 999.5 MB
+    - **Files**: 7942
 
-The **STLIB-2000** is a benchmark dataset, designed to assess the accuracy of text identification
-algorithms. It includes ground truth data for a total of **1610 text files** with near-duplicates
-organized into **805 clusters**.
+The **MIRFLICKR-MFND** is a benchmark dataset, designed to assess the accuracy of image
+identification algorithms. It includes ground truth data for a total of **7942 image files** with
+near-duplicates organized into **3825 clusters**.
 
 ??? note "Clustering Details"
-    Each cluster contains **2 near-duplicate** text files.
+    Clusters contain an average of **2.08 near-duplicate** image files.
+
+    **Cluster sizes**
+
+    - **Minimum**: 1
+    - **Maximum**: 14
+    - **Mean**: 2.08
+    - **Median**: 2.0
 
 ______________________________________________________________________
 
@@ -85,37 +92,13 @@ within the set.
     The following transformations were applied to **500 files** of the dataset to simulate different
     conditions that might be encountered in real-world applications:
 
-    - loudnorm
+    - equalize
+    - echo
+    - fade-8s-both
+    - trim-1s-both
+    - transcode-aac-32kbps
     - transcode-ogg-64kbps
     - transcode-mp3-128kbps
-    - echo
-    - equalize
-    - transcode-aac-32kbps
-    - fade-8s-both
+    - loudnorm
     - compress-medium
-    - trim-1s-both
     - trim-5s-both
-
-______________________________________________________________________
-
-### MIRFLICKR-MFND
-
-!!! abstract inline end "Dataset Info"
-    - **ID**: 99107a584e0bd4e3
-    - **Mode**: Image
-    - **Size**: 999.5 MB
-    - **Files**: 7942
-
-The **MIRFLICKR-MFND** is a benchmark dataset, designed to assess the accuracy of image
-identification algorithms. It includes ground truth data for a total of **7942 image files** with
-near-duplicates organized into **3825 clusters**.
-
-??? note "Clustering Details"
-    Clusters contain an average of **2.08 near-duplicate** image files.
-
-    **Cluster sizes**
-
-    - **Minimum**: 1
-    - **Maximum**: 14
-    - **Mean**: 2.08
-    - **Median**: 2.0
