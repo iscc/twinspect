@@ -146,7 +146,7 @@ def equalize(file_path: Path) -> Path:
         "-i",
         str(file_path),
         "-af",
-        "equalizer=f=1000:t=h:width=150:g=-3, highpass=f=150, lowpass=f=14000",
+        "equalizer=f=1000:t=h:width=150:g=-1, highpass=f=300, lowpass=f=12000",
         str(new_file_path),
     ]
 

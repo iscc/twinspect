@@ -250,10 +250,10 @@ def evaluate(df_ground_truth, df_query_result, max_threshold):
                 "threshold": threshold,
                 "precision": precision,
                 "recall": recall,
-                "accuracy": accuracy,
+                # "accuracy": accuracy,
                 "f1_score": f1_score,
-                "jaccard_index": jaccard_index,
-                "mcc": mcc,
+                # "jaccard_index": jaccard_index,
+                # "mcc": mcc,
             }
         )
 

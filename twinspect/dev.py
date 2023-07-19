@@ -1,4 +1,5 @@
 """Development Tools"""
+import subprocess
 from pathlib import Path
 import ruamel.yaml
 
@@ -37,3 +38,17 @@ def format_yml():
             data = yaml.load(infile)
         with open(f, "wt", encoding="utf-8", newline="\n") as outf:
             yaml.dump(data, outf)
+
+
+def format_md():
+    md_files = []
+    for fp in (ROOT / "docs").glob("*.md"):
+        relp = fp.relative_to(fp.parent.parent).as_posix()
+        md_files.append(relp)
+    cmd = ["poetry", "run", "mdformat", "--wrap", "100", "--end-of-line", "lf"]
+    cmd.extend(md_files)
+    subprocess.run(cmd)
+
+
+# if __name__ == '__main__':
+#     format_markdown()

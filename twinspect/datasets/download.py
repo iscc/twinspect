@@ -17,6 +17,7 @@ import tempfile
 from httpx import Client, HTTPError
 from urllib.parse import urlparse
 from twinspect.datasets.ultils import random_seed
+import twinspect as ts
 
 __all__ = [
     "download_file",
@@ -83,21 +84,30 @@ def download_multi(urls, target=None, workers=cpu_count(), dedupe=False):
     log.debug(f"Downloded {counter} files to {target}")
 
 
-def download_file(url, target=None, client=None):
-    # type: (str, Path|None, Client|None) -> Path|None
+def download_file(url, target=None, client=None, overwrite=False):
+    # type: (str, Path|None, Client|None, bool|None) -> Path|None
     """
     Download a file from the given URL to the target directory and return the file path.
 
     :param url: The URL of the file to download.
-    :param target: The directory to save the file to. If None, a temporary directory is created.
+    :param target: The directory to save the file to. If None, the root_folder is used.
     :param client: The HTTPX client to use for downloading. If None, a new client is created.
+    :param overwrite: Overwrite exiting file. Default is False and does not redownload if exists.
     :return: The path of the downloaded file or None if an error occurs during the download process.
     """
     filename = urlparse(url).path.split("/")[-1]
-    target = target or Path(tempfile.mkdtemp())
-    filepath = Path(target) / filename
+    target_path = target or ts.opts.root_folder
+    file_path = Path(target_path) / filename
+
+    # Check and return pre-existing file
+    if overwrite is False and file_path.exists():
+        log.debug(f"Using cached {file_path.name}")
+        return file_path
+
+    # Streaming file download
+    log.debug(f"Downloading {filename}")
     client = client or Client()
-    with open(filepath, "wb") as outfile:
+    with open(file_path, "wb") as outfile:
         try:
             with client.stream("GET", url) as instream:
                 for chunk in instream.iter_bytes():
@@ -105,7 +115,7 @@ def download_file(url, target=None, client=None):
         except HTTPError as e:
             log.error(repr(e))
             return None
-    return filepath
+    return file_path
 
 
 def download_samples(url, num_samples, target=None, filter_=None, seed=0):

@@ -8,7 +8,7 @@ from twinspect.schema import Benchmark as BenchmarkBase
 from twinspect.schema import Dataset as DatasetBase
 from twinspect.schema import Algorithm as AlgorithmBase
 from twinspect.schema import Transformation as TransformationBase
-from twinspect.schema import Metric, Mode, Task
+from twinspect.schema import Metric, Mode, Task, DatasetInfo
 
 
 class Benchmark(BenchmarkBase):

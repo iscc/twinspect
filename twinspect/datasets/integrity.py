@@ -171,7 +171,7 @@ def check_dir_secure(path, expected=None, raise_dupes=True):
     return dirhash
 
 
-def hash_file_secure(file_path):
+def hash_file_secure(file_path) -> bytes:
     return blake3(file_path.read_bytes(), max_threads=blake3.AUTO).digest()
 
 

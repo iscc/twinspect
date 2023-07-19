@@ -1,0 +1,105 @@
+site_name: ISCC Evaluation
+site_description: Universal Benchmark for Near-Duplicate and similarity search with compact binary
+  codes.
+site_author: Titusz Pan
+site_url: https://twinspect.iscc.codes
+
+# Repository
+repo_name: iscc/twinspect
+repo_url: https://github.com/iscc/twinspect
+edit_uri: edit/main/docs/
+
+# Copyright
+copyright: Copyright © 2023 The Authors | <a href="https://iscc.foundation/privacy">Privacy Policy</a>
+  | <a href="https://iscc.foundation/cookies">Cookie Policy</a> | <a href="https://iscc.foundation/imprint">Imprint</a>
+  | <a href="https://iscc.foundation/disclaimer">Disclaimer</a>
+
+extra_css:
+  - stylesheets/extra.css
+
+
+extra:
+  analytics:
+    provider: custom
+
+theme:
+  name: material
+  custom_dir: docs/overrides
+  icon:
+    logo: material/content-copy
+  language: en
+  font: false
+  palette:
+    - scheme: slate
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
+    - scheme: default
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+  features:
+    - navigation.tracking
+#    - navigation.tabs
+#    - navigation.tabs.sticky
+#    - toc.integrate
+
+plugins:
+  - search
+  - glightbox
+  - git-revision-date-localized:
+      type: iso_date
+      locale: en
+      enable_creation_date: true
+      enabled: true
+      exclude:
+        - index.md
+
+markdown_extensions:
+  - abbr
+  - pymdownx.snippets:
+      base_path: [docs/includes]
+      auto_append: [abbreviations.md]
+  - tables
+  - meta
+  - admonition
+  - pymdownx.details
+  - attr_list
+  - md_in_html
+  - footnotes
+  - toc:
+      permalink: '#'
+      toc_depth: 3
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.superfences
+  - pymdownx.critic
+  - pymdownx.caret
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.tilde
+  - pymdownx.magiclink
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+nav:
+  - Home: index.md
+  - Similarity: similarity.md
+  - Datasets: datasets.md
+  - Algorithms: algorithms.md
+  - Results: results.md
+#  - Similarity: similarity.md
+#  - Algorithms:
+#      - Audio-Code v0 64-Bit: algorithms/iscc-audio-code-64.md
+#      - Image-Code v0 64-Bit: algorithms/iscc-image-code-64.md
+#  - Datasets:
+#      - Pinterest 1000: datasets/pin-100.md
+#  - Evaluation Metrics: metrics.md
+#  - Benchmark Results: results.md
+#  - About Similarity: about.md
+#  - Terms & Definitions: terms.md
+#  - Outlook: outlook.md
+

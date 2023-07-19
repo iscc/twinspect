@@ -1,70 +1,190 @@
 twinspect: 0.1.0
 algorithms:
-- name: ISCC Audio-Code V0 64-Bit
-  label: audio_code_v0
-  mode: audio
-  function: twinspect.algorithms.iscc:audio_code
-  params:
-  - 64
-  dependencies:
-  - iscc-sdk==0.5.5
+  - name: ISCC Text-Code V0 64-Bit
+    label: text_code_v0_64
+    mode: text
+    function: twinspect.algos.iscc:text_code_v0_64
+    dependencies:
+      - iscc-sdk==0.5.9
+  - name: ISCC Text-Code V0 256-Bit
+    label: text_code_v0_256
+    mode: text
+    function: twinspect.algos.iscc:text_code_v0_256
+    dependencies:
+      - iscc-sdk==0.5.9
+  - name: ISCC Audio-Code V0 64-Bit
+    label: audio_code_v0_64
+    mode: audio
+    function: twinspect.algos.iscc:audio_code_v0_64
+    dependencies:
+      - iscc-sdk==0.5.9
+  - name: ISCC Audio-Code V0 256-Bit
+    label: audio_code_v0_256
+    mode: audio
+    function: twinspect.algos.iscc:audio_code_v0_256
+    dependencies:
+      - iscc-sdk==0.5.9
+  - name: ISCC Image-Code V0 64-Bit
+    label: image_code_v0_64
+    mode: image
+    function: twinspect.algos.iscc:image_code_v0_64
+    dependencies:
+      - iscc-sdk==0.5.9
+  - name: ISCC Image-Code V0 256-Bit
+    label: image_code_v0_256
+    mode: image
+    function: twinspect.algos.iscc:image_code_v0_256
+    dependencies:
+      - iscc-sdk==0.5.9
 datasets:
-- name: FMA 100/10 Synth
-  label: fma_100
-  url: https://os.unil.cloud.switch.ch/fma/fma_full.zip
-  mode: audio
-  installer: twinspect.datasets.fma:install
-  samples: 100
-  clusters: 10
-  seed: 0
+  - name: STLIB-2000
+    label: stlib_2000
+    url: https://www.streetlib.com
+    mode: text
+    installer: twinspect.datasets.dummy:install
+  - name: ISCC-FMA-10k
+    label: iscc_fma_10k
+    url: https://os.unil.cloud.switch.ch/fma/fma_full.zip
+    mode: audio
+    installer: twinspect.datasets.fma:install
+    samples: 5000
+    clusters: 500
+    seed: 0
+  - name: MFND-8k
+    label: mirflickr_mfnd
+    url: https://mfnd.similarity.eu/data/truthfiles/polito/IND_clusters.txt
+    mode: image
+    installer: twinspect.datasets.mfnd:install
+  - name: Pinterest 5000 Nat
+    label: pin_5000
+    url: https://raw.githubusercontent.com/andreydg/www-neardup-paper/master/unified_paper_dataset.csv
+    mode: image
+    installer: twinspect.datasets.pinterest:install
+    samples: 5000
+    seed: 0
+  - name: HMDB-7000
+    label: hmdb_7000
+    url: http://serre-lab.clps.brown.edu/wp-content/uploads/2013/10/hmdb51_org.rar
+    mode: video
+    installer: twinspect.datasets.hmdb:install
 transformations:
-- name: Trim 1 Second
-  mode: audio
-  function: twinspect.transformations.audio:trim
-  params:
-  - 1
-  - both
-- name: Trim 5 Seconds
-  mode: audio
-  function: twinspect.transformations.audio:trim
-  params:
-  - 5
-  - both
-- name: Fade 8 Seconds
-  mode: audio
-  function: twinspect.transformations.audio:fade
-  params:
-  - 8
-  - both
-- name: Transcode MP3 128kbps
-  mode: audio
-  function: twinspect.transformations.audio:transcode
-  params:
-  - mp3
-  - 128
-- name: Transcode OGG 64kbps
-  mode: audio
-  function: twinspect.transformations.audio:transcode
-  params:
-  - ogg
-  - 64
-- name: Transcode AAC 18kbps
-  mode: audio
-  function: twinspect.transformations.audio:transcode
-  params:
-  - aac
-  - 18
-- name: Compress
-  mode: audio
-  function: twinspect.transformations.audio:compress
-  params:
-  - medium
-- name: Equalize
-  mode: audio
-  function: twinspect.transformations.audio:equalize
-- name: Echo
-  mode: audio
-  function: twinspect.transformations.audio:echo
-- name: Loudness Normalization
-  mode: audio
-  function: twinspect.transformations.audio:loudnorm
+  - name: Trim 1 Second
+    label: trim-1s-both
+    mode: audio
+    function: twinspect.transformations.audio:trim
+    params:
+      - 1
+      - both
+  - name: Trim 5 Seconds
+    label: trim-5s-both
+    mode: audio
+    function: twinspect.transformations.audio:trim
+    params:
+      - 5
+      - both
+  - name: Fade 8 Seconds
+    label: fade-8s-both
+    mode: audio
+    function: twinspect.transformations.audio:fade
+    params:
+      - 8
+      - both
+  - name: Transcode MP3 128kbps
+    label: transcode-mp3-128kbps
+    mode: audio
+    function: twinspect.transformations.audio:transcode
+    params:
+      - mp3
+      - 128
+  - name: Transcode OGG 64kbps
+    label: transcode-ogg-64kbps
+    mode: audio
+    function: twinspect.transformations.audio:transcode
+    params:
+      - ogg
+      - 64
+  - name: Transcode AAC 32kbps
+    label: transcode-aac-32kbps
+    mode: audio
+    function: twinspect.transformations.audio:transcode
+    params:
+      - aac
+      - 32
+  - name: Compress
+    label: compress-medium
+    mode: audio
+    function: twinspect.transformations.audio:compress
+    params:
+      - medium
+  - name: Equalize
+    label: equalize
+    mode: audio
+    function: twinspect.transformations.audio:equalize
+  - name: Echo
+    label: echo
+    mode: audio
+    function: twinspect.transformations.audio:echo
+  - name: Loudness Normalization
+    label: loudnorm
+    mode: audio
+    function: twinspect.transformations.audio:loudnorm
+metrics:
+  - name: Execution Speed
+    label: speed
+    function: twinspect.metrics.speed:speed
+  - name: Effectiveness (Precission, Recall, F1-Score)
+    label: effectiveness
+    function: twinspect.metrics.eff:effectiveness
+  - name: Robustness against transformations
+    label: robustness
+    function: twinspect.metrics.robustness:robustness
+  - name: Distribution (All-Pairs Hamming Distances)
+    label: distribution
+    function: twinspect.metrics.distribution:distribution
+benchmarks:
+  - algorithm_label: text_code_v0_64
+    dataset_label: stlib_2000
+    metric_labels:
+      - speed
+      - effectiveness
+      - distribution
+    active: true
+  - algorithm_label: text_code_v0_256
+    dataset_label: stlib_2000
+    metric_labels:
+      - speed
+      - effectiveness
+      - distribution
+    active: true
+  - algorithm_label: audio_code_v0_64
+    dataset_label: iscc_fma_10k
+    metric_labels:
+      - speed
+      - effectiveness
+      - robustness
+      - distribution
+    active: true
+  - algorithm_label: audio_code_v0_256
+    dataset_label: iscc_fma_10k
+    metric_labels:
+      - speed
+      - effectiveness
+      - robustness
+      - distribution
+    active: true
+  - algorithm_label: image_code_v0_64
+    dataset_label: mirflickr_mfnd
+    metric_labels:
+      - speed
+      - effectiveness
+      - distribution
+    active: false
+  - algorithm_label: image_code_v0_256
+    dataset_label: mirflickr_mfnd
+    metric_labels:
+      - speed
+      - effectiveness
+      - distribution
+    active: false
+
+

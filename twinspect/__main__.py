@@ -3,12 +3,12 @@ TwinSpect benchmark CLI & main entrypoint.
 
 High Level Processing Pipeline:
 
-1. Read Configuration: Load Yaml-based benchmark configuration file
-2. Algorithm Acquisition: Install dependencies required to run algorithms
-3. Dataset Aquisition Pipline: Download/Clusterize/Transform
-4. Media File Processing: Process media files for each configured/active algo/dataset pair
-5. Algorithm Benchmarking: Calculate benchmarking metrics from media processing results
-6. Build Benchmark Result: Create/update Markdown/HTML output of benchmarking results
+    1. Read Configuration: Load Yaml-based benchmark configuration file
+    2. Algorithm Acquisition: Install dependencies required to run algorithms
+    3. Dataset Aquisition Pipline: Download/Clusterize/Transform
+    4. Media File Processing: Process media files for each configured/active algo/dataset pair
+    5. Algorithm Benchmarking: Calculate benchmarking metrics from media processing results
+    6. Build Benchmark Result: Create/update Markdown/HTML output of benchmarking results
 """
 from typing import Optional
 import typer
@@ -18,6 +18,8 @@ import twinspect as ts
 from pathlib import Path
 from loguru import logger as log
 from rich.table import Table
+from twinspect.render.datasets import build_dataset_page
+from twinspect.render.results import build_results_page
 
 
 HERE = Path(__file__).parent.absolute()
@@ -52,6 +54,10 @@ def run():
         for metric in benchmark.metrics:
             func = ts.load_function(metric.function)
             func(benchmark.simprint())
+    typer.echo()
+    log.info(f"[white on red] Building Result Website")
+    build_dataset_page()
+    build_results_page()
 
 
 @app.command()
@@ -68,6 +74,15 @@ def hash_(folder: Annotated[Optional[Path], Argument()] = None):
 
 
 @app.command()
+def info(folder: Annotated[Optional[Path], Argument()] = None):
+    """Compute and output detailed data-folder information"""
+    from twinspect.datasets.info import dataset_info
+
+    ds_info = dataset_info(folder)
+    ts.console.print(ds_info)
+
+
+@app.command()
 def checksum(folder: Annotated[Optional[Path], Argument()] = None):
     """Compute fast recursive checksum for folder"""
     hexhash = ts.check_dir_fast(folder, expected=None, raise_empty=False)
@@ -81,8 +96,6 @@ def algorithms():
     for algo in ts.cnf.algorithms:
         table.add_row(algo.label, algo.name, algo.mode.name)
     ts.console.print(table)
-    # c = rich.Console()
-    # c.print(table)
 
 
 @app.command()
