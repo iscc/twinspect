@@ -70,7 +70,7 @@ class Transformation(TransformationBase):
     @staticmethod
     @functools.cache
     def from_label(label):
-        # type: (str) -> Transformation
+        # type: (str) -> Optional[Transformation]
         """Get Transformation object by its label"""
         import twinspect as ts
 
@@ -106,6 +106,19 @@ class Transformation(TransformationBase):
 class Dataset(DatasetBase):
     def __hash__(self):
         return hash(self.label)
+
+    @staticmethod
+    @functools.cache
+    def from_label(label):
+        # type: (str) -> Optional[Dataset]
+        """Get Dataset object by its label"""
+        import twinspect as ts
+
+        label = label.lower().replace("-", "_")
+
+        for ds_obj in ts.cnf.datasets:
+            if ds_obj.label == label:
+                return ds_obj
 
     @property
     def data_folder(self):

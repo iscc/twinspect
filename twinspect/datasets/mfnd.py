@@ -3,8 +3,8 @@ MFND - MirFlickr Near-Duplicate Images
 
 See: https://mfnd.similarity.eu/
 
-Cluster info:
-    https://mfnd.similarity.eu/data/truthfiles/polito/IND_clusters.txt
+Identical Near Duplicate Annotations:
+    "http://www.mir-flickr-near-duplicates.appspot.com/truthFiles/IND_clusters.txt"
 
 MIrFlickr Dataset
     Records: 1M Images
@@ -30,7 +30,7 @@ from twinspect.options import opts
 from rich.progress import Progress, TaskID
 
 
-CLUSTERS = "https://mfnd.similarity.eu/data/truthfiles/polito/IND_clusters.txt"
+CLUSTERS = "http://www.mir-flickr-near-duplicates.appspot.com/truthFiles/IND_clusters.txt"
 DL_TPL = "https://press.liacs.nl/mirflickr/mirflickr1m.v3b/images{}.zip"
 
 

@@ -6,6 +6,7 @@ from twinspect.datasets.info import dataset_info
 from jinja2 import Environment, FileSystemLoader
 from twinspect.models import DatasetInfo
 from rich.filesize import decimal
+import twinspect as ts
 
 HERE = pathlib.Path(__file__).parent.absolute()
 TPL_PATH = HERE / "templates"
@@ -40,6 +41,22 @@ def render_dataset(data_folder):
     template = env.get_template("dataset.md")
     data = augment_data(dataset_info(data_folder))
     data = {k: v for k, v in sorted(data.dict().items())}
+
+    # Collection optional dataset info from config.yml if present
+    ds_obj = ts.Dataset.from_label(data["dataset_label"])
+    if ds_obj and ds_obj.info:
+        data["dataset_info"] = ds_obj.info
+
+    # Collect optional transformation metadata from config.yml if present
+    if data.get("transformations"):
+        enriched = []
+        for lbl in data["transformations"]:
+            obj = ts.Transformation.from_label(lbl)
+            if obj:
+                enriched.append(f"**{obj.label}**: {obj.info}")
+            else:
+                enriched.append(lbl)
+        data["transformations"] = enriched
     rendered = template.render(data=data)
     return rendered
 

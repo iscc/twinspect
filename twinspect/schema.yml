@@ -133,6 +133,9 @@ components:
         label:
           type: string
           description: Short label used in tables and as folder name
+        info:
+          type: string
+          description: Human readable information about the dataset
         url:
           type: string
           format: uri
@@ -170,6 +173,9 @@ components:
         label:
           type: string
           description: Short unique label to identify the transformation
+        info:
+          type: string
+          description: Human readable information about the transformation
         mode:
           $ref: '#/components/schemas/Mode'
         function:

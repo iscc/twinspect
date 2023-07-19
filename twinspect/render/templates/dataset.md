@@ -18,6 +18,10 @@ The **{{ data.dataset_label }}** is a benchmark dataset, designed to assess the 
 duplicates within the set.
 {% endif %}
 
+{% if data.dataset_info %}
+{{ data.dataset_info }}
+{% endif %}
+
 ??? note "Clustering Details"
     {% if data.cluster_sizes.min !=  data.cluster_sizes.max %}
     Clusters contain an average of **{{ data.cluster_sizes.mean | round(precision=2) }}

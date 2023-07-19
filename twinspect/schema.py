@@ -87,6 +87,7 @@ class Task(BaseModel):
 class Dataset(BaseModel):
     name: str = Field(..., description="The name of the dataset")
     label: Optional[str] = Field(None, description="Short label used in tables and as folder name")
+    info: Optional[str] = Field(None, description="Human readable information about the dataset")
     url: AnyUrl = Field(..., description="Download url for dataset")
     mode: Mode
     installer: Optional[str] = Field(
@@ -107,6 +108,9 @@ class Dataset(BaseModel):
 class Transformation(BaseModel):
     name: str = Field(..., description="The name of the transformation")
     label: str = Field(..., description="Short unique label to identify the transformation")
+    info: Optional[str] = Field(
+        None, description="Human readable information about the transformation"
+    )
     mode: Mode
     function: str = Field(
         ..., description="Full path to python function that applies the transformation"
