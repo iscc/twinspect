@@ -78,10 +78,3 @@ def build_results_page():
     with OUT_PATH.open(mode="wt", encoding="utf-8", newline="\n") as outf:
         outf.write(markdown)
     return markdown
-
-
-if __name__ == "__main__":
-    from rich import print
-
-    opts.root_folder = pathlib.Path(r"e:/twinspect")
-    build_results_page()

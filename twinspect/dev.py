@@ -48,7 +48,3 @@ def format_md():
     cmd = ["poetry", "run", "mdformat", "--wrap", "100", "--end-of-line", "lf"]
     cmd.extend(md_files)
     subprocess.run(cmd)
-
-
-# if __name__ == '__main__':
-#     format_markdown()

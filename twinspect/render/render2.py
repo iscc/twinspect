@@ -115,13 +115,3 @@ def generate_report(filenames):
         plot_data[plot_key] = "data:image/png;base64," + plot_graph(subset_df, plot_key)
 
     render_markdown(overview_df, plot_data)
-
-
-if __name__ == "__main__":
-    filenames = [
-        r"E:\twinspect\audio_code_v0_64-fma_5000-142e3bd331044320-metrics.json",
-        r"E:\twinspect\audio_code_v0_256-fma_5000-142e3bd331044320-metrics.json",
-        r"E:\twinspect\image_code_v0_64-pin_5000-b3b1e6f121e3fb48-metrics.json",
-        r"E:\twinspect\image_code_v0_256-pin_5000-b3b1e6f121e3fb48-metrics.json",
-    ]
-    generate_report(filenames)

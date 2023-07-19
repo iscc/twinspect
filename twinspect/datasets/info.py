@@ -74,10 +74,3 @@ def dataset_info(data_folder):
         "checksum": checksum,
     }
     return DatasetInfo(**result)
-
-
-if __name__ == "__main__":
-    from rich import print
-
-    fp = r"E:\twinspect\fma_5000"
-    print(dataset_info(fp).dict())

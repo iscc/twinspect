@@ -85,14 +85,6 @@ components:
           description: Short labes used in tables and for file names
         mode:
           $ref: '#/components/schemas/Mode'
-#          type: string
-#          description: Perceptual mode of algorithm
-#          enum:
-#            - text
-#            - image
-#            - audio
-#            - video
-##            - data
         function:
           type: string
           description: Full path to python function that implements the algorithm. The function must
@@ -147,14 +139,6 @@ components:
           description: Download url for dataset
         mode:
           $ref: '#/components/schemas/Mode'
-#          type: string
-#          description: Perceptual mode of media assets
-#          enum:
-#            - text
-#            - image
-#            - audio
-#            - video
-#            - mixed
         installer:
           type: string
           description: Full path to python function that installs the dataset
@@ -188,13 +172,6 @@ components:
           description: Short unique label to identify the transformation
         mode:
           $ref: '#/components/schemas/Mode'
-#          type: string
-#          description: Perceptual mode of media assets
-#          enum:
-#            - text
-#            - image
-#            - audio
-#            - video
         function:
           type: string
           description: Full path to python function that applies the transformation

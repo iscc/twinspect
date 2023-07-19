@@ -109,16 +109,3 @@ def generate_report(filenames):
         }
 
     render_markdown(df, plot_data)
-
-
-if __name__ == "__main__":
-    filenames = [
-        r"E:\twinspect\audio_code_v0_64-fma_10-345f559585b38b7c-metrics.json",
-        r"E:\twinspect\audio_code_v0_64-fma_100-6a10989f77611d16-metrics.json",
-        r"E:\twinspect\image_code_v0_64-pin_100-9294a59d89021d37-metrics.json",
-        r"E:\twinspect\image_code_v0_64-pin_1000-d05a8953f724c958-metrics.json",
-        r"E:\twinspect\audio_code_v0_256-fma_100-6a10989f77611d16-metrics.json",
-        r"E:\twinspect\image_code_v0_256-pin_1000-f9ba7fb300ead3bf-metrics.json"
-        # Add more result files as needed.
-    ]
-    generate_report(filenames)

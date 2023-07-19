@@ -9,10 +9,9 @@ Cluster info:
 MIrFlickr Dataset
     Records: 1M Images
     Size: 117 GB (compressed)
-    Info: http://press.liacs.nl/mirflickr/mirdownload.html
+    Info: https://press.liacs.nl/mirflickr/mirdownload.html
 
 """
-import os
 import shutil
 import threading
 from collections import defaultdict
@@ -22,10 +21,8 @@ from typing import Generator
 from zipfile import ZipInfo
 from loguru import logger as log
 import httpx_cache as hc
-from rich import print
 from remotezip import RemoteZip
 from rich.filesize import decimal
-
 from twinspect import check_dir_fast
 from twinspect.globals import progress
 from twinspect.models import Dataset
@@ -142,15 +139,3 @@ def install(dataset):
             for future in as_completed(futures):
                 batch_size: int = future.result()
                 log.debug(f"Finished batch of {batch_size} files")
-
-
-if __name__ == "__main__":
-    opts.root_folder = Path(r"e:/twinspect")
-    ds = Dataset(
-        name="MirFlickr MFND",
-        label="mirflickr_mfnd",
-        url="https://mfnd.similarity.eu/data/truthfiles/polito/IND_clusters.txt",
-        mode="image",
-        installer="twinspect.datastes.mfnd:install",
-    )
-    install(ds)

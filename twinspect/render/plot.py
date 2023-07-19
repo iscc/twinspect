@@ -105,13 +105,3 @@ def plot_effectiveness(metrics_path):
     plt.tick_params(labelsize=12)
     plt.subplots_adjust(left=0.08, right=0.95, top=0.90, bottom=0.08)
     return plt
-
-
-if __name__ == "__main__":
-    fp = r"E:\twinspect\audio_code_v0_64-fma_5000-142e3bd331044320-metrics.json"
-    # fp = r"E:\twinspect\audio_code_v0_256-fma_5000-142e3bd331044320-metrics.json"
-    # print(get_title(fp))
-    # plo = plot_distribution(fp)
-    # plo.show()
-    plo = plot_effectiveness(fp)
-    plo.show()

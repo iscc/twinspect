@@ -1,11 +1,10 @@
 """Datasets Page Rendering"""
 import json
 import pathlib
-from pathlib import Path
 from twinspect.options import opts
 from twinspect.datasets.info import dataset_info
 from jinja2 import Environment, FileSystemLoader
-from twinspect.models import Dataset, DatasetInfo
+from twinspect.models import DatasetInfo
 from rich.filesize import decimal
 
 HERE = pathlib.Path(__file__).parent.absolute()
@@ -56,10 +55,3 @@ def build_dataset_page():
     with OUT_PATH.open(mode="wt", encoding="utf-8", newline="\n") as outf:
         outf.write(markdown)
     return markdown
-
-
-if __name__ == "__main__":
-    from rich import print
-
-    opts.root_folder = Path(r"e:/twinspect")
-    md = build_dataset_page()

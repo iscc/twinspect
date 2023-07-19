@@ -76,11 +76,6 @@ Implementation Notes:
 
     Given gound_truths and query_results we calculate recal, precision, and
     f1-scores per query at thresholds 0 to max_trhreshold.
-
-TODO: Calculate effectiveness per transformation
-TODO: Settle on query input selection and query result set
-TODO: Calculate other metrics like Accuracy, Jaccard Index, Matthews correlation coefficient (MCC)
-TODO: Specificity = TN / (TN + FP)
 """
 from pathlib import Path
 import pandas as pd
@@ -224,187 +219,28 @@ def evaluate(df_ground_truth, df_query_result, max_threshold):
         tn = 0
 
         for _, row in df.iterrows():
-            ground_truth = set(file_id for hamming_distance, file_id in row["ground_truth"])
+            ground_truth_ = set(file_id for _, file_id in row["ground_truth"])
             query_result = set(
                 file_id
-                for hamming_distance, file_id in row["query_result"]
-                if hamming_distance <= threshold
+                for hamming_distance_, file_id in row["query_result"]
+                if hamming_distance_ <= threshold
             )
 
-            tp += len(ground_truth.intersection(query_result))
-            fp += len(query_result.difference(ground_truth))
-            fn += len(ground_truth.difference(query_result))
-            tn += total_files - len(ground_truth.union(query_result))
+            tp += len(ground_truth_.intersection(query_result))
+            fp += len(query_result.difference(ground_truth_))
+            fn += len(ground_truth_.difference(query_result))
+            tn += total_files - len(ground_truth_.union(query_result))
 
         precision = tp / (tp + fp) if (tp + fp) > 0 else 0
         recall = tp / (tp + fn) if (tp + fn) > 0 else 0
-        accuracy = (tp + tn) / (tp + tn + fp + fn) if (tp + tn + fp + fn) > 0 else 0
         f1_score = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0
-        jaccard_index = tp / (tp + fp + fn) if (tp + fp + fn) > 0 else 0
-        mcc_numerator = (tp * tn) - (fp * fn)
-        mcc_denominator = ((tp + fp) * (tp + fn) * (tn + fp) * (tn + fn)) ** 0.5
-        mcc = mcc_numerator / mcc_denominator if mcc_denominator > 0 else 0
-
         result.append(
             {
                 "threshold": threshold,
                 "precision": precision,
                 "recall": recall,
-                # "accuracy": accuracy,
                 "f1_score": f1_score,
-                # "jaccard_index": jaccard_index,
-                # "mcc": mcc,
             }
         )
 
     return result
-
-
-# def evaluate(df_ground_truth, df_query_result, max_threshold):
-#     """
-#     Evaluate precision, recall, accuracy, and f1-score for all thresholds from 0 - max_threshold.
-#
-#     Each row in the input dataframes must include the `id` of the query file and the `ground_truth`
-#     or `query_result query as sequence of (hamming_distance, file_id) results.
-#
-#     The result is a dictionary of the form:
-#
-#     {
-#         "effectiveness": [
-#             {
-#               "threshold": 0,
-#               "precision": 0.95,
-#               "recall": 0.92,
-#               "accuracy": 0.93,
-#               "f1_score": 0.935
-#             },
-#             ...
-#             {
-#               "threshold": N,
-#               "precision": P_N,
-#               "recall": R_N,
-#               "accuracy": A_N,
-#               "f1_score": F1_N
-#             }
-#         ]
-#     }
-#
-#     :param df_ground_truth: DataFrame with ground truth data e.g. df[["id", "ground_truth"]]
-#     :param df_query_result: DataFrame with query result data e.g. df[["id", "query_result"]]
-#     :param max_threshold: Maximum threshold of query results
-#     :return: dict
-#     """
-#     # Merge ground truth and query result dataframes on the 'id' column
-#     df = df_ground_truth.merge(df_query_result, on="id")
-#     total_files = len(df)
-#     result = []
-#
-#     # Iterate through all thresholds from 0 to max_threshold
-#     for threshold in range(max_threshold + 1):
-#         tp = 0
-#         fp = 0
-#         fn = 0
-#         tn = 0
-#
-#         # Iterate through each row in the merged dataframe
-#         for _, row in df.iterrows():
-#             ground_truth = set(file_id for hamming_distance, file_id in row["ground_truth"])
-#             query_result = set(
-#                 file_id
-#                 for hamming_distance, file_id in row["query_result"]
-#                 if hamming_distance <= threshold
-#             )
-#
-#             tp += len(ground_truth.intersection(query_result))
-#             fp += len(query_result.difference(ground_truth))
-#             fn += len(ground_truth.difference(query_result))
-#             tn += total_files - len(ground_truth.union(query_result))
-#
-#         # Calculate precision, recall, accuracy, and F1-score
-#         precision = tp / (tp + fp) if (tp + fp) > 0 else 0
-#         recall = tp / (tp + fn) if (tp + fn) > 0 else 0
-#         accuracy = (tp + tn) / (tp + tn + fp + fn) if (tp + tn + fp + fn) > 0 else 0
-#         f1_score = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0
-#
-#         # Append the result to the effectiveness list
-#         result.append(
-#             {
-#                 "threshold": threshold,
-#                 "precision": precision,
-#                 "recall": recall,
-#                 "accuracy": accuracy,
-#                 "f1_score": f1_score
-#             }
-#         )
-#
-#     return result
-
-
-# def evaluate(df_ground_truth, df_query_result, max_threshold):
-#     # type: (pd.DataFrame, pd.DataFrame, int) -> list[dict]
-#     """
-#     Evaluate precision, recall and f1-score for all thresholds from 0 - max_threshold.
-#
-#     Each row in the input dataframes must include the `id` of the query file and the `ground_truth`
-#     or `query_result query as sequence of (hamming_distance, file_id) results.
-#
-#     The result is a dictionary of the form:
-#
-#     {
-#         "effectiveness": [
-#             {
-#               "threshold": 0,
-#               "precision": 0.95,
-#               "recall": 0.92,
-#               "f1_score": 0.935
-#             },
-#             ...
-#             {
-#               "threshold": N,
-#               "precision": P_N,
-#               "recall": R_N,
-#               "f1_score": F1_N
-#             }
-#         ]
-#     }
-#
-#     :param df_ground_truth: DataFrame with ground truth data e.g. df[["id", "ground_truth"]]
-#     :param df_query_result: DataFrame with query result data e.g. df[["id", "query_result"]]
-#     :param max_threshold: Maximum threshold of query results
-#     :return: dict
-#     """
-#     # Merge ground truth and query result dataframes on the 'id' column
-#     df = df_ground_truth.merge(df_query_result, on="id")
-#
-#     result = []
-#
-#     # Iterate through all thresholds from 0 to max_threshold
-#     for threshold in range(max_threshold + 1):
-#         tp = 0
-#         fp = 0
-#         fn = 0
-#
-#         # Iterate through each row in the merged dataframe
-#         for _, row in df.iterrows():
-#             ground_truth = set(file_id for hamming_distance, file_id in row["ground_truth"])
-#             query_result = set(
-#                 file_id
-#                 for hamming_distance, file_id in row["query_result"]
-#                 if hamming_distance <= threshold
-#             )
-#
-#             tp += len(ground_truth.intersection(query_result))
-#             fp += len(query_result.difference(ground_truth))
-#             fn += len(ground_truth.difference(query_result))
-#
-#         # Calculate precision, recall, and F1-score
-#         precision = tp / (tp + fp) if (tp + fp) > 0 else 0
-#         recall = tp / (tp + fn) if (tp + fn) > 0 else 0
-#         f1_score = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0
-#
-#         # Append the result to the effectiveness list
-#         result.append(
-#             {"threshold": threshold, "precision": precision, "recall": recall, "f1_score": f1_score}
-#         )
-#
-#     return result

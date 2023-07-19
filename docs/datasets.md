@@ -92,13 +92,13 @@ within the set.
     The following transformations were applied to **500 files** of the dataset to simulate different
     conditions that might be encountered in real-world applications:
 
-    - equalize
-    - echo
-    - fade-8s-both
-    - trim-1s-both
     - transcode-aac-32kbps
-    - transcode-ogg-64kbps
-    - transcode-mp3-128kbps
-    - loudnorm
-    - compress-medium
+    - equalize
     - trim-5s-both
+    - compress-medium
+    - transcode-mp3-128kbps
+    - trim-1s-both
+    - fade-8s-both
+    - transcode-ogg-64kbps
+    - echo
+    - loudnorm
