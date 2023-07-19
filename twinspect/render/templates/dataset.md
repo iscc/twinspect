@@ -8,7 +8,7 @@
     - **Size**: {{ data.total_size }}
     - **Files**: {{ data.total_files }}
 
-The **{{ data.dataset_label }}** is a benchmark dataset, designed to assess the accuracy of
+The **{{ data.dataset_label }}** is a dataset, designed to assess the accuracy of
 {{ data.dataset_mode }} identification algorithms. It includes ground truth data for a total of
 **{{ data.total_files }} {{ data.dataset_mode }} files** with near-duplicates organized into
 **{{ data.total_clusters }} clusters**.

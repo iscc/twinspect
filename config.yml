@@ -25,12 +25,21 @@ algorithms:
     dependencies:
       - iscc-sdk==0.5.9
 datasets:
+  - name: STLIB-2000
+    label: stlib_2000
+    info: The STLIB-2000 is a real-world dataset of 2000 commercial E-Books where each title has
+      an EPUB and PDF version. The data has been generously provided by [StreetLib](https://www.streetlib.com/).
+      Because the ISCC-SDK does not support OCR yet, titles with image-only E-Books have been removed
+      before benchmarking.
+    url: https://www.streetlib.com
+    mode: text
+    installer: twinspect.datasets.dummy:install
   - name: MIRFLICKR-MFND
     label: mirflickr_mfnd
     info: The MFND benchmark ([Connor et al., 2015](http://dx.doi.org/10.5220/0005359705650571))
       is a subset of the real-world MIRFLICKR dataset ([Huiskes & Lew, 2008](https://doi.org/10.1145/1460096.1460104))
-      with [annotations](http://www.mir-flickr-near-duplicates.appspot.com/) for near duplicates.
-      The Twinspect benchmark automatically downloads and reproduces the tested dataset.
+      with [annotations](http://www.mir-flickr-near-duplicates.appspot.com/) for near duplicates
+      (IND). The Twinspect benchmark automatically downloads and reproduces the tested dataset.
     url: https://mfnd.similarity.eu/data/truthfiles/polito/IND_clusters.txt
     mode: image
     installer: twinspect.datasets.mfnd:install
@@ -131,6 +140,13 @@ metrics:
     label: distribution
     function: twinspect.metrics.distribution:distribution
 benchmarks:
+  - algorithm_label: text_code_v0_64
+    dataset_label: stlib_2000
+    metric_labels:
+      - speed
+      - effectiveness
+      - distribution
+    active: true
   - algorithm_label: image_code_v0_64
     dataset_label: mirflickr_mfnd
     metric_labels:

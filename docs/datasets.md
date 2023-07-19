@@ -46,32 +46,25 @@ data-folder
 
 ______________________________________________________________________
 
-### MIRFLICKR-MFND
+### STLIB-2000
 
 !!! abstract inline end "Dataset Info"
-    - **ID**: 71d8a361044c7b5f
-    - **Mode**: Image
-    - **Size**: 520.0 MB
-    - **Files**: 4062
+    - **ID**: e20bd16e097e8faf
+    - **Mode**: Text
+    - **Size**: 4.8 GB
+    - **Files**: 1610
 
-The **MIRFLICKR-MFND** is a benchmark dataset, designed to assess the accuracy of image
-identification algorithms. It includes ground truth data for a total of **4062 image files** with
-near-duplicates organized into **1958 clusters**.
+The **STLIB-2000** is a dataset, designed to assess the accuracy of text identification algorithms.
+It includes ground truth data for a total of **1610 text files** with near-duplicates organized into
+**805 clusters**.
 
-The MFND benchmark ([Connor et al., 2015](http://dx.doi.org/10.5220/0005359705650571)) is a subset
-of the real-world MIRFLICKR dataset ([Huiskes & Lew, 2008](https://doi.org/10.1145/1460096.1460104))
-with [annotations](http://www.mir-flickr-near-duplicates.appspot.com/) for near duplicates. The
-Twinspect benchmark automatically downloads and reproduces the tested dataset.
+The STLIB-2000 is a real-world dataset of 2000 commercial E-Books where each title has an EPUB and
+PDF version. The data has been generously provided by [StreetLib](https://www.streetlib.com/).
+Because the ISCC-SDK does not support OCR yet, titles with image-only E-Books have been removed
+before benchmarking.
 
 ??? note "Clustering Details"
-    Clusters contain an average of **2.07 near-duplicate** image files.
-
-    **Cluster sizes**
-
-    - **Minimum**: 1
-    - **Maximum**: 14
-    - **Mean**: 2.07
-    - **Median**: 2.0
+    Each cluster contains **2 near-duplicate** text files.
 
 ______________________________________________________________________
 
@@ -83,7 +76,7 @@ ______________________________________________________________________
     - **Size**: 69.0 GB
     - **Files**: 10000
 
-The **ISCC-FMA-10K** is a benchmark dataset, designed to assess the accuracy of audio identification
+The **ISCC-FMA-10K** is a dataset, designed to assess the accuracy of audio identification
 algorithms. It includes ground truth data for a total of **10000 audio files** with near-duplicates
 organized into **500 clusters**.
 
@@ -103,13 +96,42 @@ automatically downloads and reproduces the tested dataset.
     The following transformations were applied to **500 files** of the dataset to simulate different
     conditions that might be encountered in real-world applications:
 
-    - **echo**: Apply echo effect (ffmpeg aecho=0.8:0.7:60:0.2)
-    - **transcode-aac-32kbps**: Transcode audio to 32kbps AAC
-    - **trim-1s-both**: Remove 1 seconds of audio from start and end
-    - **loudnorm**: Apply loudness normalization (ffmpeg loudnorm=I=-16:TP=-1.5:LRA=11)
-    - **trim-5s-both**: Remove 5 seconds of audio from start and end
-    - **transcode-mp3-128kbps**: Transcode audio to 128kbps MP3
     - **equalize**: Equalize audio (ffmpeg equalizer=f=1000:t=o:w=200:g=10)
-    - **compress-medium**: Apply audio compression (attack 10, release 200, ratio 3, threshold -20)
-    - **transcode-ogg-64kbps**: Transcode audio to 64kbps OGG
+    - **loudnorm**: Apply loudness normalization (ffmpeg loudnorm=I=-16:TP=-1.5:LRA=11)
     - **fade-8s-both**: Fade in/out 8 seconds at start and end
+    - **trim-5s-both**: Remove 5 seconds of audio from start and end
+    - **transcode-aac-32kbps**: Transcode audio to 32kbps AAC
+    - **transcode-mp3-128kbps**: Transcode audio to 128kbps MP3
+    - **echo**: Apply echo effect (ffmpeg aecho=0.8:0.7:60:0.2)
+    - **trim-1s-both**: Remove 1 seconds of audio from start and end
+    - **transcode-ogg-64kbps**: Transcode audio to 64kbps OGG
+    - **compress-medium**: Apply audio compression (attack 10, release 200, ratio 3, threshold -20)
+
+______________________________________________________________________
+
+### MIRFLICKR-MFND
+
+!!! abstract inline end "Dataset Info"
+    - **ID**: 71d8a361044c7b5f
+    - **Mode**: Image
+    - **Size**: 520.0 MB
+    - **Files**: 4062
+
+The **MIRFLICKR-MFND** is a dataset, designed to assess the accuracy of image identification
+algorithms. It includes ground truth data for a total of **4062 image files** with near-duplicates
+organized into **1958 clusters**.
+
+The MFND benchmark ([Connor et al., 2015](http://dx.doi.org/10.5220/0005359705650571)) is a subset
+of the real-world MIRFLICKR dataset ([Huiskes & Lew, 2008](https://doi.org/10.1145/1460096.1460104))
+with [annotations](http://www.mir-flickr-near-duplicates.appspot.com/) for near duplicates (IND).
+The Twinspect benchmark automatically downloads and reproduces the tested dataset.
+
+??? note "Clustering Details"
+    Clusters contain an average of **2.07 near-duplicate** image files.
+
+    **Cluster sizes**
+
+    - **Minimum**: 1
+    - **Maximum**: 14
+    - **Mean**: 2.07
+    - **Median**: 2.0

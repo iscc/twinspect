@@ -39,7 +39,7 @@ To address concerns and provide clarity, we've developed
 [**TwinSpect**](https://github.com/iscc/twinspect) — a comprehensive open-source framework
 engineered for evaluating the ISCC in an accessible and scientifically robust manner. TwinSpect is
 built on widely recognized metrics from the field of information retrieval and makes use of various
-public datasets, each selected and refined to fit our evaluation objectives.
+public and private datasets selected and built to fit our evaluation objectives.
 
 While TwinSpect is specifically designed to evaluate the ISCC, its adaptability goes beyond.
 TwinSpect can easily be extended with custom algorithms, datasets, transformations and metrics.
@@ -59,7 +59,6 @@ improving the trust in content provenance becomes even more critical.
 
 ## What´s Ahead
 
-In the following sections, we will provide a detailed look at the ISCC, explain the TwinSpect
-evaluation framework, and share the findings from our extensive evaluation. Our goal is to give you
-a thorough understanding of the ISCC and its potential, in a clear, concise, and business-focused
-manner. We invite you to join us in this informative journey.
+In the following pages, we will provide a detailed look at the ISCC, explain the TwinSpect
+evaluation framework, and share the findings from our evaluation. Our goal is to give you a thorough
+understanding of the ISCC and its potential, in a clear, concise, and business-focused manner.
