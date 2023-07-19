@@ -46,30 +46,6 @@ data-folder
 
 ______________________________________________________________________
 
-### MIRFLICKR-MFND
-
-!!! abstract inline end "Dataset Info"
-    - **ID**: 99107a584e0bd4e3
-    - **Mode**: Image
-    - **Size**: 999.5 MB
-    - **Files**: 7942
-
-The **MIRFLICKR-MFND** is a benchmark dataset, designed to assess the accuracy of image
-identification algorithms. It includes ground truth data for a total of **7942 image files** with
-near-duplicates organized into **3825 clusters**.
-
-??? note "Clustering Details"
-    Clusters contain an average of **2.08 near-duplicate** image files.
-
-    **Cluster sizes**
-
-    - **Minimum**: 1
-    - **Maximum**: 14
-    - **Mean**: 2.08
-    - **Median**: 2.0
-
-______________________________________________________________________
-
 ### ISCC-FMA-10K
 
 !!! abstract inline end "Dataset Info"
@@ -92,13 +68,37 @@ within the set.
     The following transformations were applied to **500 files** of the dataset to simulate different
     conditions that might be encountered in real-world applications:
 
-    - transcode-aac-32kbps
-    - equalize
-    - trim-5s-both
     - compress-medium
     - transcode-mp3-128kbps
-    - trim-1s-both
     - fade-8s-both
+    - equalize
     - transcode-ogg-64kbps
-    - echo
     - loudnorm
+    - echo
+    - transcode-aac-32kbps
+    - trim-1s-both
+    - trim-5s-both
+
+______________________________________________________________________
+
+### MIRFLICKR-MFND
+
+!!! abstract inline end "Dataset Info"
+    - **ID**: 99107a584e0bd4e3
+    - **Mode**: Image
+    - **Size**: 999.5 MB
+    - **Files**: 7942
+
+The **MIRFLICKR-MFND** is a benchmark dataset, designed to assess the accuracy of image
+identification algorithms. It includes ground truth data for a total of **7942 image files** with
+near-duplicates organized into **3825 clusters**.
+
+??? note "Clustering Details"
+    Clusters contain an average of **2.08 near-duplicate** image files.
+
+    **Cluster sizes**
+
+    - **Minimum**: 1
+    - **Maximum**: 14
+    - **Mean**: 2.08
+    - **Median**: 2.0
