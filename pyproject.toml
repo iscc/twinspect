@@ -36,6 +36,7 @@ jmespath = "^1.0.1"
 mdformat = "*"
 mdformat-admon = "^1.0.1"
 mdformat-tables = "^0.4.1"
+iscc-sdk = "^0.5.9"
 
 [tool.datamodel-codegen]
 input = "twinspect/schema.yml"
