@@ -229,7 +229,7 @@ def get_info(url, client=None):
     """Get file information for url via head request"""
     if client:
         try:
-            response = client.head(url)
+            response = client.head(url, follow_redirects=True)
             response.raise_for_status()
         except HTTPError as e:
             log.error(repr(e))
@@ -237,7 +237,7 @@ def get_info(url, client=None):
     else:
         with Client() as c:
             try:
-                response = c.head(url)
+                response = c.head(url, follow_redirects=True)
                 response.raise_for_status()
             except HTTPError as e:
                 log.error(repr(e))
