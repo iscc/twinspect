@@ -108,6 +108,13 @@ def datasets():
 
 
 @app.command()
+def install(label: Annotated[Optional[str], Argument()] = None):
+    """Install dataset by label"""
+    ds = ts.Dataset.from_label(label)
+    ds.install()
+
+
+@app.command()
 def benchmarks():
     """List available benchmarks"""
     table = Table("Algorithm", "Dataset", "Metrics", "Active", header_style="on magenta")
