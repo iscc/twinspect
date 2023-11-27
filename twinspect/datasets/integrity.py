@@ -66,7 +66,7 @@ def check_dir_fast(path, expected=None, raise_empty=True):
     if expected:
         log.debug(f"Verifying checksum {expected} for {path.name}")
     else:
-        log.debug(f"Calculating checksum for {path.name}")
+        log.debug(f"Calculating fast checksum for {path.name}")
     path = Path(path)
     hasher = blake3(max_threads=blake3.AUTO)
     for file, size, time in iter_file_meta(path):
@@ -78,6 +78,7 @@ def check_dir_fast(path, expected=None, raise_empty=True):
         ident = f"{file};{size}".encode("utf-8")
         hasher.update(ident)
     actual_hash = hasher.hexdigest(8)
+    log.debug(f"Fast checksum for {path.name}: {actual_hash}")
     if expected:
         if expected == actual_hash:
             log.info(f"Success verifying {path.name}")
