@@ -55,6 +55,14 @@ datasets:
     samples: 5000
     clusters: 500
     seed: 0
+  - name: 10000_cutOff_PDFs
+    label: 10000_cutOff_PDFs
+    info: The 10000_10cutoff_pdfs is a real-world dataset of 10000 commercial PDFs. The data has been generously provided by [OpenAlex](https://openalex.org/).
+      Because the ISCC-SDK does not support OCR yet, titles with image-only E-Books have been removed and the pdfs have been converted to plain text files
+      before benchmarking.
+    url: https://openalex.org/
+    mode: text
+    installer: twinspect.datasets.dummy:install  
 transformations:
   - name: Trim 1 Second
     label: trim-1s-both
@@ -160,5 +168,13 @@ benchmarks:
       - speed
       - effectiveness
       - robustness
+      - distribution
+    active: true
+  - algorithm_label: text_code_v0_64
+    dataset_label: 10000_cutOff_PDFs
+    metric_labels:
+      - speed
+      - robustness
+      - effectiveness
       - distribution
     active: true
