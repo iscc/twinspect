@@ -10,6 +10,7 @@ High Level Processing Pipeline:
     5. Algorithm Benchmarking: Calculate benchmarking metrics from media processing results
     6. Build Benchmark Result: Create/update Markdown/HTML output of benchmarking results
 """
+
 from typing import Optional
 import typer
 from typer import Argument, Option

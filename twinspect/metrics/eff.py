@@ -77,6 +77,7 @@ Implementation Notes:
     Given gound_truths and query_results we calculate recal, precision, and
     f1-scores per query at thresholds 0 to max_trhreshold.
 """
+
 from pathlib import Path
 import pandas as pd
 from hexhamming import hamming_distance_string as hamming_distance

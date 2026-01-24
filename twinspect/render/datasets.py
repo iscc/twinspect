@@ -1,10 +1,10 @@
 """Datasets Page Rendering"""
+
 import json
 import pathlib
 from twinspect.options import opts
 from twinspect.datasets.info import dataset_info
 from jinja2 import Environment, FileSystemLoader
-from twinspect.models import DatasetInfo
 from rich.filesize import decimal
 import twinspect as ts
 
@@ -30,17 +30,18 @@ def get_data_folders():
     return data_folders
 
 
-def augment_data(data: DatasetInfo) -> DatasetInfo:
-    data.dataset_label = "-".join(data.dataset_label.split("_")).upper()
-    data.total_size = decimal(data.total_size)
+def augment_data(data: dict) -> dict:
+    """Augment dataset info dict with human-readable values for rendering."""
+    data["dataset_label"] = "-".join(data["dataset_label"].split("_")).upper()
+    data["total_size"] = decimal(data["total_size"])
     return data
 
 
 def render_dataset(data_folder):
     env = Environment(loader=FileSystemLoader(TPL_PATH))
     template = env.get_template("dataset.md")
-    data = augment_data(dataset_info(data_folder))
-    data = {k: v for k, v in sorted(data.dict().items())}
+    data = dataset_info(data_folder).model_dump()
+    data = augment_data({k: v for k, v in sorted(data.items())})
 
     # Collection optional dataset info from config.yml if present
     ds_obj = ts.Dataset.from_label(data["dataset_label"])

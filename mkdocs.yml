@@ -1,6 +1,6 @@
 site_name: ISCC Evaluation
-site_description: Universal Benchmark for Near-Duplicate and similarity search with compact binary
-  codes.
+site_description: Universal Benchmark for Near-Duplicate and similarity search with compact 
+  binary codes.
 site_author: Titusz Pan
 site_url: https://twinspect.iscc.codes
 
@@ -10,9 +10,10 @@ repo_url: https://github.com/iscc/twinspect
 edit_uri: edit/main/docs/
 
 # Copyright
-copyright: Copyright © 2023 The Authors | <a href="https://iscc.foundation/privacy">Privacy Policy</a>
-  | <a href="https://iscc.foundation/cookies">Cookie Policy</a> | <a href="https://iscc.foundation/imprint">Imprint</a>
-  | <a href="https://iscc.foundation/disclaimer">Disclaimer</a>
+copyright: Copyright © 2023 The Authors | <a href="https://iscc.foundation/privacy">Privacy 
+  Policy</a> | <a href="https://iscc.foundation/cookies">Cookie Policy</a> | <a 
+  href="https://iscc.foundation/imprint">Imprint</a> | <a 
+  href="https://iscc.foundation/disclaimer">Disclaimer</a>
 
 extra_css:
   - stylesheets/extra.css

@@ -93,12 +93,17 @@ def aquire_dataset(dataset: ts.Dataset) -> Path:
 
 
 def install_algorithm(algorithm: ts.Algorithm):
+    """Install algorithm dependencies if not already satisfied."""
+    from packaging.requirements import Requirement
+    from packaging.version import Version
+
     for dep in algorithm.dependencies:
-        package_name, required_version = dep.split("==")
+        req = Requirement(dep)
+        package_name = req.name
         try:
-            installed_version = version(package_name)
-            if installed_version == required_version:
-                log.trace(f"{package_name} v{required_version} already installed")
+            installed_version = Version(version(package_name))
+            if req.specifier.contains(installed_version):
+                log.trace(f"{package_name} v{installed_version} satisfies {dep}")
                 continue
             else:
                 raise PackageNotFoundError

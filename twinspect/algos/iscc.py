@@ -7,7 +7,7 @@ from pathlib import Path
 
 
 def text_code_v0_64(fp) -> Optional[str]:
-    idk.sdk_opts.extract_metadata = False
+    idk.sdk_opts.extract_meta = False
     ic.core_opts.text_bits = 64
     try:
         iscc_meta = idk.code_text(fp)
@@ -19,7 +19,7 @@ def text_code_v0_64(fp) -> Optional[str]:
 
 
 def image_code_v0_64(fp) -> Optional[str]:
-    idk.sdk_opts.extract_metadata = False
+    idk.sdk_opts.extract_meta = False
     ic.core_opts.image_bits = 64
     try:
         iscc_meta = idk.code_image(fp)
@@ -31,7 +31,7 @@ def image_code_v0_64(fp) -> Optional[str]:
 
 
 def audio_code_v0_64(fp) -> Optional[str]:
-    idk.sdk_opts.extract_metadata = False
+    idk.sdk_opts.extract_meta = False
     ic.core_opts.audio_bits = 64
     try:
         iscc_meta = idk.code_audio(fp)
@@ -43,7 +43,7 @@ def audio_code_v0_64(fp) -> Optional[str]:
 
 
 def video_code_v0_64(fp) -> Optional[str]:
-    idk.sdk_opts.extract_metadata = False
+    idk.sdk_opts.extract_meta = False
     ic.core_opts.video_bits = 64
     try:
         iscc_meta = idk.code_video(fp)

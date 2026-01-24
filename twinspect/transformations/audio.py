@@ -1,6 +1,7 @@
 """
 Collection of synthetic audio transformations.
 """
+
 from pathlib import Path
 from pydub import AudioSegment
 import subprocess
@@ -124,7 +125,7 @@ def compress(file_path: Path, intensity: str) -> Path:
         "-i",
         str(file_path),
         "-af",
-        f'acompressor=attack={settings["attack"]}:release={settings["release"]}:ratio={settings["ratio"]}:threshold={settings["threshold"]}dB',
+        f"acompressor=attack={settings['attack']}:release={settings['release']}:ratio={settings['ratio']}:threshold={settings['threshold']}dB",
         str(new_file_path),
     ]
 

@@ -1,4 +1,5 @@
 """Metrics for algorithm execition speed"""
+
 from pathlib import Path
 import csv
 from statistics import mean, median

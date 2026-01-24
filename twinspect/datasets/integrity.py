@@ -21,6 +21,7 @@ Compute and verify **fast** hash:
 TODO: The performance of check_dir_secure can be improved 10x for directories with many small
       files by using asynchronous file IO (aiofiles package).
 """
+
 import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path

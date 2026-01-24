@@ -1,19 +1,24 @@
 """Results Page Rendering"""
-import base64
+
 import json
 import pathlib
 from io import BytesIO
-from loguru import logger as log
-from twinspect.render.plot import plot_distribution, plot_effectiveness
-from twinspect.options import opts
-from twinspect.metrics.utils import best_threshold
+
 from jinja2 import Environment, FileSystemLoader
+from loguru import logger as log
+from PIL import Image
+import pillow_avif  # noqa: F401 - registers AVIF format with Pillow
+
+from twinspect.metrics.utils import best_threshold
+from twinspect.options import opts
+from twinspect.render.plot import plot_distribution, plot_effectiveness
 
 HERE = pathlib.Path(__file__).parent.absolute()
 TPL_PATH = HERE / "templates"
 TPL_HEADER_PATH = HERE / "templates/results-header.md"
 TPL_RESULT_PATH = TPL_HEADER_PATH / "templates/result.md"
 OUT_PATH = HERE.parent.parent / "docs/results.md"
+IMAGES_PATH = HERE.parent.parent / "docs/images"
 
 
 def get_header():
@@ -39,15 +44,23 @@ def render_result(data):
     return rendered
 
 
-def render_plot(plt) -> str:
+def render_plot(plt, filename: str) -> str:
+    """Render matplotlib plot to AVIF file and return relative path."""
+    IMAGES_PATH.mkdir(parents=True, exist_ok=True)
+    filepath = IMAGES_PATH / f"{filename}.avif"
+
+    # Save to buffer as PNG, then convert to AVIF for smaller file size
     buf = BytesIO()
-    plt.savefig(buf, format="png", dpi=150)
+    plt.savefig(buf, format="png", dpi=100)
+    plt.close()
     buf.seek(0)
-    img_data = buf.getvalue()
+
+    # Convert to AVIF using Pillow
+    img = Image.open(buf)
+    img.save(filepath, format="AVIF", quality=80)
     buf.close()
-    encoded_plot = base64.b64encode(img_data).decode()
-    data_url = "data:image/png;base64," + encoded_plot
-    return data_url
+
+    return f"images/{filename}.avif"
 
 
 def build_results_page():
@@ -61,12 +74,18 @@ def build_results_page():
         log.debug(f"Building results for {metrics_path.name}")
         with metrics_path.open() as infile:
             data = json.load(infile)
+            algo_slug = data["algorithm"].replace("_", "-")
+            ds_slug = "-".join(data["dataset"].split("_")[:3])
             data["algorithm"] = "-".join(
                 frag.upper() for frag in data["algorithm"].split("_")
             ).replace("V0-", "")
             data["dataset"] = "-".join(frag.upper() for frag in data["dataset"].split("_")[:3])
-            data["plot_dist"] = render_plot(plot_distribution(metrics_path))
-            data["plot_eff"] = render_plot(plot_effectiveness(metrics_path))
+            data["plot_dist"] = render_plot(
+                plot_distribution(metrics_path), f"{algo_slug}-{ds_slug}-dist"
+            )
+            data["plot_eff"] = render_plot(
+                plot_effectiveness(metrics_path), f"{algo_slug}-{ds_slug}-eff"
+            )
             best = best_threshold(data)
             best["algorithm"] = data["algorithm"]
             best["dataset"] = data["dataset"]

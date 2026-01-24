@@ -12,6 +12,7 @@ MIrFlickr Dataset
     Info: https://press.liacs.nl/mirflickr/mirdownload.html
 
 """
+
 import shutil
 import threading
 from collections import defaultdict
@@ -20,7 +21,8 @@ from pathlib import Path
 from typing import Generator
 from zipfile import ZipInfo
 from loguru import logger as log
-import httpx_cache as hc
+import hishel
+import httpx
 from remotezip import RemoteZip
 from rich.filesize import decimal
 from twinspect import check_dir_fast
@@ -36,7 +38,10 @@ DL_TPL = "https://press.liacs.nl/mirflickr/mirflickr1m.v3b/images{}.zip"
 
 def clusters() -> list[list[int]]:
     """Download and parse MirFlickr image ids clustered by near duplicates."""
-    with hc.Client(cache=hc.FileCache(), always_cache=True) as client:
+    storage = hishel.FileStorage()
+    controller = hishel.CacheController(force_cache=True)
+    transport = hishel.CacheTransport(httpx.HTTPTransport(), storage=storage, controller=controller)
+    with httpx.Client(transport=transport) as client:
         response = client.get(CLUSTERS)
 
     cluster_ids = []

@@ -1,4 +1,5 @@
 """Create plots from metrics"""
+
 import matplotlib.pyplot as plt
 from pathlib import Path
 import json

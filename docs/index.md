@@ -4,9 +4,9 @@
 
 *A Comprehensive and Scientific Approach to Understand the Capabilities of ISCC*
 
-!!! danger "ISCC Status"
-    As of July 2023 the International Standard Content Code is not yet a published ISO standard.
-    ISO/CD 24138.2 is under development at TC 46/SC 9/WG 18. https://www.iso.org/standard/77899.html
+!!! success "ISCC Status"
+    The International Standard Content Code was published as ISO 24138:2024 in May 2024. See
+    https://www.iso.org/standard/77899.html
 
 ## Digital Content Identification
 
@@ -32,8 +32,8 @@ and deliver a well-rounded understanding of this new and exciting technology.
 ## Introducing TwinSpect
 
 !!! abstract inline end "Purpose"
-    The primary purpose of TwinSpect is to assess to which extent the ISCC is capable of clustering
-    and matching similar content.
+    The primary purpose of TwinSpect is to assess to which extent the ISCC is capable of clustering and
+    matching similar content.
 
 To address concerns and provide clarity, we've developed
 [**TwinSpect**](https://github.com/iscc/twinspect) — a comprehensive open-source framework
@@ -50,12 +50,14 @@ As we enter the era of Artificial Intelligence, where content creation and distr
 increasingly automated, the role of the ISCC in ensuring accurate content identification, and
 improving the trust in content provenance becomes even more critical.
 
-??? note "Upcoming Semantic-Code"
-    As of July 2023 the ISO draft of the upcoming ISCC Standard already reserves prefixes for the
-    ISCC Semantic-Code which will employ Deep Learning and Artificial Intelligence techniques to
-    create ISCC-UNITs that match similarity based on the high-level understanding of concepts. For
-    example the Semantic-Code for textual content will be capable of creating similar codes for the
-    same text translated to different languages (cross-lingual similarity matching).
+!!! note "Semantic-Code"
+    The ISO 24138:2024 standard reserves prefixes for the ISCC Semantic-Code
+    which employs Deep Learning and Artificial Intelligence techniques to create ISCC-UNITs that match
+    similarity based on the high-level understanding of concepts. Draft implementations are available
+    for text ([iscc-sct](https://github.com/iscc/iscc-sct)) and image
+    ([iscc-sci](https://github.com/iscc/iscc-sci)) content. For example, the Semantic-Code for textual
+    content is capable of creating similar codes for the same text translated to different languages
+    (cross-lingual similarity matching). Evaluations of Semantic-Codes are planned for TwinSpect.
 
 ## What´s Ahead
 

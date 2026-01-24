@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Extended Schema Objects with convenience methods"""
+
 import functools
 from pathlib import Path
 from typing import Optional, List, Set, Callable
@@ -64,9 +65,6 @@ class Algorithm(AlgorithmBase):
 
 
 class Transformation(TransformationBase):
-    class Config(TransformationBase.Config):
-        keep_untouched = (functools.cached_property,)
-
     @staticmethod
     @functools.cache
     def from_label(label):

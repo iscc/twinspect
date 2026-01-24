@@ -4,6 +4,7 @@ does not scale for larger datasets above a couple of thousand items O(n^2). So i
 less accurate but much more performant Approximate Nearest Neighbor Search (ANNS) based on the
 faiss library.
 """
+
 import csv
 from typing import Iterable
 from numpy.typing import NDArray

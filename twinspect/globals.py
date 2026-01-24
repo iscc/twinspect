@@ -1,4 +1,5 @@
 """Global values"""
+
 from loguru import logger as log
 from rich.console import Console
 from rich.progress import (

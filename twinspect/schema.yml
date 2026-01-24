@@ -16,8 +16,8 @@ components:
     Benchmark:
       title: Benchmark
       type: object
-      description: An individual benchmark evaluating an algorithm against a specific dataset using
-        a defined set of metrics.
+      description: An individual benchmark evaluating an algorithm against a specific dataset 
+        using a defined set of metrics.
       required:
         - algorithm_label
         - dataset_label
@@ -29,7 +29,8 @@ components:
           description: The Algorithm to evaluate referenced by its label
         dataset_label:
           type: string
-          description: The Dataset against which to evaluate the Algorithm referenced by its label
+          description: The Dataset against which to evaluate the Algorithm referenced by its 
+            label
         metric_labels:
           type: array
           description: A list of metrics to calculate for the benchmark referenced by label
@@ -87,9 +88,9 @@ components:
           $ref: '#/components/schemas/Mode'
         function:
           type: string
-          description: Full path to python function that implements the algorithm. The function must
-            accept a file path as the first parameter and must return a hex encoded compact hash
-            code.
+          description: Full path to python function that implements the algorithm. The function
+            must accept a file path as the first parameter and must return a hex encoded 
+            compact hash code.
         dependencies:
           type: array
           items:

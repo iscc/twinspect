@@ -8,8 +8,8 @@ similarity, and semantic similarity.
 ## 1. Data Similarity
 
 !!! abstract inline end "Data Similarity:"
-    The measure of likeness between two digital media files, based on a direct comparison of their
-    raw binary data, without considering the interpretation or meaning of the content.
+    The measure of likeness between two digital media files, based on a direct comparison of their raw
+    binary data, without considering the interpretation or meaning of the content.
 
 This type of similarity compares the raw, uninterpreted bitstreams of digital media files, assessing
 their likeness based on the sequence of bits and bytes. Data similarity focuses on the structural
@@ -20,8 +20,8 @@ encryption algorithms.
 ## 2. Content Similarity
 
 !!! abstract inline end "Content Similarity:"
-    The measure of likeness between two digital media files, considering the perceptual, structural,
-    and syntactic aspects of the decoded content, without necessarily considering the high-level
+    The measure of likeness between two digital media files, considering the perceptual, structural, and
+    syntactic aspects of the decoded content, without necessarily considering the high-level
     understanding of the concepts represented.
 
 This category addresses the perceptual, structural, and syntactic similarity of digital media files
@@ -33,9 +33,9 @@ classification, and multimedia summarization.
 ## 3. Semantic Similarity
 
 !!! abstract inline end "Semantic Similarity:"
-    The measure of likeness between two digital media files, based on the high-level understanding
-    of the concepts, ideas, and context they represent, transcending the perceptual and structural
-    aspects of the content.
+    The measure of likeness between two digital media files, based on the high-level understanding of
+    the concepts, ideas, and context they represent, transcending the perceptual and structural aspects
+    of the content.
 
 This form of similarity pertains to the high-level understanding of concepts conveyed by digital
 media files. Semantic similarity compares the meaning and context of the content, going beyond the

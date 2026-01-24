@@ -1,4 +1,5 @@
 """Calculate ground truth data"""
+
 import csv
 import time
 from pathlib import Path
