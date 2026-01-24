@@ -45,94 +45,6 @@ data-folder
     TwinSpect Benchmark.
 ---
 
-### TED-2020
-
-!!! abstract inline end "Dataset Info"
-    - **ID**: fc4270917f6b6387
-    - **Mode**: Text
-    - **Size**: 1.1 GB
-    - **Files**: 87813
-
-The **TED-2020** is a dataset, designed to assess the accuracy of
-text identification algorithms. It includes ground truth data for a total of
-**87813 text files** with near-duplicates organized into
-**4076 clusters**.
-
-
-
-
-
-??? note "Clustering Details"
-    
-    Clusters contain an average of **21.54
-    near-duplicate** text files.
-
-    
-    **Cluster sizes**
-
-    - **Minimum**: 1
-    - **Maximum**: 47
-    - **Mean**: 21.54
-    - **Median**: 22.0
-    
-
-
-??? note "Synthetic Transformations"
-    The following transformations were applied to **4076 files** of the
-    dataset to simulate different conditions that might be encountered in real-world applications:
-
-    - hr
-    - fa
-    - lv
-    - ur
-    - gu
-    - fr
-    - bg
-    - fi
-    - mk
-    - nl
-    - my
-    - he
-    - ca
-    - ro
-    - en
-    - sq
-    - pt
-    - ku
-    - hi
-    - sk
-    - mr
-    - sl
-    - hy
-    - it
-    - de
-    - ar
-    - sv
-    - et
-    - sr
-    - mn
-    - vi
-    - da
-    - ja
-    - cs
-    - th
-    - uk
-    - id
-    - lt
-    - ru
-    - es
-    - el
-    - pl
-    - ka
-    - tr
-    - ko
-    - gl
-    - hu
-    - ms
-
-
----
-
 ### MIRFLICKR-MFND
 
 !!! abstract inline end "Dataset Info"
@@ -170,63 +82,30 @@ The MFND benchmark ([Connor et al., 2015](http://dx.doi.org/10.5220/000535970565
 
 ---
 
-### UKBENCH-10K
+### STLIB-2000
 
 !!! abstract inline end "Dataset Info"
-    - **ID**: d99648e3f5d17197
-    - **Mode**: Image
-    - **Size**: 1.7 GB
-    - **Files**: 10200
+    - **ID**: e20bd16e097e8faf
+    - **Mode**: Text
+    - **Size**: 4.8 GB
+    - **Files**: 1610
 
-The **UKBENCH-10K** is a dataset, designed to assess the accuracy of
-image identification algorithms. It includes ground truth data for a total of
-**10200 image files** with near-duplicates organized into
-**2550 clusters**.
+The **STLIB-2000** is a dataset, designed to assess the accuracy of
+text identification algorithms. It includes ground truth data for a total of
+**1610 text files** with near-duplicates organized into
+**805 clusters**.
 
 
 
+
+The STLIB-2000 is a real-world dataset of 2000 commercial E-Books where each title has an EPUB and PDF version. The data has been generously provided by [StreetLib](https://www.streetlib.com/). Because the ISCC-SDK does not support OCR yet, titles with image-only E-Books have been removed before benchmarking.
 
 
 ??? note "Clustering Details"
     Each cluster contains
-    **4 near-duplicate** image files.
+    **2 near-duplicate** text files.
     
 
-    
-
-
-
----
-
-### PINTEREST
-
-!!! abstract inline end "Dataset Info"
-    - **ID**: dd2ae263c1bf69c4
-    - **Mode**: Image
-    - **Size**: 647.3 MB
-    - **Files**: 12867
-
-The **PINTEREST** is a dataset, designed to assess the accuracy of
-image identification algorithms. It includes ground truth data for a total of
-**12867 image files** with near-duplicates organized into
-**5446 clusters**.
-
-
-
-
-
-??? note "Clustering Details"
-    
-    Clusters contain an average of **2.36
-    near-duplicate** image files.
-
-    
-    **Cluster sizes**
-
-    - **Minimum**: 2
-    - **Maximum**: 12
-    - **Mean**: 2.36
-    - **Median**: 2.0
     
 
 
@@ -267,45 +146,15 @@ The ISCC-FMA-10k benchmark is a subset of [Free Music Archive Dataset](https://d
     The following transformations were applied to **500 files** of the
     dataset to simulate different conditions that might be encountered in real-world applications:
 
-    - **compress-medium**: Apply audio compression (attack 10, release 200, ratio 3, threshold -20)
-    - **fade-8s-both**: Fade in/out 8 seconds at start and end
     - **trim-1s-both**: Remove 1 seconds of audio from start and end
-    - **loudnorm**: Apply loudness normalization (ffmpeg loudnorm=I=-16:TP=-1.5:LRA=11)
-    - **transcode-aac-32kbps**: Transcode audio to 32kbps AAC
+    - **fade-8s-both**: Fade in/out 8 seconds at start and end
     - **transcode-ogg-64kbps**: Transcode audio to 64kbps OGG
+    - **compress-medium**: Apply audio compression (attack 10, release 200, ratio 3, threshold -20)
+    - **transcode-aac-32kbps**: Transcode audio to 32kbps AAC
+    - **transcode-mp3-128kbps**: Transcode audio to 128kbps MP3
+    - **loudnorm**: Apply loudness normalization (ffmpeg loudnorm=I=-16:TP=-1.5:LRA=11)
     - **echo**: Apply echo effect (ffmpeg aecho=0.8:0.7:60:0.2)
     - **trim-5s-both**: Remove 5 seconds of audio from start and end
     - **equalize**: Equalize audio (ffmpeg equalizer=f=1000:t=o:w=200:g=10)
-    - **transcode-mp3-128kbps**: Transcode audio to 128kbps MP3
-
-
----
-
-### STLIB-2000
-
-!!! abstract inline end "Dataset Info"
-    - **ID**: e20bd16e097e8faf
-    - **Mode**: Text
-    - **Size**: 4.8 GB
-    - **Files**: 1610
-
-The **STLIB-2000** is a dataset, designed to assess the accuracy of
-text identification algorithms. It includes ground truth data for a total of
-**1610 text files** with near-duplicates organized into
-**805 clusters**.
-
-
-
-
-The STLIB-2000 is a real-world dataset of 2000 commercial E-Books where each title has an EPUB and PDF version. The data has been generously provided by [StreetLib](https://www.streetlib.com/). Because the ISCC-SDK does not support OCR yet, titles with image-only E-Books have been removed before benchmarking.
-
-
-??? note "Clustering Details"
-    Each cluster contains
-    **2 near-duplicate** text files.
-    
-
-    
-
 
 
