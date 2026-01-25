@@ -5,6 +5,7 @@
 *A Comprehensive and Scientific Approach to Understand the Capabilities of ISCC*
 
 !!! success "ISCC Status"
+
     The International Standard Content Code was published as ISO 24138:2024 in May 2024. See
     https://www.iso.org/standard/77899.html
 
@@ -21,10 +22,10 @@ With any innovative technology comes a learning curve, and the ISCC is no except
 disciplines, the ISCC's unique approach has sparked many questions:
 
 - Registration agencies are seeking to understand how this differs from established standard
-  identifiers.
+    identifiers.
 - Content recognition specialists are interested in its capabilities in granular content matching.
 - Software developers, accustomed to cryptographic hashes for secure data identification, are
-  curious about how the ISCC compares.
+    curious about how the ISCC compares.
 
 Our aim is to provide clear insights into the capabilities of the ISCC, dispel any misconceptions,
 and deliver a well-rounded understanding of this new and exciting technology.
@@ -32,6 +33,7 @@ and deliver a well-rounded understanding of this new and exciting technology.
 ## Introducing TwinSpect
 
 !!! abstract inline end "Purpose"
+
     The primary purpose of TwinSpect is to assess to which extent the ISCC is capable of clustering and
     matching similar content.
 
@@ -51,6 +53,7 @@ increasingly automated, the role of the ISCC in ensuring accurate content identi
 improving the trust in content provenance becomes even more critical.
 
 !!! note "Semantic-Code"
+
     The ISO 24138:2024 standard reserves prefixes for the ISCC Semantic-Code which employs Deep Learning
     and Artificial Intelligence techniques to create ISCC-UNITs that match similarity based on the
     high-level understanding of concepts. Draft implementations are available for text

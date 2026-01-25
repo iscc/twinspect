@@ -8,6 +8,7 @@ similarity, and semantic similarity.
 ## 1. Data Similarity
 
 !!! abstract inline end "Data Similarity:"
+
     The measure of likeness between two digital media files, based on a direct comparison of their raw
     binary data, without considering the interpretation or meaning of the content.
 
@@ -20,6 +21,7 @@ encryption algorithms.
 ## 2. Content Similarity
 
 !!! abstract inline end "Content Similarity:"
+
     The measure of likeness between two digital media files, considering the perceptual, structural, and
     syntactic aspects of the decoded content, without necessarily considering the high-level
     understanding of the concepts represented.
@@ -33,6 +35,7 @@ classification, and multimedia summarization.
 ## 3. Semantic Similarity
 
 !!! abstract inline end "Semantic Similarity:"
+
     The measure of likeness between two digital media files, based on the high-level understanding of
     the concepts, ideas, and context they represent, transcending the perceptual and structural aspects
     of the content.
@@ -67,11 +70,11 @@ comparing entire documents, images, or audio files.
 Some challenges and intricacies associated with global similarity include:
 
 - **Sensitivity to minor differences**: Small variations in content can lead to a significant
-  reduction in similarity scores, even if the overall content is largely similar.
+    reduction in similarity scores, even if the overall content is largely similar.
 - **Scale and proportion**: Differences in the scale, size, or proportion of elements within the
-  content can affect global similarity, even if the elements themselves are similar.
+    content can affect global similarity, even if the elements themselves are similar.
 - **Alignment**: Misalignments or differences in the arrangement of content can impact global
-  similarity, even if the content is otherwise highly similar.
+    similarity, even if the content is otherwise highly similar.
 
 ### Partial Similarity
 
@@ -83,13 +86,13 @@ documents, images, or audio files.
 Some intricacies and challenges associated with partial similarity include:
 
 - **Identifying relevant segments**: To effectively compare partial similarities, it is crucial to
-  identify and isolate the relevant segments or regions within the content. This can be challenging,
-  especially in cases where the boundaries are not clearly defined or are ambiguous.
+    identify and isolate the relevant segments or regions within the content. This can be
+    challenging, especially in cases where the boundaries are not clearly defined or are ambiguous.
 - **Varying granularity**: The level of granularity at which partial similarity is assessed can
-  impact the results. Finer granularity may reveal subtle similarities, while coarser granularity
-  may emphasize broader patterns.
+    impact the results. Finer granularity may reveal subtle similarities, while coarser granularity
+    may emphasize broader patterns.
 - **Computational complexity**: Comparing partial similarity can be computationally intensive, as it
-  requires analyzing and comparing multiple segments or regions within the content.
+    requires analyzing and comparing multiple segments or regions within the content.
 
 Both global and partial similarity have their strengths and limitations, and the choice between them
 depends on the specific requirements of the task at hand. In some cases, a combination of the two

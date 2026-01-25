@@ -46,6 +46,6 @@ def format_md():
     for fp in (ROOT / "docs").glob("*.md"):
         relp = fp.relative_to(fp.parent.parent).as_posix()
         md_files.append(relp)
-    cmd = ["poetry", "run", "mdformat", "--wrap", "100", "--end-of-line", "lf"]
+    cmd = ["uv", "run", "mdformat", "--wrap", "100", "--end-of-line", "lf"]
     cmd.extend(md_files)
     subprocess.run(cmd)
