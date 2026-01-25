@@ -47,30 +47,6 @@ data-folder
 
 ---
 
-### STLIB-2000
-
-!!! abstract inline end "Dataset Info"
-
-    - **ID**: e20bd16e097e8faf
-    - **Mode**: Text
-    - **Size**: 4.8 GB
-    - **Files**: 1610
-
-The **STLIB-2000** is a dataset, designed to assess the accuracy of text identification algorithms.
-It includes ground truth data for a total of **1610 text files** with near-duplicates organized into
-**805 clusters**.
-
-The STLIB-2000 is a real-world dataset of 2000 commercial E-Books where each title has an EPUB and
-PDF version. The data has been generously provided by [StreetLib](https://www.streetlib.com/).
-Because the ISCC-SDK does not support OCR yet, titles with image-only E-Books have been removed
-before benchmarking.
-
-??? note "Clustering Details"
-
-    Each cluster contains **2 near-duplicate** text files.
-
----
-
 ### NEWSEDITS-REUTERS-100
 
 !!! abstract inline end "Dataset Info"
@@ -85,8 +61,8 @@ algorithms. It includes ground truth data for a total of **340 text files** with
 organized into **100 clusters**.
 
 100-cluster subset of the [NewsEdits](https://github.com/isi-nlp/NewsEdits) Reuters dataset
-containing news article revisions (2012-2020). Only includes article versions within ±20% length of
-each other to ensure genuine near-duplicate matching. Articles shorter than 4000 characters are
+containing news article revisions (2012-2020). Only includes article versions within ±10% length of
+each other to ensure genuine near-duplicate matching. Articles shorter than 2000 characters are
 excluded.
 
 ??? note "Clustering Details"
@@ -133,16 +109,16 @@ automatically downloads and reproduces the tested dataset.
     The following transformations were applied to **500 files** of the dataset to simulate different
     conditions that might be encountered in real-world applications:
 
+    - **transcode-ogg-64kbps**: Transcode audio to 64kbps OGG
+    - **transcode-mp3-128kbps**: Transcode audio to 128kbps MP3
+    - **compress-medium**: Apply audio compression (attack 10, release 200, ratio 3, threshold -20)
+    - **equalize**: Equalize audio (ffmpeg equalizer=f=1000:t=o:w=200:g=10)
+    - **fade-8s-both**: Fade in/out 8 seconds at start and end
     - **trim-1s-both**: Remove 1 seconds of audio from start and end
-    - **trim-5s-both**: Remove 5 seconds of audio from start and end
+    - **echo**: Apply echo effect (ffmpeg aecho=0.8:0.7:60:0.2)
     - **transcode-aac-32kbps**: Transcode audio to 32kbps AAC
     - **loudnorm**: Apply loudness normalization (ffmpeg loudnorm=I=-16:TP=-1.5:LRA=11)
-    - **compress-medium**: Apply audio compression (attack 10, release 200, ratio 3, threshold -20)
-    - **echo**: Apply echo effect (ffmpeg aecho=0.8:0.7:60:0.2)
-    - **fade-8s-both**: Fade in/out 8 seconds at start and end
-    - **transcode-mp3-128kbps**: Transcode audio to 128kbps MP3
-    - **transcode-ogg-64kbps**: Transcode audio to 64kbps OGG
-    - **equalize**: Equalize audio (ffmpeg equalizer=f=1000:t=o:w=200:g=10)
+    - **trim-5s-both**: Remove 5 seconds of audio from start and end
 
 ---
 
@@ -174,3 +150,27 @@ The Twinspect benchmark automatically downloads and reproduces the tested datase
     - **Maximum**: 14
     - **Mean**: 2.07
     - **Median**: 2.0
+
+---
+
+### STLIB-2000
+
+!!! abstract inline end "Dataset Info"
+
+    - **ID**: e20bd16e097e8faf
+    - **Mode**: Text
+    - **Size**: 4.8 GB
+    - **Files**: 1610
+
+The **STLIB-2000** is a dataset, designed to assess the accuracy of text identification algorithms.
+It includes ground truth data for a total of **1610 text files** with near-duplicates organized into
+**805 clusters**.
+
+The STLIB-2000 is a real-world dataset of 2000 commercial E-Books where each title has an EPUB and
+PDF version. The data has been generously provided by [StreetLib](https://www.streetlib.com/).
+Because the ISCC-SDK does not support OCR yet, titles with image-only E-Books have been removed
+before benchmarking.
+
+??? note "Clustering Details"
+
+    Each cluster contains **2 near-duplicate** text files.

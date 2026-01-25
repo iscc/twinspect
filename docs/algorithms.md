@@ -71,3 +71,24 @@ perceptual code (iscc-sdk). Captures both semantic similarity and visual charact
 
 The reference implementation is available in the
 [`iscc/twinspect`](https://github.com/iscc/twinspect) GitHub Repository
+
+---
+
+## ISCC Text-Code-S 64-Bit
+
+The ISCC Text-Code-S is a semantic text similarity hash based on a deep neural network (DeBERTa). It
+is designed to cluster and match semantically similar text independent of textual transformations,
+supporting cross-lingual similarity matching.
+
+The reference implementation is available in the [`iscc/iscc-sct`](https://github.com/iscc/iscc-sct)
+GitHub Repository
+
+---
+
+## ISCC Text-Code-SC 128-Bit
+
+Combined 128-bit text code concatenating the 64-bit semantic code (iscc-sct/DeBERTa) with the 64-bit
+perceptual code (iscc-sdk). Captures both semantic similarity and textual characteristics.
+
+The reference implementation is available in the
+[`iscc/twinspect`](https://github.com/iscc/twinspect) GitHub Repository

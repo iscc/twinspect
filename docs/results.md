@@ -17,15 +17,19 @@ Effectiveness of all algorithm/dataset pairs at optimum F1-Score:
 | AUDIO-CODE-64     | ISCC-FMA-10K          | 4         | 0.88   | 0.84      | 0.86     |
 | IMAGE-CODE-S-64   | MIRFLICKR-MFND        | 13        | 0.91   | 0.98      | 0.94     |
 | IMAGE-CODE-SC-128 | MIRFLICKR-MFND        | 36        | 0.97   | 0.98      | 0.97     |
+| TEXT-CODE-S-64    | NEWSEDITS-REUTERS-100 | 9         | 0.97   | 0.74      | 0.84     |
+| TEXT-CODE-SC-128  | NEWSEDITS-REUTERS-100 | 30        | 0.98   | 0.76      | 0.86     |
 
 ## Results by Media Type
 
 ### [Text](results/text.md)
 
-| Algorithm    | Dataset               | F1-Score |
-| ------------ | --------------------- | -------- |
-| TEXT-CODE-64 | NEWSEDITS-REUTERS-100 | 0.85     |
-| TEXT-CODE-64 | STLIB-2000            | 0.99     |
+| Algorithm        | Dataset               | F1-Score |
+| ---------------- | --------------------- | -------- |
+| TEXT-CODE-64     | NEWSEDITS-REUTERS-100 | 0.85     |
+| TEXT-CODE-64     | STLIB-2000            | 0.99     |
+| TEXT-CODE-S-64   | NEWSEDITS-REUTERS-100 | 0.84     |
+| TEXT-CODE-SC-128 | NEWSEDITS-REUTERS-100 | 0.86     |
 
 ### [Image](results/image.md)
 

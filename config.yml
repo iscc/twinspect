@@ -61,6 +61,29 @@ algorithms:
     ensemble_of:
       - image_code_s_64
       - image_code_v0_64
+  - name: ISCC Text-Code-S 64-Bit
+    label: text_code_s_64
+    mode: text
+    function: twinspect.algos.iscc:text_code_s_64
+    info: The ISCC Text-Code-S is a semantic text similarity hash based on a deep neural 
+      network (DeBERTa). It is designed to cluster and match semantically similar text 
+      independent of textual transformations, supporting cross-lingual similarity matching.
+    url: https://github.com/iscc/iscc-sct
+    dependencies:
+      - iscc-sct
+      - onnxruntime-gpu
+  - name: ISCC Text-Code-SC 128-Bit
+    label: text_code_sc_128
+    mode: text
+    function: twinspect.algos.ensemble:placeholder
+    info: Combined 128-bit text code concatenating the 64-bit semantic code (iscc-sct/DeBERTa) 
+      with the 64-bit perceptual code (iscc-sdk). Captures both semantic similarity and textual
+      characteristics.
+    url: https://github.com/iscc/twinspect
+    dependencies: []
+    ensemble_of:
+      - text_code_s_64
+      - text_code_v0_64
 datasets:
   - name: STLIB-2000
     label: stlib_2000
@@ -229,6 +252,20 @@ benchmarks:
       - distribution
     active: true
   - algorithm_label: text_code_v0_64
+    dataset_label: newsedits_reuters_100
+    metric_labels:
+      - speed
+      - effectiveness
+      - distribution
+    active: true
+  - algorithm_label: text_code_s_64
+    dataset_label: newsedits_reuters_100
+    metric_labels:
+      - speed
+      - effectiveness
+      - distribution
+    active: true
+  - algorithm_label: text_code_sc_128
     dataset_label: newsedits_reuters_100
     metric_labels:
       - speed
