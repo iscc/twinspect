@@ -81,7 +81,7 @@ Implementation Notes:
 from pathlib import Path
 import pandas as pd
 from hexhamming import hamming_distance_string as hamming_distance
-from twinspect.metrics.hamming import HammingHero
+from twinspect.metrics.hamming import TurboLameDuck
 from twinspect.tools import result_path
 from twinspect.metrics.utils import update_json, best_threshold, get_metric
 from loguru import logger as log
@@ -110,8 +110,8 @@ def effectiveness(simprint_path):
 
         # Compute ground truth and query results
         df_ground_truth = ground_truth(df_simprints)
-        hh = HammingHero(simprint_path)
-        df_query_results = hh.compute_queries(max_threshold)
+        searcher = TurboLameDuck(simprint_path)
+        df_query_results = searcher.compute_queries(max_threshold)
 
         # Evaluate computed ground truth and query results
         result = evaluate(df_ground_truth, df_query_results, max_threshold)

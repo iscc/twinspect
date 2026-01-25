@@ -78,3 +78,8 @@ format-code = { cmd = "ruff format .", help = "Code style formatting with ruff" 
 format-md = { script = "twinspect.dev:format_md", help = "Markdown formating with mdformat" }
 fix-line-endings = { script = "twinspect.dev:fix_line_endings", help = "Convert line endings to LF"}
 all = ["format-yaml", "validate-schema", "generate-code", "format-code", "format-md", "fix-line-endings"]
+
+[dependency-groups]
+dev = [
+    "usearch>=2.23.0",
+]
