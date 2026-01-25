@@ -51,10 +51,10 @@ increasingly automated, the role of the ISCC in ensuring accurate content identi
 improving the trust in content provenance becomes even more critical.
 
 !!! note "Semantic-Code"
-    The ISO 24138:2024 standard reserves prefixes for the ISCC Semantic-Code
-    which employs Deep Learning and Artificial Intelligence techniques to create ISCC-UNITs that match
-    similarity based on the high-level understanding of concepts. Draft implementations are available
-    for text ([iscc-sct](https://github.com/iscc/iscc-sct)) and image
+    The ISO 24138:2024 standard reserves prefixes for the ISCC Semantic-Code which employs Deep Learning
+    and Artificial Intelligence techniques to create ISCC-UNITs that match similarity based on the
+    high-level understanding of concepts. Draft implementations are available for text
+    ([iscc-sct](https://github.com/iscc/iscc-sct)) and image
     ([iscc-sci](https://github.com/iscc/iscc-sci)) content. For example, the Semantic-Code for textual
     content is capable of creating similar codes for the same text translated to different languages
     (cross-lingual similarity matching). Evaluations of Semantic-Codes are planned for TwinSpect.

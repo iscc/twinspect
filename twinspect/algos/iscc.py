@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """ISCC algorithm implementations for TwinSpect benchmarking."""
+
 from typing import Optional
 from pathlib import Path
 
