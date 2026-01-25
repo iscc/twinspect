@@ -11,6 +11,7 @@ Effectiveness of all algorithm/dataset pairs at optimum F1-Score:
 | Algorithm | Dataset | Threshold | Recall | Precision | F1-Score |
 | --------- | ------- |-----------| ------ | --------- |----------|
 | AUDIO-CODE-64 | ISCC-FMA-10K | 4 | 0.87 | 0.89 | 0.88 |
+| IMAGE-CODE-S-64 | MIRFLICKR-MFND | 13 | 0.89 | 0.94 | 0.92 |
 | IMAGE-CODE-64 | MIRFLICKR-MFND | 12 | 0.91 | 0.96 | 0.94 |
 | TEXT-CODE-64 | STLIB-2000 | 11 | 0.98 | 0.97 | 0.98 |
 
@@ -78,6 +79,56 @@ Evaluation against dataset **ISCC-FMA-10K**
     - **Maximum**: 25.14 MB/s
     - **Mean**: 5.27 MB/s
     - **Median**: 4.58 MB/s
+
+
+---
+
+## IMAGE-CODE-S-64
+
+Evaluation against dataset **MIRFLICKR-MFND**
+
+
+### Effectiveness
+
+??? question "Understanding the Effectiveness Chart"
+    This chart evaluates the effectiveness of a similarity hash in comparing media files. Each hash
+    is compared against all others at different distance thresholds, with results assessed against
+    the ground truth.
+
+    **Chart Interpretation**:
+
+    - The **X-Axis** shows "Hamming Distance Query Thresholds". Each threshold marks a maximum distance
+      for two hashes to be considered similar.
+    - The **Y-Axis** represents Recall, Precision, and F1-Score:
+    - **Recall**: The fraction of actual matches correctly identified by the hash. Higher recall
+      indicates better match detection.
+    - **Precision**: The ratio of correct predictions to the total number of predictions. Higher
+      precision implies more reliable predictions.
+    - **F1-Score**: Harmonic mean of Precision and Recall, balancing both measures. A high F1-score
+      signals an effective algorithm.
+
+    The curves display how these metrics vary across thresholds.
+
+![IMAGE-CODE-S-64 / MIRFLICKR-MFND / Effectiveness](images/image-code-s-64-mirflickr-mfnd-eff.avif)
+
+
+
+
+
+
+### Distribution
+
+![IMAGE-CODE-S-64 / MIRFLICKR-MFND / Distribution](images/image-code-s-64-mirflickr-mfnd-dist.avif)
+
+
+
+### Performance
+
+!!! danger ""
+    - **Minimum**: 0.00 MB/s
+    - **Maximum**: 0.16 MB/s
+    - **Mean**: 0.03 MB/s
+    - **Median**: 0.03 MB/s
 
 
 ---

@@ -24,6 +24,13 @@ algorithms:
     function: twinspect.algos.iscc:video_code_v0_64
     dependencies:
       - iscc-sdk>=0.8.5
+  - name: ISCC Image-Code-S 64-Bit
+    label: image_code_s_64
+    mode: image
+    function: twinspect.algos.iscc:image_code_s_64
+    dependencies:
+      - iscc-sci
+      - onnxruntime-gpu
 datasets:
   - name: STLIB-2000
     label: stlib_2000
@@ -150,6 +157,13 @@ benchmarks:
       - distribution
     active: true
   - algorithm_label: image_code_v0_64
+    dataset_label: mirflickr_mfnd
+    metric_labels:
+      - speed
+      - effectiveness
+      - distribution
+    active: true
+  - algorithm_label: image_code_s_64
     dataset_label: mirflickr_mfnd
     metric_labels:
       - speed

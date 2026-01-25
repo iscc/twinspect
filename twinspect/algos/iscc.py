@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
+"""ISCC algorithm implementations for TwinSpect benchmarking."""
 from typing import Optional
+from pathlib import Path
+
 import iscc_core as ic
 import iscc_sdk as idk
 from loguru import logger as log
-from pathlib import Path
 
 
 def text_code_v0_64(fp) -> Optional[str]:
@@ -52,3 +54,18 @@ def video_code_v0_64(fp) -> Optional[str]:
         log.error(f"Failed hashing {fp} - {e}")
         return None
     return iscc_meta.iscc_obj.hash_bytes.hex()
+
+
+def image_code_s_64(fp) -> Optional[str]:
+    """Generate 64-bit semantic image code using iscc-sci."""
+    import iscc_sci as sci
+
+    try:
+        iscc_meta = sci.code_image_semantic(fp, bits=64)
+        iscc_code = iscc_meta["iscc"]
+        log.success(f"{iscc_code} <- {Path(fp).name}")
+        code_obj = ic.Code(iscc_code)
+        return code_obj.hash_bytes.hex()
+    except Exception as e:
+        log.error(f"Failed hashing {fp} - {e}")
+        return None

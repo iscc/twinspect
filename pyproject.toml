@@ -43,6 +43,8 @@ dependencies = [
     "openapi-spec-validator",
     "ruff",
     "pillow-avif-plugin",
+    "iscc-sci>=0.2.0",
+    "onnxruntime-gpu>=1.23.2",
 ]
 
 [project.scripts]
