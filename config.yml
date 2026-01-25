@@ -4,30 +4,48 @@ algorithms:
     label: text_code_v0_64
     mode: text
     function: twinspect.algos.iscc:text_code_v0_64
+    info: The ISCC Text-Code is a similarity preserving hash designed to cluster and match 
+      near-duplicate text documents that have undergone format conversion or minor edits.
+    url: https://github.com/iscc/iscc-core/blob/main/iscc_core/code_content_text.py
     dependencies:
       - iscc-sdk>=0.8.5
   - name: ISCC Image-Code V0 64-Bit
     label: image_code_v0_64
     mode: image
     function: twinspect.algos.iscc:image_code_v0_64
+    info: The ISCC Image-Code is a similarity preserving perceptual hash designed to cluster 
+      and match near-duplicate images that have undergone format conversion or minor edits.
+    url: https://github.com/iscc/iscc-core/blob/main/iscc_core/code_content_image.py
     dependencies:
       - iscc-sdk>=0.8.5
   - name: ISCC Audio-Code V0 64-Bit
     label: audio_code_v0_64
     mode: audio
     function: twinspect.algos.iscc:audio_code_v0_64
+    info: The ISCC Audio-Code is a similarity preserving hash based on chromaprint and designed
+      to cluster and match near-duplicate audio files that have undergone format conversion, 
+      transcoding, compression and other minor edits.
+    url: https://github.com/iscc/iscc-core/blob/main/iscc_core/code_content_audio.py
     dependencies:
       - iscc-sdk>=0.8.5
   - name: ISCC Video-Code V0 64-Bit
     label: video_code_v0_64
     mode: video
     function: twinspect.algos.iscc:video_code_v0_64
+    info: The ISCC Video-Code is a similarity preserving hash based on the MPEG-7 Video 
+      Signature and is designed to cluster and match near-duplicate videos that have undergone 
+      format conversion or minor edits.
+    url: https://github.com/iscc/iscc-core/blob/main/iscc_core/code_content_video.py
     dependencies:
       - iscc-sdk>=0.8.5
   - name: ISCC Image-Code-S 64-Bit
     label: image_code_s_64
     mode: image
     function: twinspect.algos.iscc:image_code_s_64
+    info: The ISCC Image-Code-S is a semantic image similarity hash based on a deep neural 
+      network (DINOv2). It is designed to cluster and match semantically similar images 
+      independent of visual transformations.
+    url: https://github.com/iscc/iscc-sci
     dependencies:
       - iscc-sci
       - onnxruntime-gpu

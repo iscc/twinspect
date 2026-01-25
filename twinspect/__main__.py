@@ -19,6 +19,7 @@ import twinspect as ts
 from pathlib import Path
 from loguru import logger as log
 from rich.table import Table
+from twinspect.render.algorithms import build_algorithms_page
 from twinspect.render.datasets import build_dataset_page
 from twinspect.render.results import build_results_page
 
@@ -57,6 +58,7 @@ def run():
             func(benchmark.simprint())
     typer.echo()
     log.info(f"[white on red] Building Result Website")
+    build_algorithms_page()
     build_dataset_page()
     build_results_page()
 

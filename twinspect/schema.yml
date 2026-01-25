@@ -103,6 +103,12 @@ components:
           description: Full path to python function that implements the algorithm. The function
             must accept a file path as the first parameter and must return a hex encoded 
             compact hash code.
+        info:
+          type: string
+          description: Description of the algorithm (supports markdown)
+        url:
+          type: string
+          description: URL to reference implementation
         dependencies:
           type: array
           items:

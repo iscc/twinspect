@@ -75,6 +75,8 @@ class Algorithm(BaseModel):
         ...,
         description="Full path to python function that implements the algorithm. The function must accept a file path as the first parameter and must return a hex encoded compact hash code.",
     )
+    info: str | None = Field(None, description="Description of the algorithm (supports markdown)")
+    url: str | None = Field(None, description="URL to reference implementation")
     dependencies: list[str] | None = Field(
         None, description="A list of python package dependencies required by the implementation"
     )
