@@ -16,6 +16,44 @@ the digital landscape, accurately identifying and cataloguing content is a criti
 is designed to address this need as a versatile, universal identifier for digital content,
 encompassing a broad spectrum of formats like text, image, audio, and video.
 
+## Quick Navigation
+
+<div class="grid cards" markdown>
+
+- :material-chart-line: **Results**
+
+    ---
+
+    View benchmark outcomes for all media types
+
+    [:octicons-arrow-right-24: Explore results](results.md)
+
+- :material-database: **Datasets**
+
+    ---
+
+    Explore test data and ground truth
+
+    [:octicons-arrow-right-24: View datasets](datasets.md)
+
+- :material-function: **Algorithms**
+
+    ---
+
+    Implementation details and links
+
+    [:octicons-arrow-right-24: See algorithms](algorithms.md)
+
+- :material-help-circle: **Similarity**
+
+    ---
+
+    Understanding similarity concepts
+
+    [:octicons-arrow-right-24: Learn more](similarity.md)
+
+</div>
+
 ## Understanding ISCC
 
 With any innovative technology comes a learning curve, and the ISCC is no exception. Across various
@@ -28,7 +66,7 @@ disciplines, the ISCC's unique approach has sparked many questions:
     curious about how the ISCC compares.
 
 Our aim is to provide clear insights into the capabilities of the ISCC, dispel any misconceptions,
-and deliver a well-rounded understanding of this new and exciting technology.
+and deliver a well-rounded understanding of this technology.
 
 ## Introducing TwinSpect
 
