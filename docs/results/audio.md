@@ -111,9 +111,11 @@ Evaluation against dataset **ISCC-FMA-10K**
 
 ### Performance
 
-!!! danger ""
+!!! example "Throughput Statistics"
 
-    - **Minimum**: 0.34 MB/s
-    - **Maximum**: 25.14 MB/s
-    - **Mean**: 5.27 MB/s
-    - **Median**: 4.58 MB/s
+    | Metric  | Value        |
+    | ------- | ------------ |
+    | Minimum | 0.3354 MB/s  |
+    | Maximum | 25.1377 MB/s |
+    | Mean    | 5.2704 MB/s  |
+    | Median  | 4.5754 MB/s  |

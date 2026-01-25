@@ -97,12 +97,14 @@ Evaluation against dataset **MIRFLICKR-MFND**
 
 ### Performance
 
-!!! danger ""
+!!! example "Throughput Statistics"
 
-    - **Minimum**: 0.27 MB/s
-    - **Maximum**: 3.52 MB/s
-    - **Mean**: 0.75 MB/s
-    - **Median**: 0.70 MB/s
+    | Metric  | Value       |
+    | ------- | ----------- |
+    | Minimum | 0.2687 MB/s |
+    | Maximum | 3.5206 MB/s |
+    | Mean    | 0.7455 MB/s |
+    | Median  | 0.6951 MB/s |
 
 ---
 
@@ -187,9 +189,11 @@ Evaluation against dataset **MIRFLICKR-MFND**
 
 ### Performance
 
-!!! danger ""
+!!! example "Throughput Statistics"
 
-    - **Minimum**: 0.00 MB/s
-    - **Maximum**: 0.16 MB/s
-    - **Mean**: 0.03 MB/s
-    - **Median**: 0.03 MB/s
+    | Metric  | Value       |
+    | ------- | ----------- |
+    | Minimum | 0.0040 MB/s |
+    | Maximum | 0.1614 MB/s |
+    | Mean    | 0.0340 MB/s |
+    | Median  | 0.0308 MB/s |

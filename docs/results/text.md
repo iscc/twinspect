@@ -96,9 +96,11 @@ Evaluation against dataset **STLIB-2000**
 
 ### Performance
 
-!!! danger ""
+!!! example "Throughput Statistics"
 
-    - **Minimum**: 0.00 MB/s
-    - **Maximum**: 6.76 MB/s
-    - **Mean**: 0.21 MB/s
-    - **Median**: 0.07 MB/s
+    | Metric  | Value       |
+    | ------- | ----------- |
+    | Minimum | 0.0004 MB/s |
+    | Maximum | 6.7619 MB/s |
+    | Mean    | 0.2134 MB/s |
+    | Median  | 0.0729 MB/s |

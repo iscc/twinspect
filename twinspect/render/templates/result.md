@@ -93,11 +93,14 @@ Evaluation against dataset **{{ data.dataset }}**
 {% if data.metrics.speed %}
 ### Performance
 
-!!! danger ""
-    - **Minimum**: {{ data.metrics.speed.min_human }}
-    - **Maximum**: {{ data.metrics.speed.max_human }}
-    - **Mean**: {{ data.metrics.speed.mean_human }}
-    - **Median**: {{ data.metrics.speed.median_human }}
+!!! example "Throughput Statistics"
+
+    | Metric  | Value |
+    |---------|-------|
+    | Minimum | {{ data.metrics.speed.min_human }} |
+    | Maximum | {{ data.metrics.speed.max_human }} |
+    | Mean    | {{ data.metrics.speed.mean_human }} |
+    | Median  | {{ data.metrics.speed.median_human }} |
 {% endif %}
 
 

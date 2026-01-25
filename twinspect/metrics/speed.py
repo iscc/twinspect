@@ -43,8 +43,7 @@ def speed(simprint_path):
         for key, value in result.items():
             bytes_per_sec = value * 1000  # Convert bytes/ms to bytes/s
             mb_per_sec = bytes_per_sec / 1_000_000  # Convert bytes/s to MB/s
-            human_readable_value = f"{mb_per_sec:.2f}"
-            readable[f"{key}_human"] = f"{human_readable_value} MB/s"
+            readable[f"{key}_human"] = f"{mb_per_sec:.4f} MB/s"
         result.update(readable)
 
     # Store result
