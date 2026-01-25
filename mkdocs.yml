@@ -23,6 +23,9 @@ extra_javascript:
   - javascripts/tablesort.js
 
 extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/iscc/twinspect
   analytics:
     provider: custom
 
