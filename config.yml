@@ -94,6 +94,19 @@ datasets:
     samples: 5000
     clusters: 500
     seed: 0
+  - name: NewsEdits-Reuters-100
+    label: newsedits_reuters_100
+    info: 100-cluster subset of the [NewsEdits](https://github.com/isi-nlp/NewsEdits) Reuters 
+      dataset containing news article revisions (2012-2020). Only includes article versions 
+      within ±10% length of each other to ensure genuine near-duplicate matching. Articles 
+      shorter than 2000 characters are excluded.
+    url: https://github.com/isi-nlp/NewsEdits
+    mode: text
+    installer: twinspect.datasets.newsedits:install
+    clusters: 100
+    min_content_length: 2000
+    max_length_variation: 0.1
+    checksum: 78b61ca5259ada64
 transformations:
   - name: Trim 1 Second
     label: trim-1s-both
@@ -213,5 +226,12 @@ benchmarks:
       - speed
       - effectiveness
       - robustness
+      - distribution
+    active: true
+  - algorithm_label: text_code_v0_64
+    dataset_label: newsedits_reuters_100
+    metric_labels:
+      - speed
+      - effectiveness
       - distribution
     active: true

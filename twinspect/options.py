@@ -17,6 +17,7 @@ class TwinSpectSettings(BaseSettings):
     model_config = SettingsConfigDict(
         validate_assignment=True,
         env_file=".env",
+        extra="ignore",
     )
 
     root_folder: DirectoryPath = Field(

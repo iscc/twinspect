@@ -71,6 +71,37 @@ before benchmarking.
 
 ---
 
+### NEWSEDITS-REUTERS-100
+
+!!! abstract inline end "Dataset Info"
+
+    - **ID**: 78b61ca5259ada64
+    - **Mode**: Text
+    - **Size**: 1.3 MB
+    - **Files**: 340
+
+The **NEWSEDITS-REUTERS-100** is a dataset, designed to assess the accuracy of text identification
+algorithms. It includes ground truth data for a total of **340 text files** with near-duplicates
+organized into **100 clusters**.
+
+100-cluster subset of the [NewsEdits](https://github.com/isi-nlp/NewsEdits) Reuters dataset
+containing news article revisions (2012-2020). Only includes article versions within ±20% length of
+each other to ensure genuine near-duplicate matching. Articles shorter than 4000 characters are
+excluded.
+
+??? note "Clustering Details"
+
+    Clusters contain an average of **3.4 near-duplicate** text files.
+
+    **Cluster sizes**
+
+    - **Minimum**: 2
+    - **Maximum**: 7
+    - **Mean**: 3.4
+    - **Median**: 3.0
+
+---
+
 ### ISCC-FMA-10K
 
 !!! abstract inline end "Dataset Info"
@@ -102,16 +133,16 @@ automatically downloads and reproduces the tested dataset.
     The following transformations were applied to **500 files** of the dataset to simulate different
     conditions that might be encountered in real-world applications:
 
+    - **trim-1s-both**: Remove 1 seconds of audio from start and end
+    - **trim-5s-both**: Remove 5 seconds of audio from start and end
     - **transcode-aac-32kbps**: Transcode audio to 32kbps AAC
+    - **loudnorm**: Apply loudness normalization (ffmpeg loudnorm=I=-16:TP=-1.5:LRA=11)
     - **compress-medium**: Apply audio compression (attack 10, release 200, ratio 3, threshold -20)
     - **echo**: Apply echo effect (ffmpeg aecho=0.8:0.7:60:0.2)
-    - **trim-5s-both**: Remove 5 seconds of audio from start and end
-    - **loudnorm**: Apply loudness normalization (ffmpeg loudnorm=I=-16:TP=-1.5:LRA=11)
     - **fade-8s-both**: Fade in/out 8 seconds at start and end
     - **transcode-mp3-128kbps**: Transcode audio to 128kbps MP3
     - **transcode-ogg-64kbps**: Transcode audio to 64kbps OGG
     - **equalize**: Equalize audio (ffmpeg equalizer=f=1000:t=o:w=200:g=10)
-    - **trim-1s-both**: Remove 1 seconds of audio from start and end
 
 ---
 

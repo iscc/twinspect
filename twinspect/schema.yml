@@ -178,6 +178,12 @@ components:
         seed:
           type: integer
           description: Seed for reproducible random selection of samples
+        min_content_length:
+          type: integer
+          description: Minimum content length in characters for sample inclusion
+        max_length_variation:
+          type: number
+          description: Maximum allowed length variation between versions (0.2 = ±20%)
         checksum:
           type: string
           description: Checksum of datafolder

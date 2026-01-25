@@ -13,6 +13,7 @@ classifiers = [
     "Programming Language :: Python :: 3.14",
 ]
 dependencies = [
+    "gdown>=5.0.0",
     "remotezip",
     "datamodel-code-generator",
     "poethepoet",

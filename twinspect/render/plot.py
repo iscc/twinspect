@@ -202,9 +202,7 @@ def plot_effectiveness(metrics_path):
         num_queries = (
             df["num_queries_recall"].iloc[0] if "num_queries_recall" in df.columns else "N/A"
         )
-        ax.set_title(
-            f"{title} | Precision, Recall, F1-Score (n={num_queries} clusters)", fontsize=18
-        )
+        ax.set_title(f"{title} | Precision, Recall, F1-Score (n={num_queries} files)", fontsize=18)
     else:
         ax.set_title(f"{title} | Precision, Recall, F1-Score", fontsize=18)
 

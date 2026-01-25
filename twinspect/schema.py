@@ -109,6 +109,12 @@ class Dataset(BaseModel):
         None, description="Number of similarity clusters to build for dataset"
     )
     seed: int | None = Field(None, description="Seed for reproducible random selection of samples")
+    min_content_length: int | None = Field(
+        None, description="Minimum content length in characters for sample inclusion"
+    )
+    max_length_variation: float | None = Field(
+        None, description="Maximum allowed length variation between versions (0.2 = ±20%)"
+    )
     checksum: str | None = Field(None, description="Checksum of datafolder")
 
 
