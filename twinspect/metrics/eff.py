@@ -7,7 +7,8 @@ minimizing the retrieval of non-relevant ones.
 
 We calculate effectiveness of near-duplicate retrieval by measuring recall, precision, and
 f1-score at hamming distance thresholds 0 to max_threshold for each query input.
-We determine the max_threshold dynamically as 1/4th total bitlength of the compact binary code.
+We determine the max_threshold dynamically: 1/4 bitlength for 64-bit codes (collision risk),
+1/2 bitlength for larger codes (to capture combined component distances in ensembles).
 
 Given a simprint csv `ìnfile` with the following required fields:
     id: The unique id of the media file
@@ -108,10 +109,12 @@ def effectiveness(simprint_path):
         do_update = True
         df_simprints = load_simprints(simprint_path)
 
-        # Inferr max hamming threshold as 1/4 of the code length
+        # Infer max hamming threshold based on code length
+        # 64-bit codes: 1/4 (16 bits) - higher risks too many collisions
+        # Larger codes: 1/2 - needed to capture combined component distances
         code = df_simprints.at[0, "code"]
         bitlength = int((len(code) / 2) * 8)
-        max_threshold = bitlength // 4
+        max_threshold = bitlength // 4 if bitlength <= 64 else bitlength // 2
 
         # Compute ground truth and query results
         df_ground_truth = ground_truth(df_simprints)

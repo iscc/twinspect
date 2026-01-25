@@ -49,6 +49,18 @@ algorithms:
     dependencies:
       - iscc-sci
       - onnxruntime-gpu
+  - name: ISCC Image-Code-SC 128-Bit
+    label: image_code_sc_128
+    mode: image
+    function: twinspect.algos.ensemble:placeholder
+    info: Combined 128-bit image code concatenating the 64-bit semantic code (iscc-sci/DINOv2) 
+      with the 64-bit perceptual code (iscc-sdk). Captures both semantic similarity and visual 
+      characteristics.
+    url: https://github.com/iscc/twinspect
+    dependencies: []
+    ensemble_of:
+      - image_code_s_64
+      - image_code_v0_64
 datasets:
   - name: STLIB-2000
     label: stlib_2000
@@ -182,6 +194,13 @@ benchmarks:
       - distribution
     active: true
   - algorithm_label: image_code_s_64
+    dataset_label: mirflickr_mfnd
+    metric_labels:
+      - speed
+      - effectiveness
+      - distribution
+    active: true
+  - algorithm_label: image_code_sc_128
     dataset_label: mirflickr_mfnd
     metric_labels:
       - speed

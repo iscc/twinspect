@@ -61,3 +61,13 @@ transformations.
 
 The reference implementation is available in the [`iscc/iscc-sci`](https://github.com/iscc/iscc-sci)
 GitHub Repository
+
+---
+
+## ISCC Image-Code-SC 128-Bit
+
+Combined 128-bit image code concatenating the 64-bit semantic code (iscc-sci/DINOv2) with the 64-bit
+perceptual code (iscc-sdk). Captures both semantic similarity and visual characteristics.
+
+The reference implementation is available in the
+[`iscc/twinspect`](https://github.com/iscc/twinspect) GitHub Repository

@@ -25,11 +25,24 @@ def simprint(benchmark):
     Get file path to processed data for Dataset/Algorithm pair.
 
     Will either return a cached file path or generate a new one and return it.
+    For ensemble algorithms, combines existing component simprints instead of
+    processing files directly.
     """
     file_path = benchmark.filepath("csv", tag="simprint")
     if file_path.exists():
         log.debug(f"Using cached {file_path.name}")
         return file_path
+
+    # Handle ensemble algorithms by combining component simprints
+    if benchmark.algorithm.ensemble_of:
+        from twinspect.algos.ensemble import combine_simprints
+
+        return combine_simprints(
+            algo_labels=benchmark.algorithm.ensemble_of,
+            dataset_label=benchmark.dataset.label,
+            output_path=file_path,
+        )
+
     with Timer("Data-Folder Processing", text="{name}: {seconds:.2f} seconds", logger=log.info):
         path = process_data_folder(benchmark.algorithm.function, benchmark.dataset.data_folder)
     return path

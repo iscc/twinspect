@@ -11,6 +11,8 @@ Major modernization release after 3 years of dormancy.
 
 ### Added
 
+- **Ensemble algorithms**: Support for combining multiple simprints into ensemble codes with
+  checksum-based version matching to prevent mixing stale component outputs
 - **TurboLameDuck**: Exact hamming search implementation using usearch library for improved
   performance
 - **Semantic Image Code (iscc-sci)**: New algorithm for semantic image similarity matching

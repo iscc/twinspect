@@ -9,12 +9,13 @@
 
 Effectiveness of all algorithm/dataset pairs at optimum F1-Score:
 
-| Algorithm       | Dataset        | Threshold | Recall | Precision | F1-Score |
-| --------------- | -------------- | --------- | ------ | --------- | -------- |
-| TEXT-CODE-64    | STLIB-2000     | 11        | 0.98   | 0.99      | 0.99     |
-| IMAGE-CODE-64   | MIRFLICKR-MFND | 12        | 0.92   | 0.98      | 0.95     |
-| AUDIO-CODE-64   | ISCC-FMA-10K   | 4         | 0.88   | 0.84      | 0.86     |
-| IMAGE-CODE-S-64 | MIRFLICKR-MFND | 13        | 0.91   | 0.98      | 0.94     |
+| Algorithm         | Dataset        | Threshold | Recall | Precision | F1-Score |
+| ----------------- | -------------- | --------- | ------ | --------- | -------- |
+| TEXT-CODE-64      | STLIB-2000     | 11        | 0.98   | 0.99      | 0.99     |
+| IMAGE-CODE-64     | MIRFLICKR-MFND | 12        | 0.92   | 0.98      | 0.95     |
+| AUDIO-CODE-64     | ISCC-FMA-10K   | 4         | 0.88   | 0.84      | 0.86     |
+| IMAGE-CODE-S-64   | MIRFLICKR-MFND | 13        | 0.91   | 0.98      | 0.94     |
+| IMAGE-CODE-SC-128 | MIRFLICKR-MFND | 36        | 0.97   | 0.98      | 0.97     |
 
 ## Results by Media Type
 
@@ -26,10 +27,11 @@ Effectiveness of all algorithm/dataset pairs at optimum F1-Score:
 
 ### [Image](results/image.md)
 
-| Algorithm       | Dataset        | F1-Score |
-| --------------- | -------------- | -------- |
-| IMAGE-CODE-64   | MIRFLICKR-MFND | 0.95     |
-| IMAGE-CODE-S-64 | MIRFLICKR-MFND | 0.94     |
+| Algorithm         | Dataset        | F1-Score |
+| ----------------- | -------------- | -------- |
+| IMAGE-CODE-64     | MIRFLICKR-MFND | 0.95     |
+| IMAGE-CODE-S-64   | MIRFLICKR-MFND | 0.94     |
+| IMAGE-CODE-SC-128 | MIRFLICKR-MFND | 0.97     |
 
 ### [Audio](results/audio.md)
 

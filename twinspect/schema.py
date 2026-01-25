@@ -80,6 +80,9 @@ class Algorithm(BaseModel):
     dependencies: list[str] | None = Field(
         None, description="A list of python package dependencies required by the implementation"
     )
+    ensemble_of: list[str] | None = Field(
+        None, description="List of component algorithm labels for ensemble algorithms"
+    )
 
 
 class Task(BaseModel):
