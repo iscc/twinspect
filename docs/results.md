@@ -9,27 +9,25 @@
 
 Effectiveness of all algorithm/dataset pairs at optimum F1-Score:
 
-| Algorithm         | Dataset               | Threshold | Recall | Precision | F1-Score |
-| ----------------- | --------------------- | --------- | ------ | --------- | -------- |
-| TEXT-CODE-64      | NEWSEDITS-REUTERS-100 | 16        | 0.96   | 0.76      | 0.85     |
-| TEXT-CODE-64      | STLIB-2000            | 11        | 0.98   | 0.99      | 0.99     |
-| IMAGE-CODE-64     | MIRFLICKR-MFND        | 12        | 0.92   | 0.98      | 0.95     |
-| AUDIO-CODE-64     | ISCC-FMA-10K          | 4         | 0.88   | 0.84      | 0.86     |
-| IMAGE-CODE-S-64   | MIRFLICKR-MFND        | 13        | 0.91   | 0.98      | 0.94     |
-| IMAGE-CODE-SC-128 | MIRFLICKR-MFND        | 36        | 0.97   | 0.98      | 0.97     |
-| TEXT-CODE-S-64    | NEWSEDITS-REUTERS-100 | 9         | 0.97   | 0.74      | 0.84     |
-| TEXT-CODE-SC-128  | NEWSEDITS-REUTERS-100 | 30        | 0.98   | 0.76      | 0.86     |
+| Algorithm         | Dataset                | Threshold | Recall | Precision | F1-Score |
+| ----------------- | ---------------------- | --------- | ------ | --------- | -------- |
+| TEXT-CODE-64      | NEWSEDITS-REUTERS-1000 | 13        | 0.96   | 0.71      | 0.82     |
+| IMAGE-CODE-64     | MIRFLICKR-MFND         | 12        | 0.92   | 0.98      | 0.95     |
+| AUDIO-CODE-64     | ISCC-FMA-10K           | 4         | 0.88   | 0.84      | 0.86     |
+| IMAGE-CODE-S-64   | MIRFLICKR-MFND         | 13        | 0.91   | 0.98      | 0.94     |
+| IMAGE-CODE-SC-128 | MIRFLICKR-MFND         | 36        | 0.97   | 0.98      | 0.97     |
+| TEXT-CODE-S-64    | NEWSEDITS-REUTERS-1000 | 5         | 0.95   | 0.68      | 0.79     |
+| TEXT-CODE-SC-128  | NEWSEDITS-REUTERS-1000 | 24        | 0.98   | 0.71      | 0.82     |
 
 ## Results by Media Type
 
 ### [Text](results/text.md)
 
-| Algorithm        | Dataset               | F1-Score |
-| ---------------- | --------------------- | -------- |
-| TEXT-CODE-64     | NEWSEDITS-REUTERS-100 | 0.85     |
-| TEXT-CODE-64     | STLIB-2000            | 0.99     |
-| TEXT-CODE-S-64   | NEWSEDITS-REUTERS-100 | 0.84     |
-| TEXT-CODE-SC-128 | NEWSEDITS-REUTERS-100 | 0.86     |
+| Algorithm        | Dataset                | F1-Score |
+| ---------------- | ---------------------- | -------- |
+| TEXT-CODE-64     | NEWSEDITS-REUTERS-1000 | 0.82     |
+| TEXT-CODE-S-64   | NEWSEDITS-REUTERS-1000 | 0.79     |
+| TEXT-CODE-SC-128 | NEWSEDITS-REUTERS-1000 | 0.82     |
 
 ### [Image](results/image.md)
 

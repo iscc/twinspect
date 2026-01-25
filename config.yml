@@ -85,15 +85,6 @@ algorithms:
       - text_code_s_64
       - text_code_v0_64
 datasets:
-  - name: STLIB-2000
-    label: stlib_2000
-    info: The STLIB-2000 is a real-world dataset of 2000 commercial E-Books where each title 
-      has an EPUB and PDF version. The data has been generously provided by 
-      [StreetLib](https://www.streetlib.com/). Because the ISCC-SDK does not support OCR yet, 
-      titles with image-only E-Books have been removed before benchmarking.
-    url: https://www.streetlib.com
-    mode: text
-    installer: twinspect.datasets.dummy:install
   - name: MIRFLICKR-MFND
     label: mirflickr_mfnd
     info: The MFND benchmark ([Connor et al., 
@@ -117,19 +108,18 @@ datasets:
     samples: 5000
     clusters: 500
     seed: 0
-  - name: NewsEdits-Reuters-100
-    label: newsedits_reuters_100
-    info: 100-cluster subset of the [NewsEdits](https://github.com/isi-nlp/NewsEdits) Reuters 
+  - name: NewsEdits-Reuters-1000
+    label: newsedits_reuters_1000
+    info: 1000-cluster subset of the [NewsEdits](https://github.com/isi-nlp/NewsEdits) Reuters 
       dataset containing news article revisions (2012-2020). Only includes article versions 
-      within ±10% length of each other to ensure genuine near-duplicate matching. Articles 
-      shorter than 2000 characters are excluded.
+      within ±5% length of each other to ensure genuine near-duplicate matching. Articles 
+      shorter than 1000 characters are excluded.
     url: https://github.com/isi-nlp/NewsEdits
     mode: text
     installer: twinspect.datasets.newsedits:install
-    clusters: 100
-    min_content_length: 2000
-    max_length_variation: 0.1
-    checksum: 78b61ca5259ada64
+    clusters: 1000
+    min_content_length: 1000
+    max_length_variation: 0.05
 transformations:
   - name: Trim 1 Second
     label: trim-1s-both
@@ -215,13 +205,6 @@ metrics:
     label: distribution
     function: twinspect.metrics.distribution:distribution
 benchmarks:
-  - algorithm_label: text_code_v0_64
-    dataset_label: stlib_2000
-    metric_labels:
-      - speed
-      - effectiveness
-      - distribution
-    active: true
   - algorithm_label: image_code_v0_64
     dataset_label: mirflickr_mfnd
     metric_labels:
@@ -252,21 +235,21 @@ benchmarks:
       - distribution
     active: true
   - algorithm_label: text_code_v0_64
-    dataset_label: newsedits_reuters_100
+    dataset_label: newsedits_reuters_1000
     metric_labels:
       - speed
       - effectiveness
       - distribution
     active: true
   - algorithm_label: text_code_s_64
-    dataset_label: newsedits_reuters_100
+    dataset_label: newsedits_reuters_1000
     metric_labels:
       - speed
       - effectiveness
       - distribution
     active: true
   - algorithm_label: text_code_sc_128
-    dataset_label: newsedits_reuters_100
+    dataset_label: newsedits_reuters_1000
     metric_labels:
       - speed
       - effectiveness
