@@ -8,61 +8,69 @@
 
 Effectiveness of all algorithm/dataset pairs at optimum F1-Score:
 
-| Algorithm       | Dataset        | Threshold | Recall | Precision | F1-Score |
-| --------------- | -------------- | --------- | ------ | --------- | -------- |
-| AUDIO-CODE-64   | ISCC-FMA-10K   | 3         | 0.8    | 0.94      | 0.86     |
-| IMAGE-CODE-S-64 | MIRFLICKR-MFND | 13        | 0.89   | 0.94      | 0.92     |
-| IMAGE-CODE-64   | MIRFLICKR-MFND | 12        | 0.91   | 0.96      | 0.94     |
-| TEXT-CODE-64    | STLIB-2000     | 11        | 0.98   | 0.97      | 0.98     |
+| Algorithm | Dataset | Threshold | Recall | Precision | F1-Score |
+| --------- | ------- |-----------| ------ | --------- |----------|
+| AUDIO-CODE-64 | ISCC-FMA-10K | 3 | 0.8 | 0.94 | 0.86 |
+| IMAGE-CODE-S-64 | MIRFLICKR-MFND | 13 | 0.89 | 0.94 | 0.92 |
+| IMAGE-CODE-64 | MIRFLICKR-MFND | 12 | 0.91 | 0.96 | 0.94 |
+| TEXT-CODE-64 | STLIB-2000 | 11 | 0.98 | 0.97 | 0.98 |
 
-______________________________________________________________________
+---
 
 ## AUDIO-CODE-64
 
 Evaluation against dataset **ISCC-FMA-10K**
 
+
 ### Effectiveness
 
-??? question "Understanding the Effectiveness Chart" This chart evaluates the effectiveness of a
-similarity hash in comparing media files. Each hash is compared against all others at different
-distance thresholds, with results assessed against the ground truth.
+??? question "Understanding the Effectiveness Chart"
+    This chart evaluates the effectiveness of a similarity hash in comparing media files. Each hash
+    is compared against all others at different distance thresholds, with results assessed against
+    the ground truth.
 
-```
-**Chart Interpretation**:
+    **Chart Interpretation**:
 
-- The **X-Axis** shows "Hamming Distance Query Thresholds". Each threshold marks a maximum distance
-  for two hashes to be considered similar.
-- The **Y-Axis** represents Recall, Precision, and F1-Score:
-- **Recall**: The fraction of actual matches correctly identified by the hash. Higher recall
-  indicates better match detection.
-- **Precision**: The ratio of correct predictions to the total number of predictions. Higher
-  precision implies more reliable predictions.
-- **F1-Score**: Harmonic mean of Precision and Recall, balancing both measures. A high F1-score
-  signals an effective algorithm.
+    - The **X-Axis** shows "Hamming Distance Query Thresholds". Each threshold marks a maximum distance
+      for two hashes to be considered similar.
+    - The **Y-Axis** represents Recall, Precision, and F1-Score:
+    - **Recall**: The fraction of actual matches correctly identified by the hash. Higher recall
+      indicates better match detection.
+    - **Precision**: The ratio of correct predictions to the total number of predictions. Higher
+      precision implies more reliable predictions.
+    - **F1-Score**: Harmonic mean of Precision and Recall, balancing both measures. A high F1-score
+      signals an effective algorithm.
 
-The curves display how these metrics vary across thresholds.
-```
+    The curves display how these metrics vary across thresholds.
 
 ![AUDIO-CODE-64 / ISCC-FMA-10K / Effectiveness](images/audio-code-v0-64-iscc-fma-10k-eff.avif)
 
+
+
+
 ### Robustness
 
-| Transformation        | Minimum | Maximum | Mean  | Median |
-| --------------------- | ------- | ------- | ----- | ------ |
-| compress-medium       | 0       | 11      | 2.006 | 1.0    |
-| echo                  | 0       | 15      | 3.598 | 3.0    |
-| equalize              | 0       | 12      | 1.214 | 1.0    |
-| fade-8s-both          | 0       | 4       | 0.436 | 0.0    |
-| loudnorm              | 0       | 5       | 0.55  | 0.0    |
-| transcode-aac-32kbps  | 0       | 10      | 1.786 | 1.0    |
-| transcode-mp3-128kbps | 0       | 3       | 0.33  | 0.0    |
-| transcode-ogg-64kbps  | 0       | 7       | 0.864 | 1.0    |
-| trim-1s-both          | 0       | 5       | 0.936 | 1.0    |
-| trim-5s-both          | 0       | 11      | 2.4   | 2.0    |
+| Transformation | Minimum | Maximum | Mean | Median |
+| -------------- | ------- | ------- | ---- | ------ |
+| compress-medium | 0 | 11 | 2.006 | 1.0 |
+| echo | 0 | 15 | 3.598 | 3.0 |
+| equalize | 0 | 12 | 1.214 | 1.0 |
+| fade-8s-both | 0 | 4 | 0.436 | 0.0 |
+| loudnorm | 0 | 5 | 0.55 | 0.0 |
+| transcode-aac-32kbps | 0 | 10 | 1.786 | 1.0 |
+| transcode-mp3-128kbps | 0 | 3 | 0.33 | 0.0 |
+| transcode-ogg-64kbps | 0 | 7 | 0.864 | 1.0 |
+| trim-1s-both | 0 | 5 | 0.936 | 1.0 |
+| trim-5s-both | 0 | 11 | 2.4 | 2.0 |
+
+
+
 
 ### Distribution
 
 ![AUDIO-CODE-64 / ISCC-FMA-10K / Distribution](images/audio-code-v0-64-iscc-fma-10k-dist.avif)
+
+
 
 ### Performance
 
@@ -72,39 +80,47 @@ The curves display how these metrics vary across thresholds.
     - **Mean**: 5.27 MB/s
     - **Median**: 4.58 MB/s
 
-______________________________________________________________________
+
+---
 
 ## IMAGE-CODE-S-64
 
 Evaluation against dataset **MIRFLICKR-MFND**
 
+
 ### Effectiveness
 
-??? question "Understanding the Effectiveness Chart" This chart evaluates the effectiveness of a
-similarity hash in comparing media files. Each hash is compared against all others at different
-distance thresholds, with results assessed against the ground truth.
+??? question "Understanding the Effectiveness Chart"
+    This chart evaluates the effectiveness of a similarity hash in comparing media files. Each hash
+    is compared against all others at different distance thresholds, with results assessed against
+    the ground truth.
 
-```
-**Chart Interpretation**:
+    **Chart Interpretation**:
 
-- The **X-Axis** shows "Hamming Distance Query Thresholds". Each threshold marks a maximum distance
-  for two hashes to be considered similar.
-- The **Y-Axis** represents Recall, Precision, and F1-Score:
-- **Recall**: The fraction of actual matches correctly identified by the hash. Higher recall
-  indicates better match detection.
-- **Precision**: The ratio of correct predictions to the total number of predictions. Higher
-  precision implies more reliable predictions.
-- **F1-Score**: Harmonic mean of Precision and Recall, balancing both measures. A high F1-score
-  signals an effective algorithm.
+    - The **X-Axis** shows "Hamming Distance Query Thresholds". Each threshold marks a maximum distance
+      for two hashes to be considered similar.
+    - The **Y-Axis** represents Recall, Precision, and F1-Score:
+    - **Recall**: The fraction of actual matches correctly identified by the hash. Higher recall
+      indicates better match detection.
+    - **Precision**: The ratio of correct predictions to the total number of predictions. Higher
+      precision implies more reliable predictions.
+    - **F1-Score**: Harmonic mean of Precision and Recall, balancing both measures. A high F1-score
+      signals an effective algorithm.
 
-The curves display how these metrics vary across thresholds.
-```
+    The curves display how these metrics vary across thresholds.
 
 ![IMAGE-CODE-S-64 / MIRFLICKR-MFND / Effectiveness](images/image-code-s-64-mirflickr-mfnd-eff.avif)
+
+
+
+
+
 
 ### Distribution
 
 ![IMAGE-CODE-S-64 / MIRFLICKR-MFND / Distribution](images/image-code-s-64-mirflickr-mfnd-dist.avif)
+
+
 
 ### Performance
 
@@ -114,39 +130,47 @@ The curves display how these metrics vary across thresholds.
     - **Mean**: 0.03 MB/s
     - **Median**: 0.03 MB/s
 
-______________________________________________________________________
+
+---
 
 ## IMAGE-CODE-64
 
 Evaluation against dataset **MIRFLICKR-MFND**
 
+
 ### Effectiveness
 
-??? question "Understanding the Effectiveness Chart" This chart evaluates the effectiveness of a
-similarity hash in comparing media files. Each hash is compared against all others at different
-distance thresholds, with results assessed against the ground truth.
+??? question "Understanding the Effectiveness Chart"
+    This chart evaluates the effectiveness of a similarity hash in comparing media files. Each hash
+    is compared against all others at different distance thresholds, with results assessed against
+    the ground truth.
 
-```
-**Chart Interpretation**:
+    **Chart Interpretation**:
 
-- The **X-Axis** shows "Hamming Distance Query Thresholds". Each threshold marks a maximum distance
-  for two hashes to be considered similar.
-- The **Y-Axis** represents Recall, Precision, and F1-Score:
-- **Recall**: The fraction of actual matches correctly identified by the hash. Higher recall
-  indicates better match detection.
-- **Precision**: The ratio of correct predictions to the total number of predictions. Higher
-  precision implies more reliable predictions.
-- **F1-Score**: Harmonic mean of Precision and Recall, balancing both measures. A high F1-score
-  signals an effective algorithm.
+    - The **X-Axis** shows "Hamming Distance Query Thresholds". Each threshold marks a maximum distance
+      for two hashes to be considered similar.
+    - The **Y-Axis** represents Recall, Precision, and F1-Score:
+    - **Recall**: The fraction of actual matches correctly identified by the hash. Higher recall
+      indicates better match detection.
+    - **Precision**: The ratio of correct predictions to the total number of predictions. Higher
+      precision implies more reliable predictions.
+    - **F1-Score**: Harmonic mean of Precision and Recall, balancing both measures. A high F1-score
+      signals an effective algorithm.
 
-The curves display how these metrics vary across thresholds.
-```
+    The curves display how these metrics vary across thresholds.
 
 ![IMAGE-CODE-64 / MIRFLICKR-MFND / Effectiveness](images/image-code-v0-64-mirflickr-mfnd-eff.avif)
+
+
+
+
+
 
 ### Distribution
 
 ![IMAGE-CODE-64 / MIRFLICKR-MFND / Distribution](images/image-code-v0-64-mirflickr-mfnd-dist.avif)
+
+
 
 ### Performance
 
@@ -156,39 +180,47 @@ The curves display how these metrics vary across thresholds.
     - **Mean**: 0.75 MB/s
     - **Median**: 0.70 MB/s
 
-______________________________________________________________________
+
+---
 
 ## TEXT-CODE-64
 
 Evaluation against dataset **STLIB-2000**
 
+
 ### Effectiveness
 
-??? question "Understanding the Effectiveness Chart" This chart evaluates the effectiveness of a
-similarity hash in comparing media files. Each hash is compared against all others at different
-distance thresholds, with results assessed against the ground truth.
+??? question "Understanding the Effectiveness Chart"
+    This chart evaluates the effectiveness of a similarity hash in comparing media files. Each hash
+    is compared against all others at different distance thresholds, with results assessed against
+    the ground truth.
 
-```
-**Chart Interpretation**:
+    **Chart Interpretation**:
 
-- The **X-Axis** shows "Hamming Distance Query Thresholds". Each threshold marks a maximum distance
-  for two hashes to be considered similar.
-- The **Y-Axis** represents Recall, Precision, and F1-Score:
-- **Recall**: The fraction of actual matches correctly identified by the hash. Higher recall
-  indicates better match detection.
-- **Precision**: The ratio of correct predictions to the total number of predictions. Higher
-  precision implies more reliable predictions.
-- **F1-Score**: Harmonic mean of Precision and Recall, balancing both measures. A high F1-score
-  signals an effective algorithm.
+    - The **X-Axis** shows "Hamming Distance Query Thresholds". Each threshold marks a maximum distance
+      for two hashes to be considered similar.
+    - The **Y-Axis** represents Recall, Precision, and F1-Score:
+    - **Recall**: The fraction of actual matches correctly identified by the hash. Higher recall
+      indicates better match detection.
+    - **Precision**: The ratio of correct predictions to the total number of predictions. Higher
+      precision implies more reliable predictions.
+    - **F1-Score**: Harmonic mean of Precision and Recall, balancing both measures. A high F1-score
+      signals an effective algorithm.
 
-The curves display how these metrics vary across thresholds.
-```
+    The curves display how these metrics vary across thresholds.
 
 ![TEXT-CODE-64 / STLIB-2000 / Effectiveness](images/text-code-v0-64-stlib-2000-eff.avif)
+
+
+
+
+
 
 ### Distribution
 
 ![TEXT-CODE-64 / STLIB-2000 / Distribution](images/text-code-v0-64-stlib-2000-dist.avif)
+
+
 
 ### Performance
 
@@ -197,3 +229,5 @@ The curves display how these metrics vary across thresholds.
     - **Maximum**: 6.76 MB/s
     - **Mean**: 0.21 MB/s
     - **Median**: 0.07 MB/s
+
+
