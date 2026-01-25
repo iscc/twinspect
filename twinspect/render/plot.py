@@ -32,7 +32,7 @@ def big_num(num):
 
 
 def plot_distribution(metrics_path):
-    """Plot pair-wise hamming distribution"""
+    """Plot intra-cluster and inter-cluster hamming distance distributions."""
     metrics_path = Path(metrics_path)
     log.debug(f"Plotting distribution for {metrics_path.name}")
     with metrics_path.open("r") as json_file:
@@ -41,6 +41,90 @@ def plot_distribution(metrics_path):
     if dist is None:
         return
 
+    # Handle both old format (single dict) and new format (with intra/inter)
+    if "intra" in dist and "inter" in dist:
+        return plot_distribution_separated(metrics_path, dist)
+    else:
+        return plot_distribution_legacy(metrics_path, dist)
+
+
+def plot_distribution_separated(metrics_path, dist):
+    """Plot separate intra-cluster and inter-cluster distributions."""
+    intra = {int(k): v for k, v in dist["intra"].items()}
+    inter = {int(k): v for k, v in dist["inter"].items()}
+
+    # Determine max distance for x-axis
+    all_keys = set(intra.keys()) | set(inter.keys())
+    if not all_keys:
+        return
+    max_dist = max(all_keys)
+
+    # Create aligned arrays for plotting
+    x_range = np.arange(max_dist + 1)
+    intra_values = np.array([intra.get(x, 0) for x in x_range], dtype=float)
+    inter_values = np.array([inter.get(x, 0) for x in x_range], dtype=float)
+
+    # Create figure
+    fig, ax = plt.subplots(figsize=(13, 9))
+
+    # Bar width and positioning
+    bar_width = 0.4
+    x_intra = x_range - bar_width / 2
+    x_inter = x_range + bar_width / 2
+
+    # Plot both distributions side by side
+    # Use log scale but handle zeros by setting minimum to 0.5 for visibility
+    intra_plot = np.where(intra_values > 0, intra_values, 0.5)
+    inter_plot = np.where(inter_values > 0, inter_values, 0.5)
+
+    ax.bar(x_intra, intra_plot, width=bar_width, label="Intra-cluster (positives)", color="#2ecc71", alpha=0.8)
+    ax.bar(x_inter, inter_plot, width=bar_width, label="Inter-cluster (negatives)", color="#3498db", alpha=0.8)
+
+    ax.set_yscale("log")
+
+    # Configure x-axis ticks
+    if max_dist <= 64:
+        plt.xticks(list(range(0, max_dist + 1, 2 if max_dist <= 32 else 4)))
+    else:
+        plt.xticks(list(range(0, max_dist + 1, 8)))
+
+    plt.tick_params(labelsize=12)
+    plt.subplots_adjust(left=0.08, right=0.95, top=0.88, bottom=0.10)
+
+    # Labels and title
+    title = get_title(metrics_path)
+    total_intra = sum(intra.values())
+    total_inter = sum(inter.values())
+    fig.suptitle("Distance Distribution: Positives vs Negatives", fontsize=20, fontweight="bold")
+    ax.set_title(f"{title} | {big_num(total_intra)} positive pairs, {big_num(total_inter)} negative pairs", fontsize=16)
+    ax.set_xlabel("Hamming Distance", fontsize=16)
+    ax.set_ylabel("Frequency (log scale)", fontsize=16)
+    ax.legend(loc="upper right", fontsize=14)
+
+    # Add vertical line at crossover point (if any)
+    crossover = find_crossover(intra, inter)
+    if crossover is not None:
+        ax.axvline(x=crossover, color="#e74c3c", linestyle="--", linewidth=2, label=f"Crossover ≈ {crossover}")
+        ax.legend(loc="upper right", fontsize=14)
+
+    return plt
+
+
+def find_crossover(intra, inter):
+    """Find approximate crossover point where inter-cluster frequency exceeds intra-cluster."""
+    if not intra or not inter:
+        return None
+    max_dist = max(max(intra.keys(), default=0), max(inter.keys(), default=0))
+    for d in range(max_dist + 1):
+        intra_freq = intra.get(d, 0)
+        inter_freq = inter.get(d, 0)
+        if inter_freq > intra_freq and intra_freq > 0:
+            return d
+    return None
+
+
+def plot_distribution_legacy(metrics_path, dist):
+    """Plot legacy single distribution format for backward compatibility."""
     dist = {int(k): v for k, v in dist.items()}
     keys = list(dist.keys())
     values = list(dist.values())
