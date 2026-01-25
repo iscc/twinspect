@@ -72,3 +72,32 @@ th {
 ol {
   list-style-type: upper-alpha;
 }
+
+/* Similarity flow diagram */
+.similarity-flow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 1.5rem 0;
+  flex-wrap: wrap;
+}
+
+.sim-box {
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  text-align: center;
+  color: #fff;
+  flex: 1;
+  min-width: 120px;
+  max-width: 200px;
+}
+
+.sim-data { background: #1976d2; }
+.sim-content { background: #f57c00; }
+.sim-semantic { background: #388e3c; }
+
+.sim-arrow {
+  font-size: 1.5rem;
+  color: var(--md-default-fg-color--light);
+}

@@ -5,6 +5,14 @@ media. For the purposes of the ISCC the concept of such similarity can be classi
 primary categories, each examining different aspects of the digital files: data similarity, content
 similarity, and semantic similarity.
 
+<div class="similarity-flow">
+  <div class="sim-box sim-data"><strong>Data</strong><br/>Binary</div>
+  <div class="sim-arrow">→</div>
+  <div class="sim-box sim-content"><strong>Content</strong><br/>Perceptual</div>
+  <div class="sim-arrow">→</div>
+  <div class="sim-box sim-semantic"><strong>Semantic</strong><br/>Meaning</div>
+</div>
+
 ## 1. Data Similarity
 
 !!! abstract inline end "Data Similarity:"

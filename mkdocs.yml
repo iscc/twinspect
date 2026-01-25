@@ -18,7 +18,6 @@ copyright: Copyright © 2023 The Authors | <a href="https://iscc.foundation/priv
 extra_css:
   - stylesheets/extra.css
 
-
 extra:
   analytics:
     provider: custom
@@ -41,8 +40,8 @@ theme:
         name: Switch to dark mode
   features:
     - navigation.tracking
-#    - navigation.tabs
-#    - navigation.tabs.sticky
+    - navigation.tabs
+    - navigation.tabs.sticky
 #    - toc.integrate
 
 plugins:
