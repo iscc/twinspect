@@ -1,6 +1,6 @@
 [project]
 name = "twinspect"
-version = "0.1.0"
+dynamic = ["version"]
 description = ""
 authors = [{ name = "Titusz", email = "tp@py7.de" }]
 requires-python = ">=3.11,<4"
@@ -51,6 +51,9 @@ twinspect = "twinspect.__main__:app"
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.hatch.version]
+path = "twinspect/__init__.py"
 
 [tool.datamodel-codegen]
 input = "twinspect/schema.yml"
