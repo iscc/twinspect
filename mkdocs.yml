@@ -91,7 +91,12 @@ nav:
   - Similarity: similarity.md
   - Datasets: datasets.md
   - Algorithms: algorithms.md
-  - Results: results.md
+  - Results:
+      - Overview: results.md
+      - Text: results/text.md
+      - Image: results/image.md
+      - Audio: results/audio.md
+      - Video: results/video.md
 #  - Similarity: similarity.md
 #  - Algorithms:
 #      - Audio-Code v0 64-Bit: algorithms/iscc-audio-code-64.md

@@ -1,5 +1,3 @@
----
-
 ## {{ data.algorithm }}
 
 Evaluation against dataset **{{ data.dataset }}**

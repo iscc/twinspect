@@ -42,10 +42,12 @@ def format_yml():
 
 
 def format_md():
+    """Format all markdown files in docs/ recursively."""
     md_files = []
-    for fp in (ROOT / "docs").glob("*.md"):
-        relp = fp.relative_to(fp.parent.parent).as_posix()
+    for fp in (ROOT / "docs").rglob("*.md"):
+        relp = fp.relative_to(ROOT).as_posix()
         md_files.append(relp)
-    cmd = ["uv", "run", "mdformat", "--wrap", "100", "--end-of-line", "lf"]
-    cmd.extend(md_files)
-    subprocess.run(cmd)
+    if md_files:
+        cmd = ["uv", "run", "mdformat", "--wrap", "100", "--end-of-line", "lf"]
+        cmd.extend(md_files)
+        subprocess.run(cmd)

@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.2.0] - 2026-01-25
+## [0.2.0] - Unreleased
 
 Major modernization release after 3 years of dormancy.
 
@@ -20,6 +20,8 @@ Major modernization release after 3 years of dormancy.
 
 ### Changed
 
+- **Results documentation**: Restructured from single page to multi-page layout organized by media
+  type (text, image, audio, video) with a central overview page
 - **Build system**: Migrated from Poetry to uv for faster dependency resolution and installation
 - **Markdown formatting**: Switched to mdformat-mkdocs for consistent documentation formatting
 - **Metrics calculation**: Now uses macro-averaged effectiveness metrics for unbiased evaluation
