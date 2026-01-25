@@ -68,6 +68,18 @@ components:
         f1-score:
           type: number
           description: Harmonic mean of precision and recall (0-Worst, 1-Best)
+        precision_std:
+          type: number
+          description: Standard deviation of per-query precision values
+        recall_std:
+          type: number
+          description: Standard deviation of per-query recall values
+        num_queries_precision:
+          type: integer
+          description: Number of queries contributing to precision (queries with results)
+        num_queries_recall:
+          type: integer
+          description: Number of queries contributing to recall (cluster members only)
     Algorithm:
       title: Algorithm
       type: object

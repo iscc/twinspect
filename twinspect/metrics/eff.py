@@ -74,8 +74,13 @@ Implementation Notes:
             Query results include all files with up to (including) max_threshold hamming
             distance and are sorted by lowest to hightest hamming distance.
 
-    Given gound_truths and query_results we calculate recal, precision, and
-    f1-scores per query at thresholds 0 to max_trhreshold.
+    Given gound_truths and query_results we calculate recall, precision, and
+    f1-scores per query at thresholds 0 to max_threshold.
+
+    Metrics are computed using macro-averaging: precision and recall are calculated
+    per query, then averaged across all queries. This ensures equal weighting
+    regardless of cluster size. Standard deviation is also reported to indicate
+    variance across queries.
 """
 
 from pathlib import Path
@@ -207,17 +212,28 @@ def ground_truth(df):
 
 
 def evaluate(df_ground_truth, df_query_result, max_threshold):
+    """Evaluate effectiveness metrics using per-query averaging.
+
+    Calculates precision, recall, and F1-score at each hamming distance threshold.
+    Uses macro-averaging: metrics are computed per query then averaged across queries.
+    This ensures equal weighting regardless of cluster size.
+
+    Precision handling:
+    - Computed for ALL queries that return results (tp + fp > 0), including distractors
+    - Distractor queries returning results have precision = 0 (all results are FPs)
+    - Queries returning no results have undefined precision (excluded from average)
+
+    Recall handling:
+    - Only computed for queries with ground truth positives (cluster members)
+    - Distractors have no ground truth, so recall is undefined for them
+    """
     df = df_ground_truth.merge(df_query_result, on="id")
 
     result = []
 
-    total_files = len(df)
-
     for threshold in range(max_threshold + 1):
-        tp = 0
-        fp = 0
-        fn = 0
-        tn = 0
+        precisions = []
+        recalls = []
 
         for _, row in df.iterrows():
             ground_truth_ = set(file_id for _, file_id in row["ground_truth"])
@@ -227,21 +243,52 @@ def evaluate(df_ground_truth, df_query_result, max_threshold):
                 if hamming_distance_ <= threshold
             )
 
-            tp += len(ground_truth_.intersection(query_result))
-            fp += len(query_result.difference(ground_truth_))
-            fn += len(ground_truth_.difference(query_result))
-            tn += total_files - len(ground_truth_.union(query_result))
+            tp = len(ground_truth_.intersection(query_result))
+            fp = len(query_result.difference(ground_truth_))
+            fn = len(ground_truth_.difference(query_result))
 
-        precision = tp / (tp + fp) if (tp + fp) > 0 else 0
-        recall = tp / (tp + fn) if (tp + fn) > 0 else 0
-        f1_score = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0
+            # Precision: defined when there are results (tp + fp > 0)
+            # This includes distractor queries - any result for a distractor is an FP
+            if (tp + fp) > 0:
+                query_precision = tp / (tp + fp)
+                precisions.append(query_precision)
+
+            # Recall: only defined for queries with ground truth positives
+            if ground_truth_:
+                query_recall = tp / (tp + fn)
+                recalls.append(query_recall)
+
+        # Average across contributing queries
+        precision = sum(precisions) / len(precisions) if precisions else 0.0
+        recall = sum(recalls) / len(recalls) if recalls else 0.0
+        f1_score = (
+            2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0.0
+        )
+
+        # Calculate standard deviation for statistical reporting
+        precision_std = _std(precisions) if precisions else 0.0
+        recall_std = _std(recalls) if recalls else 0.0
+
         result.append(
             {
                 "threshold": threshold,
                 "precision": precision,
                 "recall": recall,
                 "f1_score": f1_score,
+                "precision_std": precision_std,
+                "recall_std": recall_std,
+                "num_queries_precision": len(precisions),
+                "num_queries_recall": len(recalls),
             }
         )
 
     return result
+
+
+def _std(values):
+    """Calculate standard deviation of a list of values."""
+    if len(values) < 2:
+        return 0.0
+    mean = sum(values) / len(values)
+    variance = sum((x - mean) ** 2 for x in values) / (len(values) - 1)
+    return variance**0.5

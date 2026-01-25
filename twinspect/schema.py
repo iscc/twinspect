@@ -53,6 +53,18 @@ class Effectivness(BaseModel):
         alias="f1-score",
         description="Harmonic mean of precision and recall (0-Worst, 1-Best)",
     )
+    precision_std: float | None = Field(
+        None, description="Standard deviation of per-query precision values"
+    )
+    recall_std: float | None = Field(
+        None, description="Standard deviation of per-query recall values"
+    )
+    num_queries_precision: int | None = Field(
+        None, description="Number of queries contributing to precision (queries with results)"
+    )
+    num_queries_recall: int | None = Field(
+        None, description="Number of queries contributing to recall (cluster members only)"
+    )
 
 
 class Algorithm(BaseModel):

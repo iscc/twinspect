@@ -77,8 +77,22 @@ def plot_distribution_separated(metrics_path, dist):
     intra_plot = np.where(intra_values > 0, intra_values, 0.5)
     inter_plot = np.where(inter_values > 0, inter_values, 0.5)
 
-    ax.bar(x_intra, intra_plot, width=bar_width, label="Intra-cluster (positives)", color="#2ecc71", alpha=0.8)
-    ax.bar(x_inter, inter_plot, width=bar_width, label="Inter-cluster (negatives)", color="#3498db", alpha=0.8)
+    ax.bar(
+        x_intra,
+        intra_plot,
+        width=bar_width,
+        label="Intra-cluster (positives)",
+        color="#2ecc71",
+        alpha=0.8,
+    )
+    ax.bar(
+        x_inter,
+        inter_plot,
+        width=bar_width,
+        label="Inter-cluster (negatives)",
+        color="#3498db",
+        alpha=0.8,
+    )
 
     ax.set_yscale("log")
 
@@ -96,7 +110,10 @@ def plot_distribution_separated(metrics_path, dist):
     total_intra = sum(intra.values())
     total_inter = sum(inter.values())
     fig.suptitle("Distance Distribution: Positives vs Negatives", fontsize=20, fontweight="bold")
-    ax.set_title(f"{title} | {big_num(total_intra)} positive pairs, {big_num(total_inter)} negative pairs", fontsize=16)
+    ax.set_title(
+        f"{title} | {big_num(total_intra)} positive pairs, {big_num(total_inter)} negative pairs",
+        fontsize=16,
+    )
     ax.set_xlabel("Hamming Distance", fontsize=16)
     ax.set_ylabel("Frequency (log scale)", fontsize=16)
     ax.legend(loc="upper right", fontsize=14)
@@ -104,7 +121,13 @@ def plot_distribution_separated(metrics_path, dist):
     # Add vertical line at crossover point (if any)
     crossover = find_crossover(intra, inter)
     if crossover is not None:
-        ax.axvline(x=crossover, color="#e74c3c", linestyle="--", linewidth=2, label=f"Crossover ≈ {crossover}")
+        ax.axvline(
+            x=crossover,
+            color="#e74c3c",
+            linestyle="--",
+            linewidth=2,
+            label=f"Crossover ≈ {crossover}",
+        )
         ax.legend(loc="upper right", fontsize=14)
 
     return plt
@@ -158,7 +181,7 @@ def plot_distribution_legacy(metrics_path, dist):
 
 
 def plot_effectiveness(metrics_path):
-    """Plot effectiveness metrics"""
+    """Plot effectiveness metrics with optional standard deviation bands."""
     metrics_path = Path(metrics_path)
     log.debug(f"Plotting effectiveness for {metrics_path.name}")
     with metrics_path.open("r") as json_file:
@@ -170,16 +193,57 @@ def plot_effectiveness(metrics_path):
     fig, ax = plt.subplots(figsize=(13, 9))
     fig.suptitle("Matching Effectiveness", fontsize=20, fontweight="bold")
     title = get_title(metrics_path)
-    ax.set_title(f"{title} | Precision, Recall, F1-Score", fontsize=18)
 
-    df.plot(x="threshold", y="precision", ax=ax, label="Precision", marker="o", linestyle="-")
-    df.plot(x="threshold", y="recall", ax=ax, label="Recall", marker="o", linestyle="-")
-    df.plot(x="threshold", y="f1_score", ax=ax, label="F1 Score", marker="o", linestyle="-")
+    # Check if standard deviation data is available
+    has_std = "precision_std" in df.columns and "recall_std" in df.columns
+
+    if has_std:
+        # Use recall query count as the primary indicator (cluster members only)
+        num_queries = (
+            df["num_queries_recall"].iloc[0] if "num_queries_recall" in df.columns else "N/A"
+        )
+        ax.set_title(
+            f"{title} | Precision, Recall, F1-Score (n={num_queries} clusters)", fontsize=18
+        )
+    else:
+        ax.set_title(f"{title} | Precision, Recall, F1-Score", fontsize=18)
+
+    x = df["threshold"].values
+    colors = {"precision": "#1f77b4", "recall": "#ff7f0e", "f1_score": "#2ca02c"}
+
+    # Plot precision with optional std band
+    ax.plot(
+        x, df["precision"], label="Precision", marker="o", linestyle="-", color=colors["precision"]
+    )
+    if has_std:
+        ax.fill_between(
+            x,
+            np.clip(df["precision"] - df["precision_std"], 0, 1),
+            np.clip(df["precision"] + df["precision_std"], 0, 1),
+            alpha=0.2,
+            color=colors["precision"],
+        )
+
+    # Plot recall with optional std band
+    ax.plot(x, df["recall"], label="Recall", marker="o", linestyle="-", color=colors["recall"])
+    if has_std:
+        ax.fill_between(
+            x,
+            np.clip(df["recall"] - df["recall_std"], 0, 1),
+            np.clip(df["recall"] + df["recall_std"], 0, 1),
+            alpha=0.2,
+            color=colors["recall"],
+        )
+
+    # Plot F1 score (no std band as it's derived from precision and recall)
+    ax.plot(
+        x, df["f1_score"], label="F1 Score", marker="o", linestyle="-", color=colors["f1_score"]
+    )
 
     plt.legend()
     plt.grid()
 
-    x = df["threshold"].unique()  # Fix x-axis ticks to show only available threshold values
+    # Fix x-axis ticks to show only available threshold values
     if len(x) > 17:
         plt.xticks(np.arange(min(x), max(x) + 1, 2))
     else:
@@ -187,6 +251,7 @@ def plot_effectiveness(metrics_path):
 
     ax.set_xlabel("Hamming Distance Query Threshold", fontsize=16)
     ax.set_ylabel("Performance (higher is better)", fontsize=16)
+    ax.set_ylim(0, 1.05)  # Metrics are bounded 0-1
     plt.tick_params(labelsize=12)
     plt.subplots_adjust(left=0.08, right=0.95, top=0.90, bottom=0.08)
     return plt
