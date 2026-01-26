@@ -46,6 +46,7 @@ dependencies = [
     "iscc-sct>=0.1.0",
     "onnxruntime-gpu>=1.23.2",
     "usearch>=2.23.0",
+    "rapidfuzz>=3.0.0",
 ]
 
 [project.scripts]

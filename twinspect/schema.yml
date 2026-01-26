@@ -184,6 +184,10 @@ components:
         max_length_variation:
           type: number
           description: Maximum allowed length variation between versions (0.2 = ±20%)
+        min_text_overlap:
+          type: number
+          description: Minimum text similarity ratio (0-1) using LCS. Versions below threshold 
+            are excluded.
         checksum:
           type: string
           description: Checksum of datafolder

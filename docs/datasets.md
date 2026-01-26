@@ -78,16 +78,47 @@ automatically downloads and reproduces the tested dataset.
     The following transformations were applied to **500 files** of the dataset to simulate different
     conditions that might be encountered in real-world applications:
 
+    - **trim-1s-both**: Remove 1 seconds of audio from start and end
     - **echo**: Apply echo effect (ffmpeg aecho=0.8:0.7:60:0.2)
+    - **loudnorm**: Apply loudness normalization (ffmpeg loudnorm=I=-16:TP=-1.5:LRA=11)
+    - **trim-5s-both**: Remove 5 seconds of audio from start and end
     - **transcode-mp3-128kbps**: Transcode audio to 128kbps MP3
     - **compress-medium**: Apply audio compression (attack 10, release 200, ratio 3, threshold -20)
-    - **transcode-aac-32kbps**: Transcode audio to 32kbps AAC
-    - **trim-1s-both**: Remove 1 seconds of audio from start and end
-    - **equalize**: Equalize audio (ffmpeg equalizer=f=1000:t=o:w=200:g=10)
-    - **loudnorm**: Apply loudness normalization (ffmpeg loudnorm=I=-16:TP=-1.5:LRA=11)
     - **fade-8s-both**: Fade in/out 8 seconds at start and end
     - **transcode-ogg-64kbps**: Transcode audio to 64kbps OGG
-    - **trim-5s-both**: Remove 5 seconds of audio from start and end
+    - **transcode-aac-32kbps**: Transcode audio to 32kbps AAC
+    - **equalize**: Equalize audio (ffmpeg equalizer=f=1000:t=o:w=200:g=10)
+
+---
+
+### NEWSEDITS-REUTERS-1000
+
+!!! abstract inline end "Dataset Info"
+
+    - **ID**: dd58b4cdb2066726
+    - **Mode**: Text
+    - **Size**: 10.9 MB
+    - **Files**: 3096
+
+The **NEWSEDITS-REUTERS-1000** is a dataset, designed to assess the accuracy of text identification
+algorithms. It includes ground truth data for a total of **3096 text files** with near-duplicates
+organized into **1000 clusters**.
+
+1000-cluster subset of the [NewsEdits](https://github.com/isi-nlp/NewsEdits) Reuters dataset
+containing news article revisions (2012-2020). Filtered using LCS similarity (>=80%) and length
+variation (\<=20%) to ensure genuine near-duplicates. Cross-cluster deduplication prevents duplicate
+articles.
+
+??? note "Clustering Details"
+
+    Clusters contain an average of **3.1 near-duplicate** text files.
+
+    **Cluster sizes**
+
+    - **Minimum**: 2
+    - **Maximum**: 8
+    - **Mean**: 3.1
+    - **Median**: 3.0
 
 ---
 
@@ -118,35 +149,4 @@ The Twinspect benchmark automatically downloads and reproduces the tested datase
     - **Minimum**: 1
     - **Maximum**: 14
     - **Mean**: 2.07
-    - **Median**: 2.0
-
----
-
-### NEWSEDITS-REUTERS-1000
-
-!!! abstract inline end "Dataset Info"
-
-    - **ID**: 7c94708c16d7f5cd
-    - **Mode**: Text
-    - **Size**: 10.2 MB
-    - **Files**: 2732
-
-The **NEWSEDITS-REUTERS-1000** is a dataset, designed to assess the accuracy of text identification
-algorithms. It includes ground truth data for a total of **2732 text files** with near-duplicates
-organized into **1000 clusters**.
-
-1000-cluster subset of the [NewsEdits](https://github.com/isi-nlp/NewsEdits) Reuters dataset
-containing news article revisions (2012-2020). Only includes article versions within ±5% length of
-each other to ensure genuine near-duplicate matching. Articles shorter than 1000 characters are
-excluded.
-
-??? note "Clustering Details"
-
-    Clusters contain an average of **2.73 near-duplicate** text files.
-
-    **Cluster sizes**
-
-    - **Minimum**: 2
-    - **Maximum**: 7
-    - **Mean**: 2.73
     - **Median**: 2.0

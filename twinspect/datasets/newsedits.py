@@ -54,6 +54,7 @@ def install(dataset):
         min_versions=2,
         min_content_length=dataset.min_content_length or 0,
         max_length_variation=dataset.max_length_variation,
+        min_text_overlap=dataset.min_text_overlap,
     )
 
     # Verify integrity
@@ -91,31 +92,44 @@ def download_reuters_db():
     return db_path
 
 
-def filter_by_length_variation(versions, max_variation):
-    # type: (list[tuple[int, str]], float | None) -> list[tuple[int, str]]
-    """Keep only versions within max_variation of each other.
+def filter_by_similarity(versions, max_length_variation, min_text_overlap):
+    # type: (list[tuple[int, str]], float | None, float | None) -> list[tuple[int, str]]
+    """Keep only versions that are true near-duplicates.
 
-    Uses a greedy approach: finds the largest group of versions where each version
-    is within max_variation (as a fraction) of all other versions in the group.
+    Uses LCSseq (Longest Common Subsequence) to measure content preservation.
+    Finds the largest group of mutually similar versions.
     """
-    if not versions or max_variation is None or max_variation <= 0:
+    if not versions or (max_length_variation is None and min_text_overlap is None):
         return versions
 
-    # Sort by content length
-    sorted_versions = sorted(versions, key=lambda v: len(v[1]))
+    from rapidfuzz.distance import LCSseq
 
-    # Find largest group of versions within tolerance of each other
+    def are_similar(content1, content2):
+        # type: (str, str) -> bool
+        """Check if two text contents are similar enough."""
+        # Length check (fast pre-filter)
+        if max_length_variation is not None:
+            len_ratio = abs(len(content1) - len(content2)) / max(len(content1), len(content2))
+            if len_ratio > max_length_variation:
+                return False
+
+        # Content similarity check with early termination
+        if min_text_overlap is not None:
+            similarity = LCSseq.normalized_similarity(
+                content1, content2, score_cutoff=min_text_overlap
+            )
+            if similarity < min_text_overlap:
+                return False
+
+        return True
+
+    # Find largest group of mutually similar versions (greedy)
     best_group = []
-    for i, (_, content_i) in enumerate(sorted_versions):
-        len_i = len(content_i)
-        group = [sorted_versions[i]]
-        for j, (_, content_j) in enumerate(sorted_versions):
-            if i == j:
-                continue
-            len_j = len(content_j)
-            # Check if within tolerance of ALL versions in current group
-            if all(abs(len_j - len(c)) / len(c) <= max_variation for _, c in group):
-                group.append(sorted_versions[j])
+    for i, (_, content_i) in enumerate(versions):
+        group = [versions[i]]
+        for j, (_, content_j) in enumerate(versions):
+            if i != j and all(are_similar(content_j, c) for _, c in group):
+                group.append(versions[j])
         if len(group) > len(best_group):
             best_group = group
 
@@ -123,15 +137,21 @@ def filter_by_length_variation(versions, max_variation):
 
 
 def extract_clusters(
-    db_path, output_dir, max_clusters, min_versions, min_content_length=0, max_length_variation=None
+    db_path,
+    output_dir,
+    max_clusters,
+    min_versions,
+    min_content_length=0,
+    max_length_variation=None,
+    min_text_overlap=None,
 ):
-    # type: (Path, Path, int, int, int, float | None) -> None
+    # type: (Path, Path, int, int, int, float | None, float | None) -> None
     """Extract article clusters from SQLite database.
 
     Creates a cluster folder structure where each cluster contains multiple versions
     of the same article as plaintext files. Articles shorter than min_content_length
-    are excluded. If max_length_variation is set, only versions within that fraction
-    of each other's length are kept. Iterates until max_clusters valid clusters are created.
+    are excluded. Versions are filtered by length variation and/or text similarity.
+    Iterates until max_clusters valid clusters are created.
     """
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -155,6 +175,7 @@ def extract_clusters(
 
     clusters_created = 0
     total_files = 0
+    global_seen_hashes = set()  # Track content across all clusters to avoid duplicates
 
     with Progress(console=console) as prog:
         task = prog.add_task(f"Extracting {output_dir.name}", total=max_clusters)
@@ -192,12 +213,23 @@ def extract_clusters(
                     seen_hashes.add(content_hash)
                     unique_versions.append((version_num, content))
 
-            # Apply length variation filter
-            unique_versions = filter_by_length_variation(unique_versions, max_length_variation)
+            # Apply similarity filter (length variation + text overlap)
+            unique_versions = filter_by_similarity(
+                unique_versions, max_length_variation, min_text_overlap
+            )
 
             # Skip if fewer than min_versions unique versions
             if len(unique_versions) < min_versions:
                 continue
+
+            # Skip if this cluster's content already exists (cross-cluster deduplication)
+            # Use first version's hash as cluster fingerprint
+            first_content_hash = blake3.blake3(unique_versions[0][1].encode("utf-8")).hexdigest()
+            if first_content_hash in global_seen_hashes:
+                continue
+            # Add all version hashes to global set
+            for _, content in unique_versions:
+                global_seen_hashes.add(blake3.blake3(content.encode("utf-8")).hexdigest())
 
             # Create cluster folder
             cluster_folder = output_dir / f"{clusters_created:07d}"

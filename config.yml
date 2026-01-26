@@ -111,15 +111,16 @@ datasets:
   - name: NewsEdits-Reuters-1000
     label: newsedits_reuters_1000
     info: 1000-cluster subset of the [NewsEdits](https://github.com/isi-nlp/NewsEdits) Reuters 
-      dataset containing news article revisions (2012-2020). Only includes article versions 
-      within ±5% length of each other to ensure genuine near-duplicate matching. Articles 
-      shorter than 1000 characters are excluded.
+      dataset containing news article revisions (2012-2020). Filtered using LCS similarity 
+      (>=70%) and length variation (<=20%) to ensure genuine near-duplicates. Cross-cluster 
+      deduplication prevents duplicate articles.
     url: https://github.com/isi-nlp/NewsEdits
     mode: text
     installer: twinspect.datasets.newsedits:install
     clusters: 1000
     min_content_length: 1000
-    max_length_variation: 0.05
+    max_length_variation: 0.20
+    min_text_overlap: 0.70
 transformations:
   - name: Trim 1 Second
     label: trim-1s-both

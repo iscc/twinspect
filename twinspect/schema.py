@@ -115,6 +115,10 @@ class Dataset(BaseModel):
     max_length_variation: float | None = Field(
         None, description="Maximum allowed length variation between versions (0.2 = ±20%)"
     )
+    min_text_overlap: float | None = Field(
+        None,
+        description="Minimum text similarity ratio (0-1) using LCS. Versions below threshold are excluded.",
+    )
     checksum: str | None = Field(None, description="Checksum of datafolder")
 
 

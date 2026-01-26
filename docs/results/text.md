@@ -8,9 +8,9 @@
 
 | Algorithm        | Dataset                | Threshold | Recall | Precision | F1-Score |
 | ---------------- | ---------------------- | --------- | ------ | --------- | -------- |
-| TEXT-CODE-64     | NEWSEDITS-REUTERS-1000 | 13        | 0.96   | 0.71      | 0.82     |
-| TEXT-CODE-S-64   | NEWSEDITS-REUTERS-1000 | 5         | 0.95   | 0.68      | 0.79     |
-| TEXT-CODE-SC-128 | NEWSEDITS-REUTERS-1000 | 24        | 0.98   | 0.71      | 0.82     |
+| TEXT-CODE-64     | NEWSEDITS-REUTERS-1000 | 15        | 0.97   | 0.98      | 0.98     |
+| TEXT-CODE-S-64   | NEWSEDITS-REUTERS-1000 | 5         | 0.92   | 0.95      | 0.93     |
+| TEXT-CODE-SC-128 | NEWSEDITS-REUTERS-1000 | 25        | 0.99   | 0.99      | 0.99     |
 
 Text similarity algorithms identify near-duplicate documents that may have undergone format
 conversion, minor edits, or text extraction differences.
@@ -102,10 +102,10 @@ Evaluation against dataset **NEWSEDITS-REUTERS-1000**
 
     | Metric  | Value       |
     | ------- | ----------- |
-    | Minimum | 0.0027 MB/s |
-    | Maximum | 0.0329 MB/s |
-    | Mean    | 0.0107 MB/s |
-    | Median  | 0.0100 MB/s |
+    | Minimum | 0.0028 MB/s |
+    | Maximum | 0.0353 MB/s |
+    | Mean    | 0.0102 MB/s |
+    | Median  | 0.0095 MB/s |
 
 ---
 
@@ -195,9 +195,9 @@ Evaluation against dataset **NEWSEDITS-REUTERS-1000**
     | Metric  | Value       |
     | ------- | ----------- |
     | Minimum | 0.0001 MB/s |
-    | Maximum | 0.0036 MB/s |
-    | Mean    | 0.0013 MB/s |
-    | Median  | 0.0013 MB/s |
+    | Maximum | 0.0033 MB/s |
+    | Mean    | 0.0012 MB/s |
+    | Median  | 0.0012 MB/s |
 
 ---
 
@@ -287,6 +287,6 @@ Evaluation against dataset **NEWSEDITS-REUTERS-1000**
     | Metric  | Value       |
     | ------- | ----------- |
     | Minimum | 0.0001 MB/s |
-    | Maximum | 0.0031 MB/s |
+    | Maximum | 0.0030 MB/s |
     | Mean    | 0.0011 MB/s |
     | Median  | 0.0011 MB/s |
