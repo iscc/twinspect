@@ -5,20 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.2.0] - Unreleased
+## [0.2.0] - 2026-01-26
 
 Major modernization release after 3 years of dormancy.
 
 ### Added
 
+- **Semantic Text Code (iscc-sct)**: New algorithm for semantic text similarity matching using
+  neural embeddings
+- **Semantic Image Code (iscc-sci)**: New algorithm for semantic image similarity matching
+- **NewsEdits Reuters dataset**: Text benchmarking dataset with 1000 clusters of news article
+  revisions, filtered using LCS similarity for quality near-duplicates
 - **Ensemble algorithms**: Support for combining multiple simprints into ensemble codes with
   checksum-based version matching to prevent mixing stale component outputs
 - **TurboLameDuck**: Exact hamming search implementation using usearch library for improved
   performance
-- **Semantic Image Code (iscc-sci)**: New algorithm for semantic image similarity matching
+- **LCS similarity filtering**: Dataset filtering using rapidfuzz LCSseq for content-aware
+  near-duplicate detection with cross-cluster deduplication
 - **Auto-generated documentation**: Algorithms page now auto-generated from config.yml
 - **Intra/inter-cluster separation**: Distribution plots now show separate intra-cluster and
   inter-cluster distance distributions for better analysis
+- **Sortable tables**: Interactive table sorting via Tablesort library
+- **Navigation improvements**: Added navigation tabs, grid cards, and social card for link sharing
 
 ### Changed
 
@@ -30,9 +38,12 @@ Major modernization release after 3 years of dormancy.
   across different cluster sizes
 - **Documentation**: Improved chart documentation for non-technical users
 - **Embedded images**: Optimized image sizes in documentation
+- **Text benchmarks**: Replaced STLIB-2000 with NewsEdits-Reuters-1000 for better quality
+  evaluation
 
 ### Removed
 
+- STLIB-2000 dataset replaced by NewsEdits-Reuters-1000
 - Unused datasets removed from documentation and configuration
 - Extra benchmark artifacts cleaned up to match live configuration
 
