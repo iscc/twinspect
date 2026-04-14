@@ -201,13 +201,15 @@ def ground_truth(df):
     empty result list.
     """
     df["ground_truth"] = df.apply(
-        lambda x: [
-            (hamming_distance(x["code"], y["code"]), y["id"])
-            for _, y in df[df["cluster"] == x["cluster"]].iterrows()
-            if y["id"] != x["id"]
-        ]
-        if pd.notna(x["cluster"])
-        else [],
+        lambda x: (
+            [
+                (hamming_distance(x["code"], y["code"]), y["id"])
+                for _, y in df[df["cluster"] == x["cluster"]].iterrows()
+                if y["id"] != x["id"]
+            ]
+            if pd.notna(x["cluster"])
+            else []
+        ),
         axis=1,
     )
     df["ground_truth"] = df["ground_truth"].apply(lambda x: sorted(x, key=lambda y: y[0]))
