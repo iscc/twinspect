@@ -2,7 +2,7 @@ site_name: ISCC Evaluation
 site_description: Universal Benchmark for Near-Duplicate and similarity search with compact 
   binary codes.
 site_author: Titusz Pan
-site_url: https://twinspect.iscc.codes
+site_url: https://eval.iscc.codes
 
 # Repository
 repo_name: iscc/twinspect
