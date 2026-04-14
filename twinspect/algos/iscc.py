@@ -73,12 +73,12 @@ def image_code_s_64(fp) -> Optional[str]:
 
 
 def text_code_s_64(fp) -> Optional[str]:
-    """Generate 64-bit semantic text code using iscc-sct."""
-    import iscc_sct as sct
+    """Generate 64-bit semantic text code via iscc-sdk (supports content extraction)."""
+    import iscc_sdk as idk
 
     try:
-        iscc_meta = sct.code_text_semantic(fp, bits=64)
-        iscc_code = iscc_meta["iscc"]
+        iscc_meta = idk.code_text_semantic(fp, bits=64)
+        iscc_code = iscc_meta.iscc
         log.success(f"{iscc_code} <- {Path(fp).name}")
         code_obj = ic.Code(iscc_code)
         return code_obj.hash_bytes.hex()
