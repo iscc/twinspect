@@ -37,7 +37,7 @@ dependencies = [
     "jinja2",
     "jmespath",
     "mdformat-mkdocs[recommended]",
-    "iscc-sdk",
+    "iscc-sdk==0.9.1",
     "hishel>=1.1.8",
     "openapi-spec-validator",
     "ruff",
