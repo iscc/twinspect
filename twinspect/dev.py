@@ -13,15 +13,17 @@ def fix_line_endings():
     WINDOWS_LINE_ENDING = b"\r\n"
     UNIX_LINE_ENDING = b"\n"
     extensions = {".py", ".toml", ".lock", ".md", ".yml", ".yaml"}
-    for fp in ROOT.glob("**/*"):
-        if fp.suffix in extensions:
-            with open(fp, "rb") as infile:
-                content = infile.read()
-            new_content = content.replace(WINDOWS_LINE_ENDING, UNIX_LINE_ENDING)
-            if new_content != content:
-                with open(fp, "wb") as outfile:
-                    outfile.write(new_content)
-                print(f"       fixed line endings for {fp.name}")
+    folders = [ROOT / "twinspect", ROOT / "tests", ROOT / "docs"]
+    for folder in folders:
+        for fp in folder.rglob("*"):
+            if fp.suffix in extensions:
+                with open(fp, "rb") as infile:
+                    content = infile.read()
+                new_content = content.replace(WINDOWS_LINE_ENDING, UNIX_LINE_ENDING)
+                if new_content != content:
+                    with open(fp, "wb") as outfile:
+                        outfile.write(new_content)
+                    print(f"       fixed line endings for {fp.name}")
 
 
 def format_yml():
