@@ -18,6 +18,16 @@ algorithms:
     url: https://github.com/iscc/iscc-core/blob/main/iscc_core/code_content_image.py
     dependencies:
       - iscc-sdk>=0.8.5
+  - name: ISCC BioImage Data-Code IW 64-Bit
+    label: bioimage_data_code_iw_64
+    mode: image
+    function: twinspect.algos.iscc_bio:bioimage_data_code_iw_64
+    info: IMAGEWALK-based bioimage Data-Code using iscc-bio. Decodes bioimage pixel planes via
+      BioIO/OME-NGFF, canonicalizes plane bytes, and generates a 64-bit ISCC Data-Code for
+      same-image/different-format bioimage matching.
+    url: https://github.com/bio-codes/iscc-bio
+    dependencies:
+      - iscc-bio[readers] @ git+https://github.com/bio-codes/iscc-bio.git@940bbbbb961e4b5316d95a5619b9d797fe70c16d
   - name: ISCC Audio-Code V0 64-Bit
     label: audio_code_v0_64
     mode: audio
@@ -95,6 +105,18 @@ datasets:
     url: https://mfnd.similarity.eu/data/truthfiles/polito/IND_clusters.txt
     mode: image
     installer: twinspect.datasets.mfnd:install
+  - name: BioImage Convert 1000
+    label: bioimage_convert_1000
+    info: Reproducible 1000-cluster public bioimage benchmark built from Broad Bioimage
+      Benchmark Collection archives. Each selected source image is converted with BioImage Convert
+      into single-file formats, producing same-image/different-format clusters for evaluating
+      iscc-bio IMAGEWALK Data-Code matching under realistic conversion drift.
+    url: https://bbbc.broadinstitute.org/
+    mode: image
+    installer: twinspect.datasets.bioimage_convert:install
+    samples: 1000
+    clusters: 1000
+    seed: 0
   - name: ISCC-FMA-10k
     label: iscc_fma_10k
     info: The ISCC-FMA-10k benchmark is a subset of [Free Music Archive 
@@ -206,6 +228,20 @@ metrics:
     label: distribution
     function: twinspect.metrics.distribution:distribution
 benchmarks:
+  - algorithm_label: bioimage_data_code_iw_64
+    dataset_label: bioimage_convert_1000
+    metric_labels:
+      - speed
+      - effectiveness
+      - distribution
+    active: true
+  - algorithm_label: image_code_v0_64
+    dataset_label: bioimage_convert_1000
+    metric_labels:
+      - speed
+      - effectiveness
+      - distribution
+    active: true
   - algorithm_label: image_code_v0_64
     dataset_label: mirflickr_mfnd
     metric_labels:
