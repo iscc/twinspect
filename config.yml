@@ -111,7 +111,9 @@ datasets:
       Benchmark Collection archives. Each selected source image is converted with pinned OME
       Bio-Formats bftools defaults into common, exotic, and microscopy-oriented single-file
       formats, producing same-source clusters for evaluating iscc-bio IMAGEWALK Data-Code
-      matching under converter-induced format drift.
+      matching under converter-induced format drift. Directory-backed media such as
+      OME-Zarr are treated as single benchmark inputs so CZI/JPEG-XR to OME-Zarr decoder
+      drift cases can be added without hashing internal chunks.
     url: https://bbbc.broadinstitute.org/
     mode: image
     installer: twinspect.datasets.bioimage_convert:install

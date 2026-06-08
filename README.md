@@ -85,8 +85,13 @@ The benchmark measures same-source conversion robustness. It intentionally uses 
 format conversions rather than synthetic edits, brightness shifts, blur, or custom compression
 flags. On BBBC smoke runs with Bio-Formats defaults, OME-TIFF/TIFF/PNG/DICOM/ICS
 generally preserve identical IMAGEWALK Data-Codes, while JPEG 2000 introduces converter drift
-on some BMP sources. That negative/positive split is part of the benchmark pressure and keeps
-the dataset semantics converter-induced rather than hand-edited.
+on some BMP sources. A stronger real-world stress case is lossy proprietary microscopy input,
+especially Zeiss CZI files using JPEG-XR compression converted to OME-Zarr with `bioformats2raw`:
+different valid decoder/conversion paths can preserve about 96% exact pixels while producing
+non-identical IMAGEWALK codes. TwinSpect treats `.zarr` directories as single benchmark media
+inputs so such CZI-to-OME-Zarr clusters can be added without hashing internal chunk files.
+That negative/positive split is part of the benchmark pressure and keeps the dataset semantics
+converter-induced rather than hand-edited.
 
 ## Documentation
 

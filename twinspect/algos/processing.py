@@ -64,17 +64,40 @@ def process_file(function: Callable, task: ts.Task) -> ts.Task:
 
 def benchmark_files(data_folder):
     # type: (Path) -> list[Path]
-    """Return files that should be processed by benchmark algorithms.
+    """Return benchmark media inputs with deterministic ordering.
 
     Dataset-local metadata files are useful for reproducibility but are not media
     inputs. Skip top-level hidden/underscore metadata so simprint generation does
     not try to hash JSON build manifests.
+
+    Directory-backed media formats, especially OME-NGFF/Zarr, must be treated as
+    one benchmark input. Walking their internal chunk files would benchmark the
+    container serialization instead of the decoded image content.
     """
-    return [
-        path
-        for path in ts.iter_files(data_folder)
-        if not (path.parent == data_folder and is_dataset_metadata_file(path))
-    ]
+    data_folder = Path(data_folder)
+
+    def walk(path):
+        entries = sorted(path.iterdir(), key=lambda item: item.name)
+        for entry in entries:
+            if entry.is_dir():
+                if is_directory_media_input(entry):
+                    yield entry
+                else:
+                    yield from walk(entry)
+            elif not (entry.parent == data_folder and is_dataset_metadata_file(entry)):
+                yield entry
+
+    return list(walk(data_folder))
+
+
+def is_directory_media_input(path):
+    # type: (Path) -> bool
+    """Return true for directory-backed media that should hash as one input."""
+    return (
+        path.suffix == ".zarr"
+        or (path / ".zattrs").exists()
+        or (path / "zarr.json").exists()
+    )
 
 
 def is_dataset_metadata_file(path):
