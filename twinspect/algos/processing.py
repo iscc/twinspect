@@ -4,6 +4,7 @@ import csv
 import time
 from pathlib import Path
 from typing import Callable
+
 from loguru import logger as log
 from concurrent.futures import as_completed, ThreadPoolExecutor
 import os
@@ -16,6 +17,7 @@ __all__ = [
     "simprint",
     "process_file",
     "process_data_folder",
+    "benchmark_files",
 ]
 
 
@@ -48,8 +50,7 @@ def simprint(benchmark):
     return path
 
 
-def process_file(function, task):
-    # type: (Callable, ts.Task) -> ts.Task
+def process_file(function: Callable, task: ts.Task) -> ts.Task:
     """
     Process compact code for a single media file.
 
@@ -61,6 +62,27 @@ def process_file(function, task):
     return task
 
 
+def benchmark_files(data_folder):
+    # type: (Path) -> list[Path]
+    """Return files that should be processed by benchmark algorithms.
+
+    Dataset-local metadata files are useful for reproducibility but are not media
+    inputs. Skip top-level hidden/underscore metadata so simprint generation does
+    not try to hash JSON build manifests.
+    """
+    return [
+        path
+        for path in ts.iter_files(data_folder)
+        if not (path.parent == data_folder and is_dataset_metadata_file(path))
+    ]
+
+
+def is_dataset_metadata_file(path):
+    # type: (Path) -> bool
+    """Return true for top-level dataset metadata that should not be hashed."""
+    return path.name.startswith(".") or path.name == "_bioimage_convert_build.json"
+
+
 def process_data_folder(func_path, data_folder):
     # type: (str, Path) -> Path
     """Process all files in `data_folder` with `function` and function `params`."""
@@ -68,13 +90,14 @@ def process_data_folder(func_path, data_folder):
     result_path = ts.result_path(func_path, data_folder, extension="csv", tag="simprint")
     func = ts.load_function(func_path)
     cores = os.cpu_count()
-    total = ts.count_files(data_folder)
+    files = benchmark_files(data_folder)
+    total = len(files)
     log.debug(f"Processing {data_folder.name} with {cores} max workers")
     results = []
     with ThreadPoolExecutor() as executor:
         futures = []
         for idx, file_path in track(
-            enumerate(ts.iter_files(data_folder)),
+            enumerate(files),
             total=total,
             description="Populating Tasks",
             console=ts.console,

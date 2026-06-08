@@ -107,6 +107,87 @@ def test_bioimage_convert_command_allows_template(monkeypatch):
     assert command == ["converter", "--input", "in.tif", "--output", "out.png", "--format", "png"]
 
 
+def test_bioformats_tools_archive_is_pinned():
+    assert bic.BIOFORMATS_VERSION == "8.5.0"
+    assert bic.BFTOOLS_URL.endswith("/bio-formats/8.5.0/artifacts/bftools.zip")
+    assert bic.BFTOOLS_SHA256 == "07a3bb1d3de84da3a709655a1008cb2d9b19becc5bad4ae4112633aec9380478"
+
+
+def test_default_converter_command_uses_pinned_bfconvert(monkeypatch, tmp_path):
+    monkeypatch.delenv("TWINSPECT_BIOIMAGE_CONVERT_TEMPLATE", raising=False)
+    monkeypatch.delenv("TWINSPECT_BIOIMAGE_CONVERT_BIN", raising=False)
+    fake = tmp_path / ("bfconvert.bat" if bic.platform.system() == "Windows" else "bfconvert")
+    fake.write_text("", encoding="utf-8")
+    monkeypatch.setattr(bic, "ensure_bioformats_tools", lambda cache_dir=None: fake)
+
+    command = bic.bioimage_convert_command(Path("in.tif"), Path("out.ome.tiff"), "ome-tiff")
+
+    assert command == [str(fake), "in.tif", "out.ome.tiff"]
+
+
+def test_ensure_bioformats_tools_downloads_verifies_and_extracts(monkeypatch, tmp_path):
+    archive = tmp_path / "fixture-bftools.zip"
+    import hashlib
+    from zipfile import ZipFile
+
+    script_name = "bfconvert.bat" if bic.platform.system() == "Windows" else "bfconvert"
+    with ZipFile(archive, "w") as zf:
+        zf.writestr(f"bftools/{script_name}", "echo bfconvert")
+        zf.writestr("bftools/bf.sh", "echo bf")
+        zf.writestr("bftools/bioformats_package.jar", "jar")
+    digest = hashlib.sha256(archive.read_bytes()).hexdigest()
+
+    monkeypatch.setattr(bic, "BFTOOLS_SHA256", digest)
+    monkeypatch.setattr(bic, "download_file", lambda url, path: path.write_bytes(archive.read_bytes()))
+
+    bfconvert = bic.ensure_bioformats_tools(tmp_path / "tools")
+
+    assert bfconvert.name == script_name
+    assert bfconvert.exists()
+    assert (bfconvert.parent / "bioformats_package.jar").exists()
+    if bic.platform.system() != "Windows":
+        assert bfconvert.stat().st_mode & 0o111
+        assert (bfconvert.parent / "bf.sh").stat().st_mode & 0o111
+
+
+def test_ensure_bioformats_tools_selects_windows_launcher(monkeypatch, tmp_path):
+    archive = tmp_path / "fixture-bftools.zip"
+    import hashlib
+    from zipfile import ZipFile
+
+    with ZipFile(archive, "w") as zf:
+        zf.writestr("bftools/bfconvert.bat", "call bf.bat")
+        zf.writestr("bftools/bioformats_package.jar", "jar")
+    digest = hashlib.sha256(archive.read_bytes()).hexdigest()
+
+    monkeypatch.setattr(bic.platform, "system", lambda: "Windows")
+    monkeypatch.setattr(bic, "BFTOOLS_SHA256", digest)
+    monkeypatch.setattr(bic, "download_file", lambda url, path: path.write_bytes(archive.read_bytes()))
+
+    bfconvert = bic.ensure_bioformats_tools(tmp_path / "tools")
+
+    assert bfconvert.name == "bfconvert.bat"
+
+
+def test_safe_extract_zip_rejects_path_traversal(tmp_path):
+    archive = tmp_path / "evil.zip"
+    from zipfile import ZipFile
+
+    with ZipFile(archive, "w") as zf:
+        zf.writestr("../evil", "nope")
+
+    with pytest.raises(RuntimeError, match="Unsafe archive"):
+        bic.safe_extract_zip(archive, tmp_path / "extract")
+
+
+def test_ensure_bioformats_tools_rejects_checksum_mismatch(monkeypatch, tmp_path):
+    monkeypatch.setattr(bic, "download_file", lambda url, path: path.write_bytes(b"wrong"))
+    monkeypatch.setattr(bic, "BFTOOLS_SHA256", "0" * 64)
+
+    with pytest.raises(RuntimeError, match="checksum"):
+        bic.ensure_bioformats_tools(tmp_path / "tools")
+
+
 def test_validate_file_size_rejects_empty_and_oversized(tmp_path):
     empty = tmp_path / "empty.tif"
     empty.write_bytes(b"")

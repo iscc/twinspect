@@ -10,24 +10,29 @@ Benchmark Collection archives. Each selected source bioimage becomes one cluster
     0000000/3variant_png.png
 
 The converted cluster members are intended for benchmarking IMAGEWALK-based
-bioimage Data-Code matching across storage formats. BioImage Convert (``imgcnv``)
-is used for conversions because it supports microscopy formats beyond ordinary
-Pillow/OpenCV image files.
+bioimage Data-Code matching across storage formats. Bio-Formats ``bfconvert``
+from pinned OME bftools is used by default because it is mature,
+cross-platform, actively maintained, and supports microscopy formats beyond
+ordinary Pillow/OpenCV image files.
 """
 
 from __future__ import annotations
 
 import csv
+import hashlib
 import json
 import os
+import platform
 import random
 import shlex
 import shutil
+import stat
 import subprocess
 import tempfile
+import urllib.request
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from zipfile import ZipInfo
+from zipfile import ZipFile, ZipInfo
 
 from loguru import logger as log
 from remotezip import RemoteZip
@@ -37,6 +42,12 @@ from twinspect import check_dir_fast, console
 
 ONE_GIB = 1024**3
 DEFAULT_CONVERT_TIMEOUT = 300
+BIOFORMATS_VERSION = "8.5.0"
+BFTOOLS_URL = (
+    f"https://downloads.openmicroscopy.org/bio-formats/{BIOFORMATS_VERSION}/artifacts/bftools.zip"
+)
+BFTOOLS_SHA256 = "07a3bb1d3de84da3a709655a1008cb2d9b19becc5bad4ae4112633aec9380478"
+MAX_BFTOOLS_DOWNLOAD_BYTES = 128 * 1024 * 1024
 MANIFEST_PATH = Path(__file__).parent / "manifests" / "bioimage_convert_1000.csv"
 BUILD_INFO_FILENAME = "_bioimage_convert_build.json"
 
@@ -240,10 +251,12 @@ def convert_file(input_path, output_path, format_name):
     # type: (Path, Path, str) -> Path
     """Convert ``input_path`` with BioImage Convert.
 
-    The default command follows the documented BioImage Convertor/imgcnv style:
-    ``imgcnv -i INPUT -o OUTPUT -t FORMAT``. For local installations with a
-    different wrapper, set ``TWINSPECT_BIOIMAGE_CONVERT_TEMPLATE`` to a shell-free
-    argument template, e.g. ``"bioimageconvert --input {input} --output {output} --format {format}"``.
+    The default converter is the pinned Bio-Formats command-line tool
+    (``bfconvert`` from ``bftools.zip``), which is actively maintained by OME,
+    distributed as a Java application, and ships shell/batch launchers for
+    Linux, macOS, and Windows. For local installations with a different wrapper,
+    set ``TWINSPECT_BIOIMAGE_CONVERT_TEMPLATE`` to a shell-free argument
+    template, e.g. ``"bioimageconvert --input {input} --output {output} --format {format}"``.
     """
     if output_path.exists() and output_path.stat().st_size > 0:
         validate_file_size(output_path)
@@ -253,12 +266,17 @@ def convert_file(input_path, output_path, format_name):
     timeout = int(os.environ.get("TWINSPECT_BIOIMAGE_CONVERT_TIMEOUT", DEFAULT_CONVERT_TIMEOUT))
     log.debug("Running BioImage Convert: {}", " ".join(command))
     try:
-        subprocess.run(command, check=True, capture_output=True, text=True, timeout=timeout)
+        env = os.environ.copy()
+        env.setdefault("NO_UPDATE_CHECK", "1")
+        subprocess.run(
+            command, check=True, capture_output=True, text=True, timeout=timeout, env=env
+        )
     except FileNotFoundError as exc:
         raise RuntimeError(
-            "BioImage Convert executable not found. Install BioImage Convert and ensure "
-            "`imgcnv` is on PATH, set TWINSPECT_BIOIMAGE_CONVERT_BIN, or set "
-            "TWINSPECT_BIOIMAGE_CONVERT_TEMPLATE."
+            "Bioimage conversion executable not found. TwinSpect downloads pinned OME Bio-Formats "
+            "bftools by default; custom TWINSPECT_BIOIMAGE_CONVERT_BIN values must point to an "
+            "existing executable. Use TWINSPECT_BIOIMAGE_CONVERT_TEMPLATE for non-imgcnv-style "
+            "custom converters."
         ) from exc
     except subprocess.TimeoutExpired as exc:
         raise RuntimeError(
@@ -277,32 +295,142 @@ def convert_file(input_path, output_path, format_name):
 
 def bioimage_convert_command(input_path, output_path, format_name):
     # type: (Path, Path, str) -> list[str]
-    """Build the BioImage Convert command line."""
+    """Build the BioImage conversion command line."""
     template = os.environ.get("TWINSPECT_BIOIMAGE_CONVERT_TEMPLATE")
     if template:
         return [
             part.format(input=input_path, output=output_path, format=format_name)
             for part in shlex.split(template)
         ]
-    binary = os.environ.get("TWINSPECT_BIOIMAGE_CONVERT_BIN") or "imgcnv"
-    return [binary, "-i", str(input_path), "-o", str(output_path), "-t", format_name]
+    binary = os.environ.get("TWINSPECT_BIOIMAGE_CONVERT_BIN")
+    if binary:
+        return [binary, "-i", str(input_path), "-o", str(output_path), "-t", format_name]
+    bfconvert = ensure_bioformats_tools()
+    return [str(bfconvert), str(input_path), str(output_path)]
+
+
+def default_bioformats_cache_dir():
+    # type: () -> Path
+    """Return the default cache directory for pinned Bio-Formats tools."""
+    override = os.environ.get("TWINSPECT_BIOIMAGE_CONVERT_CACHE")
+    if override:
+        return Path(override)
+    return Path.home() / ".cache" / "twinspect" / "bioformats"
+
+
+def bioformats_bfconvert_name():
+    # type: () -> str
+    """Return the platform-specific Bio-Formats launcher name."""
+    return "bfconvert.bat" if platform.system() == "Windows" else "bfconvert"
+
+
+def ensure_bioformats_tools(cache_dir=None):
+    # type: (Path | None) -> Path
+    """Download, verify, and extract pinned Bio-Formats command-line tools.
+
+    Bio-Formats bftools is a cross-platform Java distribution containing Unix
+    shell launchers and Windows ``.bat`` launchers. We pin the exact archive URL
+    and SHA-256 digest instead of relying on a moving ``latest`` endpoint.
+    """
+    cache_dir = Path(cache_dir) if cache_dir is not None else default_bioformats_cache_dir()
+    target_dir = cache_dir / f"bftools-{BIOFORMATS_VERSION}"
+    bfconvert = target_dir / bioformats_bfconvert_name()
+    jar = target_dir / "bioformats_package.jar"
+    if bfconvert.exists() and jar.exists():
+        make_bioformats_scripts_executable(target_dir)
+        return bfconvert
+
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    archive_path = cache_dir / f"bftools-{BIOFORMATS_VERSION}.zip"
+    download_file(BFTOOLS_URL, archive_path)
+    verify_sha256(archive_path, BFTOOLS_SHA256)
+
+    extract_root = cache_dir / f".extract-bftools-{BIOFORMATS_VERSION}"
+    shutil.rmtree(extract_root, ignore_errors=True)
+    extract_root.mkdir(parents=True)
+    try:
+        safe_extract_zip(archive_path, extract_root)
+        extracted = extract_root / "bftools"
+        if not (extracted / bioformats_bfconvert_name()).exists():
+            raise RuntimeError(f"Bio-Formats archive did not contain {bioformats_bfconvert_name()}")
+        shutil.rmtree(target_dir, ignore_errors=True)
+        extracted.replace(target_dir)
+    finally:
+        shutil.rmtree(extract_root, ignore_errors=True)
+
+    make_bioformats_scripts_executable(target_dir)
+    return bfconvert
+
+
+def make_bioformats_scripts_executable(target_dir):
+    # type: (Path) -> None
+    """Mark Unix Bio-Formats launcher scripts executable."""
+    if platform.system() == "Windows":
+        return
+    for script in target_dir.iterdir():
+        if script.is_file() and script.suffix in {"", ".sh"}:
+            script.chmod(script.stat().st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+
+
+def download_file(url, output_path, max_bytes=MAX_BFTOOLS_DOWNLOAD_BYTES):
+    # type: (str, Path, int) -> Path
+    """Download ``url`` to ``output_path`` without loading the whole body at once."""
+    bytes_written = 0
+    with urllib.request.urlopen(url, timeout=120) as response:
+        with open(output_path, "wb") as out_file:
+            while True:
+                chunk = response.read(1024 * 1024)
+                if not chunk:
+                    break
+                bytes_written += len(chunk)
+                if bytes_written > max_bytes:
+                    raise RuntimeError(f"Download exceeded maximum size of {max_bytes} bytes")
+                out_file.write(chunk)
+    return output_path
+
+
+def verify_sha256(path, expected):
+    # type: (Path, str) -> None
+    """Verify a file SHA-256 digest."""
+    actual = hashlib.sha256(path.read_bytes()).hexdigest()
+    if actual != expected:
+        raise RuntimeError(
+            f"Bio-Formats bftools checksum mismatch for {path}: expected {expected}, got {actual}"
+        )
+
+
+def safe_extract_zip(archive_path, target_dir):
+    # type: (Path, Path) -> None
+    """Extract a ZIP archive while rejecting path traversal entries."""
+    target_dir = target_dir.resolve()
+    with ZipFile(archive_path) as zip_file:
+        for member in zip_file.infolist():
+            destination = (target_dir / member.filename).resolve()
+            if not destination.is_relative_to(target_dir):
+                raise RuntimeError(f"Unsafe archive member path: {member.filename}")
+        zip_file.extractall(target_dir)
 
 
 def bioimage_convert_version():
     # type: () -> str
-    """Best-effort BioImage Convert version string for build metadata."""
-    binary = os.environ.get("TWINSPECT_BIOIMAGE_CONVERT_BIN") or "imgcnv"
-    for flag in ("--version", "-v"):
-        try:
-            result = subprocess.run(
-                [binary, flag], check=False, capture_output=True, text=True, timeout=10
-            )
-        except Exception:
-            continue
-        text = (result.stdout or result.stderr or "").strip()
-        if text:
-            return text.splitlines()[0]
-    return "unknown"
+    """Best-effort BioImage converter version string for build metadata."""
+    template = os.environ.get("TWINSPECT_BIOIMAGE_CONVERT_TEMPLATE")
+    if template:
+        return f"custom template: {template}"
+    binary = os.environ.get("TWINSPECT_BIOIMAGE_CONVERT_BIN")
+    if binary:
+        for flag in ("--version", "-v"):
+            try:
+                result = subprocess.run(
+                    [binary, flag], check=False, capture_output=True, text=True, timeout=10
+                )
+            except Exception:
+                continue
+            text = (result.stdout or result.stderr or "").strip()
+            if text:
+                return text.splitlines()[0]
+        return "custom binary: unknown"
+    return f"Bio-Formats bftools {BIOFORMATS_VERSION}"
 
 
 def validate_file_size(path, max_file_size=ONE_GIB):

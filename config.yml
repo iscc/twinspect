@@ -108,9 +108,9 @@ datasets:
   - name: BioImage Convert 1000
     label: bioimage_convert_1000
     info: Reproducible 1000-cluster public bioimage benchmark built from Broad Bioimage
-      Benchmark Collection archives. Each selected source image is converted with BioImage Convert
-      into single-file formats, producing same-image/different-format clusters for evaluating
-      iscc-bio IMAGEWALK Data-Code matching under realistic conversion drift.
+      Benchmark Collection archives. Each selected source image is converted with pinned OME
+      Bio-Formats bftools into single-file formats, producing same-image/different-format clusters
+      for evaluating iscc-bio IMAGEWALK Data-Code matching under realistic conversion drift.
     url: https://bbbc.broadinstitute.org/
     mode: image
     installer: twinspect.datasets.bioimage_convert:install
