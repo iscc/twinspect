@@ -62,6 +62,37 @@ uv run twinspect info             # Show data folder information
 uv run twinspect checksum <path>  # Compute folder checksum
 ```
 
+## Bioimage conversion benchmark
+
+The `bioimage_convert_1000` dataset builds 1000 same-source conversion clusters from public Broad
+Bioimage Benchmark Collection sources. Each cluster contains the selected source bioimage plus
+OME-TIFF, TIFF, PNG, JPEG 2000, DICOM and ICS variants converted with pinned
+OME Bio-Formats bftools `8.5.0` using default conversion settings only.
+
+TwinSpect downloads and verifies the bftools archive automatically on first use:
+
+- URL: `https://downloads.openmicroscopy.org/bio-formats/8.5.0/artifacts/bftools.zip`
+- SHA-256: `07a3bb1d3de84da3a709655a1008cb2d9b19becc5bad4ae4112633aec9380478`
+- Default cache: `~/.cache/twinspect/bioformats`
+
+Bio-Formats bftools is a Java distribution with Unix and Windows launchers (`bfconvert` and
+`bfconvert.bat`). A working Java runtime is required. Custom converters are still supported via
+`TWINSPECT_BIOIMAGE_CONVERT_TEMPLATE` or `TWINSPECT_BIOIMAGE_CONVERT_BIN`; the binary override uses
+the legacy `imgcnv -i INPUT -o OUTPUT -t FORMAT` argument shape, while arbitrary CLIs should use the
+template override.
+
+The benchmark measures same-source conversion robustness. It intentionally uses default
+format conversions rather than synthetic edits, brightness shifts, blur, or custom compression
+flags. On BBBC smoke runs with Bio-Formats defaults, OME-TIFF/TIFF/PNG/DICOM/ICS
+generally preserve identical IMAGEWALK Data-Codes, while JPEG 2000 introduces converter drift
+on some BMP sources. A stronger real-world stress case is lossy proprietary microscopy input,
+especially Zeiss CZI files using JPEG-XR compression converted to OME-Zarr with `bioformats2raw`:
+different valid decoder/conversion paths can preserve about 96% exact pixels while producing
+non-identical IMAGEWALK codes. TwinSpect treats `.zarr` directories as single benchmark media
+inputs so such CZI-to-OME-Zarr clusters can be added without hashing internal chunk files.
+That negative/positive split is part of the benchmark pressure and keeps the dataset semantics
+converter-induced rather than hand-edited.
+
 ## Documentation
 
 The benchmark results and methodology are documented at **https://eval.iscc.codes**, including:
