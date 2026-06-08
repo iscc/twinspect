@@ -66,7 +66,8 @@ uv run twinspect checksum <path>  # Compute folder checksum
 
 The `bioimage_convert_1000` dataset builds 1000 same-source conversion clusters from public Broad
 Bioimage Benchmark Collection sources. Each cluster contains the selected source bioimage plus
-OME-TIFF, TIFF, PNG, JPEG, TIFF/JPEG, and OME-TIFF/JPEG variants converted with pinned OME Bio-Formats bftools `8.5.0`.
+OME-TIFF, TIFF, PNG, JPEG 2000, DICOM and ICS variants converted with pinned
+OME Bio-Formats bftools `8.5.0` using default conversion settings only.
 
 TwinSpect downloads and verifies the bftools archive automatically on first use:
 
@@ -80,8 +81,12 @@ Bio-Formats bftools is a Java distribution with Unix and Windows launchers (`bfc
 the legacy `imgcnv -i INPUT -o OUTPUT -t FORMAT` argument shape, while arbitrary CLIs should use the
 template override.
 
-The benchmark measures same-source conversion robustness. It intentionally uses real format/codec conversions rather than synthetic edits such as brightness shifts or blur. On the BBBC smoke set, lossless/container conversions keep IMAGEWALK Data-Codes identical, while JPEG-compressed conversions produce non-identical IMAGEWALK bitstreams through codec artifacts; that drift is part of the benchmark
-pressure.
+The benchmark measures same-source conversion robustness. It intentionally uses default
+format conversions rather than synthetic edits, brightness shifts, blur, or custom compression
+flags. On BBBC smoke runs with Bio-Formats defaults, OME-TIFF/TIFF/PNG/DICOM/ICS
+generally preserve identical IMAGEWALK Data-Codes, while JPEG 2000 introduces converter drift
+on some BMP sources. That negative/positive split is part of the benchmark pressure and keeps
+the dataset semantics converter-induced rather than hand-edited.
 
 ## Documentation
 
