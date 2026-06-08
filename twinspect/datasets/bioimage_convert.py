@@ -8,12 +8,15 @@ Benchmark Collection archives. Each selected source bioimage becomes one cluster
     0000000/1variant_ome-tiff.ome.tiff
     0000000/2variant_tiff.tiff
     0000000/3variant_png.png
+    0000000/4variant_jpeg.jpg
+    0000000/5variant_tiff-jpeg.tiff
+    0000000/6variant_ome-tiff-jpeg.ome.tiff
 
 The converted cluster members are intended for benchmarking IMAGEWALK-based
-bioimage Data-Code matching across storage formats. Bio-Formats ``bfconvert``
-from pinned OME bftools is used by default because it is mature,
-cross-platform, actively maintained, and supports microscopy formats beyond
-ordinary Pillow/OpenCV image files.
+bioimage Data-Code matching across storage formats and codec semantics.
+Bio-Formats ``bfconvert`` from pinned OME bftools is used by default because it
+is mature, cross-platform, actively maintained, and supports microscopy formats
+beyond ordinary Pillow/OpenCV image files.
 """
 
 from __future__ import annotations
@@ -74,11 +77,22 @@ BBBC_SOURCES = (
 
 # Conservative, broadly readable single-file output formats. Directory formats
 # such as OME-NGFF/Zarr are intentionally excluded because TwinSpect currently
-# treats benchmark assets as files.
+# treats benchmark assets as files. The first three conversions form an identity
+# tier on the BBBC smoke set; the JPEG-compressed conversions are real codec
+# conversions that produce non-identical IMAGEWALK bitstreams without synthetic
+# brightness/blur/crop/etc. manipulations.
 CONVERSIONS = (
-    ("ome-tiff", ".ome.tiff", "ome-tiff"),
-    ("tiff", ".tiff", "tiff"),
-    ("png", ".png", "png"),
+    ("ome-tiff", ".ome.tiff", "ome-tiff", ()),
+    ("tiff", ".tiff", "tiff", ()),
+    ("png", ".png", "png", ()),
+    ("jpeg", ".jpg", "jpeg", ()),
+    ("tiff-jpeg", ".tiff", "tiff", ("-compression", "JPEG", "-quality", "0.90")),
+    (
+        "ome-tiff-jpeg",
+        ".ome.tiff",
+        "ome-tiff",
+        ("-compression", "JPEG", "-quality", "0.90"),
+    ),
 )
 
 IMAGE_EXTENSIONS = {".bmp", ".gif", ".jpg", ".jpeg", ".png", ".tif", ".tiff"}
@@ -228,9 +242,9 @@ def build_cluster(sample, cluster_path):
     original_path = cluster_path / f"0original{sample.suffix}"
     extract_member(sample, original_path)
     validate_file_size(original_path)
-    for idx, (label, suffix, format_name) in enumerate(CONVERSIONS, start=1):
+    for idx, (label, suffix, format_name, convert_args) in enumerate(CONVERSIONS, start=1):
         output_path = cluster_path / f"{idx}variant_{label}{suffix}"
-        convert_file(original_path, output_path, format_name)
+        convert_file(original_path, output_path, format_name, convert_args)
         validate_file_size(output_path)
 
 
@@ -247,8 +261,8 @@ def extract_member(sample, output_path):
     return output_path
 
 
-def convert_file(input_path, output_path, format_name):
-    # type: (Path, Path, str) -> Path
+def convert_file(input_path, output_path, format_name, convert_args=()):
+    # type: (Path, Path, str, tuple[str, ...]) -> Path
     """Convert ``input_path`` with BioImage Convert.
 
     The default converter is the pinned Bio-Formats command-line tool
@@ -262,7 +276,7 @@ def convert_file(input_path, output_path, format_name):
         validate_file_size(output_path)
         return output_path
 
-    command = bioimage_convert_command(input_path, output_path, format_name)
+    command = bioimage_convert_command(input_path, output_path, format_name, convert_args)
     timeout = int(os.environ.get("TWINSPECT_BIOIMAGE_CONVERT_TIMEOUT", DEFAULT_CONVERT_TIMEOUT))
     log.debug("Running BioImage Convert: {}", " ".join(command))
     try:
@@ -293,20 +307,27 @@ def convert_file(input_path, output_path, format_name):
     return output_path
 
 
-def bioimage_convert_command(input_path, output_path, format_name):
-    # type: (Path, Path, str) -> list[str]
+def bioimage_convert_command(input_path, output_path, format_name, convert_args=()):
+    # type: (Path, Path, str, tuple[str, ...]) -> list[str]
     """Build the BioImage conversion command line."""
     template = os.environ.get("TWINSPECT_BIOIMAGE_CONVERT_TEMPLATE")
     if template:
+        options = " ".join(shlex.quote(option) for option in convert_args)
         return [
-            part.format(input=input_path, output=output_path, format=format_name)
+            part.format(input=input_path, output=output_path, format=format_name, options=options)
             for part in shlex.split(template)
         ]
     binary = os.environ.get("TWINSPECT_BIOIMAGE_CONVERT_BIN")
     if binary:
+        if convert_args:
+            raise RuntimeError(
+                "TWINSPECT_BIOIMAGE_CONVERT_BIN uses the legacy imgcnv argument shape and cannot "
+                "represent Bio-Formats codec options. Use TWINSPECT_BIOIMAGE_CONVERT_TEMPLATE "
+                "with an {options} placeholder for codec-specific conversions."
+            )
         return [binary, "-i", str(input_path), "-o", str(output_path), "-t", format_name]
     bfconvert = ensure_bioformats_tools()
-    return [str(bfconvert), str(input_path), str(output_path)]
+    return [str(bfconvert), *convert_args, str(input_path), str(output_path)]
 
 
 def default_bioformats_cache_dir():
@@ -455,7 +476,7 @@ def validate_cluster(cluster_path):
         )
     validate_file_size(originals[0])
 
-    for idx, (label, suffix, _) in enumerate(CONVERSIONS, start=1):
+    for idx, (label, suffix, _, _) in enumerate(CONVERSIONS, start=1):
         path = cluster_path / f"{idx}variant_{label}{suffix}"
         validate_file_size(path)
 

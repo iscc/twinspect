@@ -78,7 +78,7 @@ def test_build_cluster_keeps_original_first_and_conversion_labels(monkeypatch, t
         output_path.write_bytes(b"original")
         return output_path
 
-    def fake_convert_file(input_path, output_path, format_name):
+    def fake_convert_file(input_path, output_path, format_name, convert_args=()):
         output_path.write_bytes(format_name.encode("utf-8"))
         return output_path
 
@@ -94,6 +94,9 @@ def test_build_cluster_keeps_original_first_and_conversion_labels(monkeypatch, t
         "1variant_ome-tiff.ome.tiff",
         "2variant_tiff.tiff",
         "3variant_png.png",
+        "4variant_jpeg.jpg",
+        "5variant_tiff-jpeg.tiff",
+        "6variant_ome-tiff-jpeg.ome.tiff",
     ]
     bic.validate_cluster(cluster)
 
@@ -101,10 +104,22 @@ def test_build_cluster_keeps_original_first_and_conversion_labels(monkeypatch, t
 def test_bioimage_convert_command_allows_template(monkeypatch):
     monkeypatch.setenv(
         "TWINSPECT_BIOIMAGE_CONVERT_TEMPLATE",
-        "converter --input {input} --output {output} --format {format}",
+        "converter --input {input} --output {output} --format {format} --opts {options}",
     )
-    command = bic.bioimage_convert_command(Path("in.tif"), Path("out.png"), "png")
-    assert command == ["converter", "--input", "in.tif", "--output", "out.png", "--format", "png"]
+    command = bic.bioimage_convert_command(
+        Path("in.tif"), Path("out.png"), "png", ("-compression", "JPEG")
+    )
+    assert command == [
+        "converter",
+        "--input",
+        "in.tif",
+        "--output",
+        "out.png",
+        "--format",
+        "png",
+        "--opts",
+        "-compression JPEG",
+    ]
 
 
 def test_bioformats_tools_archive_is_pinned():
@@ -123,6 +138,31 @@ def test_default_converter_command_uses_pinned_bfconvert(monkeypatch, tmp_path):
     command = bic.bioimage_convert_command(Path("in.tif"), Path("out.ome.tiff"), "ome-tiff")
 
     assert command == [str(fake), "in.tif", "out.ome.tiff"]
+
+
+def test_default_converter_command_includes_bioformats_codec_options(monkeypatch, tmp_path):
+    monkeypatch.delenv("TWINSPECT_BIOIMAGE_CONVERT_TEMPLATE", raising=False)
+    monkeypatch.delenv("TWINSPECT_BIOIMAGE_CONVERT_BIN", raising=False)
+    fake = tmp_path / ("bfconvert.bat" if bic.platform.system() == "Windows" else "bfconvert")
+    fake.write_text("", encoding="utf-8")
+    monkeypatch.setattr(bic, "ensure_bioformats_tools", lambda cache_dir=None: fake)
+
+    command = bic.bioimage_convert_command(
+        Path("in.tif"),
+        Path("out.ome.tiff"),
+        "ome-tiff",
+        ("-compression", "JPEG", "-quality", "0.90"),
+    )
+
+    assert command == [
+        str(fake),
+        "-compression",
+        "JPEG",
+        "-quality",
+        "0.90",
+        "in.tif",
+        "out.ome.tiff",
+    ]
 
 
 def test_ensure_bioformats_tools_downloads_verifies_and_extracts(monkeypatch, tmp_path):
