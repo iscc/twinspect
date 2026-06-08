@@ -66,9 +66,7 @@ def test_manifest_roundtrip(tmp_path):
     assert bic.load_manifest(manifest) == samples
 
 
-def test_build_cluster_keeps_original_first_and_adds_identity_and_similarity_variants(
-    monkeypatch, tmp_path
-):
+def test_build_cluster_keeps_original_first_and_conversion_labels(monkeypatch, tmp_path):
     sample = bic.BioimageSample(
         source_label="bbbc-test",
         archive_url="https://example.test/archive.zip",
@@ -84,16 +82,8 @@ def test_build_cluster_keeps_original_first_and_adds_identity_and_similarity_var
         output_path.write_bytes(format_name.encode("utf-8"))
         return output_path
 
-    pixel_variant_calls = []
-
-    def fake_apply_pixel_variant(input_path, output_path, variant_name):
-        pixel_variant_calls.append((input_path.name, output_path.name, variant_name))
-        output_path.write_bytes(variant_name.encode("utf-8"))
-        return output_path
-
     monkeypatch.setattr(bic, "extract_member", fake_extract_member)
     monkeypatch.setattr(bic, "convert_file", fake_convert_file)
-    monkeypatch.setattr(bic, "apply_pixel_variant", fake_apply_pixel_variant)
 
     cluster = tmp_path / "0000000"
     bic.build_cluster(sample, cluster)
@@ -104,45 +94,8 @@ def test_build_cluster_keeps_original_first_and_adds_identity_and_similarity_var
         "1variant_ome-tiff.ome.tiff",
         "2variant_tiff.tiff",
         "3variant_png.png",
-        "4variant_brightness-png.png",
-        "5variant_blur-png.png",
-    ]
-    assert pixel_variant_calls == [
-        ("3variant_png.png", "4variant_brightness-png.png", "brightness"),
-        ("3variant_png.png", "5variant_blur-png.png", "blur"),
     ]
     bic.validate_cluster(cluster)
-
-
-def test_apply_pixel_variant_creates_readable_nonempty_png(tmp_path):
-    from PIL import Image
-
-    src = tmp_path / "source.tif"
-    out = tmp_path / "brightness.png"
-    Image.new("L", (32, 32), 128).save(src)
-
-    result = bic.apply_pixel_variant(src, out, "brightness")
-
-    assert result == out
-    assert out.stat().st_size > 0
-    assert Image.open(out).size == (32, 32)
-
-
-def test_apply_pixel_variants_change_pixels_on_nonuniform_input(tmp_path):
-    from PIL import Image, ImageChops
-
-    src = tmp_path / "source.png"
-    image = Image.new("L", (32, 32), 0)
-    for x in range(8, 24):
-        for y in range(8, 24):
-            image.putpixel((x, y), 128)
-    image.save(src)
-
-    for variant in ("brightness", "blur"):
-        out = tmp_path / f"{variant}.png"
-        bic.apply_pixel_variant(src, out, variant)
-        with Image.open(src) as original, Image.open(out) as changed:
-            assert ImageChops.difference(original, changed).getbbox() is not None
 
 
 def test_bioimage_convert_command_allows_template(monkeypatch):
