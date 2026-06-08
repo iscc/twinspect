@@ -8,12 +8,14 @@ Benchmark Collection archives. Each selected source bioimage becomes one cluster
     0000000/1variant_ome-tiff.ome.tiff
     0000000/2variant_tiff.tiff
     0000000/3variant_png.png
+    0000000/4variant_brightness-png.png
+    0000000/5variant_blur-png.png
 
 The converted cluster members are intended for benchmarking IMAGEWALK-based
-bioimage Data-Code matching across storage formats. Bio-Formats ``bfconvert``
-from pinned OME bftools is used by default because it is mature,
-cross-platform, actively maintained, and supports microscopy formats beyond
-ordinary Pillow/OpenCV image files.
+bioimage Data-Code matching across storage formats and mild same-source export
+perturbations. Bio-Formats ``bfconvert`` from pinned OME bftools is used by
+default because it is mature, cross-platform, actively maintained, and supports
+microscopy formats beyond ordinary Pillow/OpenCV image files.
 """
 
 from __future__ import annotations
@@ -79,6 +81,16 @@ CONVERSIONS = (
     ("ome-tiff", ".ome.tiff", "ome-tiff"),
     ("tiff", ".tiff", "tiff"),
     ("png", ".png", "png"),
+)
+
+# Deterministic pixel-altering same-source variants. The lossless container
+# conversions above are useful as an identity/reproducibility tier, but they can
+# leave IMAGEWALK-normalized pixels identical. These variants intentionally nudge
+# normalized pixels while preserving visual/source identity, so the Hamming
+# similarity behaviour is actually exercised.
+PIXEL_VARIANTS = (
+    ("brightness-png", ".png", "brightness"),
+    ("blur-png", ".png", "blur"),
 )
 
 IMAGE_EXTENSIONS = {".bmp", ".gif", ".jpg", ".jpeg", ".png", ".tif", ".tiff"}
@@ -228,9 +240,22 @@ def build_cluster(sample, cluster_path):
     original_path = cluster_path / f"0original{sample.suffix}"
     extract_member(sample, original_path)
     validate_file_size(original_path)
+    conversion_outputs = {}
     for idx, (label, suffix, format_name) in enumerate(CONVERSIONS, start=1):
         output_path = cluster_path / f"{idx}variant_{label}{suffix}"
         convert_file(original_path, output_path, format_name)
+        validate_file_size(output_path)
+        conversion_outputs[label] = output_path
+
+    # Generate export-style perturbations from the Bio-Formats PNG identity
+    # output, not the original archive member. That keeps the similarity tier
+    # readable via Pillow even when the original is a microscopy TIFF variant
+    # that Bio-Formats can decode but Pillow cannot.
+    pixel_source = conversion_outputs["png"]
+    start = 1 + len(CONVERSIONS)
+    for idx, (label, suffix, variant_name) in enumerate(PIXEL_VARIANTS, start=start):
+        output_path = cluster_path / f"{idx}variant_{label}{suffix}"
+        apply_pixel_variant(pixel_source, output_path, variant_name)
         validate_file_size(output_path)
 
 
@@ -288,6 +313,39 @@ def convert_file(input_path, output_path, format_name):
             f"BioImage Convert failed for {input_path.name} -> {output_path.name}: "
             f"stdout={exc.stdout!r} stderr={exc.stderr!r}"
         ) from exc
+
+    validate_file_size(output_path)
+    return output_path
+
+
+def apply_pixel_variant(input_path, output_path, variant_name):
+    # type: (Path, Path, str) -> Path
+    """Create a deterministic pixel-altering same-source PNG variant.
+
+    These mild perturbations complement the lossless Bio-Formats conversion tier:
+    they preserve visual/source identity while producing non-identical normalized
+    IMAGEWALK bitstreams on tested BBBC samples.
+    """
+    if output_path.exists() and output_path.stat().st_size > 0:
+        validate_file_size(output_path)
+        return output_path
+
+    from PIL import Image, ImageEnhance, ImageFilter
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with Image.open(input_path) as image:
+        working = image.convert("L")
+        if variant_name == "brightness":
+            # +1% brightness was the lightest tested perturbation that produced
+            # non-identical IMAGEWALK codes for all 20 BBBC smoke-test samples.
+            result = ImageEnhance.Brightness(working).enhance(1.01)
+        elif variant_name == "blur":
+            # A 0.3 px Gaussian blur keeps most same-source distances below 16
+            # while still making many normalized bitstreams non-identical.
+            result = working.filter(ImageFilter.GaussianBlur(0.3))
+        else:
+            raise RuntimeError(f"Unknown bioimage pixel variant: {variant_name}")
+        result.save(output_path)
 
     validate_file_size(output_path)
     return output_path
@@ -455,7 +513,7 @@ def validate_cluster(cluster_path):
         )
     validate_file_size(originals[0])
 
-    for idx, (label, suffix, _) in enumerate(CONVERSIONS, start=1):
+    for idx, (label, suffix, _) in enumerate((*CONVERSIONS, *PIXEL_VARIANTS), start=1):
         path = cluster_path / f"{idx}variant_{label}{suffix}"
         validate_file_size(path)
 
@@ -479,6 +537,7 @@ def write_build_info(data_folder, samples):
         "dataset": "bioimage_convert_1000",
         "sources": BBBC_SOURCES,
         "conversions": CONVERSIONS,
+        "pixel_variants": PIXEL_VARIANTS,
         "max_file_size": ONE_GIB,
         "bioimage_convert_command": bioimage_convert_command(
             Path("INPUT"), Path("OUTPUT"), "FORMAT"

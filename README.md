@@ -65,8 +65,11 @@ uv run twinspect checksum <path>  # Compute folder checksum
 ## Bioimage conversion benchmark
 
 The `bioimage_convert_1000` dataset builds 1000 same-source conversion clusters from public Broad
-Bioimage Benchmark Collection sources. Each cluster contains the selected source bioimage plus
-OME-TIFF, TIFF, and PNG variants converted with pinned OME Bio-Formats bftools `8.5.0`.
+Bioimage Benchmark Collection sources. Each cluster contains the selected source bioimage plus an
+identity tier (OME-TIFF, TIFF, PNG converted with pinned OME Bio-Formats bftools `8.5.0`) and a
+similarity tier (deterministic +1% brightness and 0.3 px Gaussian-blur PNG exports from the
+Bio-Formats PNG). The identity tier catches pipeline non-determinism; the similarity tier is intended
+to exercise IMAGEWALK Hamming-distance robustness beyond byte-identical normalized pixels.
 
 TwinSpect downloads and verifies the bftools archive automatically on first use:
 
